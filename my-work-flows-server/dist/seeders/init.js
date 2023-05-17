@@ -9,16 +9,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Users_1 = require("../models/Users");
+const Task_1 = require("../models/Task");
+const User_1 = require("../models/User");
 require('dotenv').config();
 const isDev = process.env.NODE_ENV === 'development';
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield Users_1.Users.sync({ force: isDev });
-    const result = yield Users_1.Users.bulkCreate([
-        { name: 'Guest One', email: 'guest1@example.com', createdAt: new Date(), updatedAt: new Date(), deletedAt: new Date() },
-        { name: 'Guest Two', email: 'guest2@example.com', createdAt: new Date(), updatedAt: new Date(), deletedAt: new Date() }
-    ]);
-    console.log("🚀 ~ file: init.ts:10 ~ dbInit ~ result:", result);
+    function user() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield User_1.User.sync({ force: isDev });
+            yield User_1.User.bulkCreate([
+                { name: 'Guest One', email: 'guest1@example.com', createdAt: new Date() },
+                { name: 'Guest Two', email: 'guest2@example.com', createdAt: new Date() }
+            ]);
+        });
+    }
+    function task() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Task_1.Task.sync({ force: isDev });
+            yield Task_1.Task.bulkCreate([
+                {
+                    name: 'task 1',
+                    description: 'task 1 description',
+                    owner: BigInt(1),
+                    reviewer: BigInt(2),
+                    dueDate: new Date('2023-05-30T17:00:00'),
+                    startDate: new Date(),
+                    workflowID: BigInt(1),
+                },
+                {
+                    name: 'task 2',
+                    description: 'task 2 description',
+                    owner: BigInt(1),
+                    reviewer: BigInt(2),
+                    dueDate: new Date('2023-05-30T17:00:00'),
+                    dependencies: [BigInt(1)],
+                    workflowID: BigInt(1),
+                },
+                {
+                    name: 'task 3',
+                    description: 'task 3 description',
+                    owner: BigInt(1),
+                    reviewer: BigInt(2),
+                    dueDate: new Date('2023-05-30T17:00:00'),
+                    dependencies: [BigInt(1), BigInt(2)],
+                    workflowID: BigInt(1),
+                }
+            ]);
+        });
+    }
+    const promises = [user(), task()];
+    yield Promise.all(promises);
 });
 init();
 exports.default = init;
