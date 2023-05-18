@@ -9,7 +9,7 @@ const getTasks = (req, res) => {
         owner: BigInt(1),
         reviewer: BigInt(2),
         dueDate: new Date('2023-05-30T17:00:00'),
-        dependencies: [BigInt(1), BigInt(2)],
+        // dependencies: [BigInt(1), BigInt(2)],
         workflowID: BigInt(1),
     });
     res.send('getTasks');

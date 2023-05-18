@@ -9,7 +9,7 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   declare reviewer: bigint;
   declare dueDate: Date;
   declare startDate: CreationOptional<Date>;
-  declare dependencies: CreationOptional<bigint[]>;
+  // declare dependencies: CreationOptional<bigint[]>;
   declare workflowID: bigint;
 
   // timestamps
@@ -56,18 +56,9 @@ Task.init({
   startDate: {
     type: DataTypes.DATE,
   },
-  dependencies: {
-    type: DataTypes.STRING(100),
-    // get(this: Task): bigint[] {
-    //   const val = this.getDataValue('dependencies');
-    //   console.log("🚀 ~ file: Task.ts:81 ~ get ~ val:", val)
-    //   return val;
-    //   // return this.getDataValue('dependencies').split(',').map((val: string) => BigInt(val))
-    // },
-    set(val: bigint[]) {
-      this.setDataValue('dependencies', val.join(','));
-    }
-  },
+  // dependencies: {
+  //   type: DataTypes.STRING(100),
+  // },
   workflowID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,

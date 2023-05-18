@@ -44,18 +44,9 @@ Task.init({
     startDate: {
         type: sequelize_1.DataTypes.DATE,
     },
-    dependencies: {
-        type: sequelize_1.DataTypes.STRING(100),
-        // get(this: Task): bigint[] {
-        //   const val = this.getDataValue('dependencies');
-        //   console.log("🚀 ~ file: Task.ts:81 ~ get ~ val:", val)
-        //   return val;
-        //   // return this.getDataValue('dependencies').split(',').map((val: string) => BigInt(val))
-        // },
-        set(val) {
-            return val.join(',');
-        }
-    },
+    // dependencies: {
+    //   type: DataTypes.STRING(100),
+    // },
     workflowID: {
         type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,

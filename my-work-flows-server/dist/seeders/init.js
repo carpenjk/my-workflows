@@ -42,7 +42,7 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
                     owner: BigInt(1),
                     reviewer: BigInt(2),
                     dueDate: new Date('2023-05-30T17:00:00'),
-                    dependencies: [BigInt(1)],
+                    // dependencies: [BigInt(1)],
                     workflowID: BigInt(1),
                 },
                 {
@@ -51,7 +51,7 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
                     owner: BigInt(1),
                     reviewer: BigInt(2),
                     dueDate: new Date('2023-05-30T17:00:00'),
-                    dependencies: [BigInt(1), BigInt(2)],
+                    // dependencies: [BigInt(1), BigInt(2)],
                     workflowID: BigInt(1),
                 }
             ]);
