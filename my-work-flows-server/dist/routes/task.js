@@ -8,4 +8,4 @@ const tasks_1 = require("../controllers/tasks");
 const router = express_1.default.Router({ mergeParams: true });
 router.route('/').get(tasks_1.getTasks).post(tasks_1.createTask);
 router.route('/:taskID').get(tasks_1.getTask).patch(tasks_1.updateTask);
-module.exports = router;
+exports.default = router;

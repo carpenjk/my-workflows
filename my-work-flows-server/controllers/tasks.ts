@@ -1,29 +1,59 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { asyncWrapper } from "../middleware/asyncWrapper";
 import { Task } from "../models/Task";
+import { NotFoundError } from "../errors/notFoundError";
 
-export const getTasks = (req: Request, res: Response) => {
-  Task.create(
-    {
-      name: 'task 4',
-      description: 'task 4 description',
-      owner: BigInt(1),
-      reviewer: BigInt(2),
-      dueDate: new Date('2023-05-30T17:00:00'),
-      // dependencies: [BigInt(1), BigInt(2)],
-      workflowID: BigInt(1),
+export const getTasks = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const filters = req.params;
+  const tasks = await Task.findAll({
+    where: {
+      ...filters
     }
+  })
+  if (tasks.length === 0) {
+    return next(new NotFoundError('No tasks found.'));
+  }
+  res.send(tasks);
+})
+
+export const getTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const taskID: string = req.params.taskID;
+  console.log(`Getting task for ${taskID}`);
+  const task = await Task.findOne({ where: { taskID: taskID } });
+  console.log("🚀 ~ file: tasks.ts:23 ~ getTask ~ task:", task);
+  if (!task) {
+    return next(new NotFoundError(`No task with id : ${taskID}`));
+  }
+  res.send(task);
+})
+
+export const createTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const workflowID: string = req.params.workflowID;
+  const { taskID, ...colsToCreate } = req.body;
+  console.log(`Creating task for ${taskID}`);
+  await Task.create(
+    { ...colsToCreate, workflowID: workflowID },
   )
-  res.send('getTasks');
-}
-export const getTask = (req: Request, res: Response) => {
-  res.send('getTask');
-}
-export const createTask = (req: Request, res: Response) => {
-  res.send('createTasks');
-}
-export const updateTask = (req: Request, res: Response) => {
-  res.send('updateTask');
-}
-export const deleteTask = (req: Request, res: Response) => {
-  res.send('deleteTask');
-}
+  res.send({ msg: 'Task created!' });
+})
+
+export const updateTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const taskID: string = req.params.taskID;
+  const workflowID: string = req.params.workflowID;
+  const { taskID: ignoreID, ...colsToUpdate } = req.body;
+  await Task.update(
+    { ...colsToUpdate, workflowID: workflowID },
+    { where: { taskID: taskID } }
+  )
+  console.log(`Creating task for ${taskID}`);
+  res.send(`Task updated!`);
+})
+
+export const deleteTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { taskID } = req.params;
+  const task = await Task.destroy({ where: { taskID: taskID } });
+  if (task === 0) {
+    return next(new NotFoundError('The task does not exist to delete.'))
+  }
+  res.send({ msg: `Task ${taskID} has been deleted.` });
+})

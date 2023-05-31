@@ -11,54 +11,54 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Task_1 = require("../models/Task");
 const User_1 = require("../models/User");
+const Workflow_1 = require("../models/Workflow");
+const sequelize_1 = require("../adapters/sequelize");
+const Dependency_1 = require("../models/Dependency");
 require('dotenv').config();
 const isDev = process.env.NODE_ENV === 'development';
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
-    function user() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield User_1.User.sync({ force: isDev });
-            yield User_1.User.bulkCreate([
-                { name: 'Guest One', email: 'guest1@example.com', createdAt: new Date() },
-                { name: 'Guest Two', email: 'guest2@example.com', createdAt: new Date() }
-            ]);
-        });
-    }
-    function task() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield Task_1.Task.sync({ force: isDev });
-            yield Task_1.Task.bulkCreate([
-                {
-                    name: 'task 1',
-                    description: 'task 1 description',
-                    owner: BigInt(1),
-                    reviewer: BigInt(2),
-                    dueDate: new Date('2023-05-30T17:00:00'),
-                    startDate: new Date(),
-                    workflowID: BigInt(1),
-                },
-                {
-                    name: 'task 2',
-                    description: 'task 2 description',
-                    owner: BigInt(1),
-                    reviewer: BigInt(2),
-                    dueDate: new Date('2023-05-30T17:00:00'),
-                    // dependencies: [BigInt(1)],
-                    workflowID: BigInt(1),
-                },
-                {
-                    name: 'task 3',
-                    description: 'task 3 description',
-                    owner: BigInt(1),
-                    reviewer: BigInt(2),
-                    dueDate: new Date('2023-05-30T17:00:00'),
-                    // dependencies: [BigInt(1), BigInt(2)],
-                    workflowID: BigInt(1),
-                }
-            ]);
-        });
-    }
-    const promises = [user(), task()];
-    yield Promise.all(promises);
+    yield sequelize_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+    yield sequelize_1.sequelize.sync({ force: isDev });
+    yield sequelize_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+    yield User_1.User.bulkCreate([
+        { name: 'Guest One', email: 'guest1@example.com', password: 'password', createdAt: new Date() },
+        { name: 'Guest Two', email: 'guest2@example.com', password: 'password', createdAt: new Date() }
+    ]);
+    yield Workflow_1.Workflow.bulkCreate([
+        { name: 'Workflow 1', description: 'This is Workflow 1' }
+    ]);
+    yield Task_1.Task.bulkCreate([
+        {
+            name: 'task 1',
+            description: 'task 1 description',
+            owner: BigInt(1),
+            reviewer: BigInt(2),
+            dueDate: new Date('2023-05-30T17:00:00'),
+            startDate: new Date(),
+            workflowID: BigInt(1),
+        },
+        {
+            name: 'task 2',
+            description: 'task 2 description',
+            owner: BigInt(1),
+            reviewer: BigInt(2),
+            dueDate: new Date('2023-05-30T17:00:00'),
+            workflowID: BigInt(1),
+        },
+        {
+            name: 'task 3',
+            description: 'task 3 description',
+            owner: BigInt(1),
+            reviewer: BigInt(2),
+            dueDate: new Date('2023-05-30T17:00:00'),
+            workflowID: BigInt(1),
+        }
+    ]);
+    yield Dependency_1.Dependency.bulkCreate([
+        { taskID: BigInt(2), dependency: BigInt(1) },
+        { taskID: BigInt(3), dependency: BigInt(1) },
+        { taskID: BigInt(3), dependency: BigInt(2) }
+    ]);
 });
 init();
 exports.default = init;
