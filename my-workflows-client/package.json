@@ -1,5 +1,5 @@
 {
-  "name": "my-work-flows-client",
+  "name": "my-workflows-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,8 +7,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.28",
-    "@types/react": "^18.2.6",
+    "@types/node": "^16.18.34",
+    "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -40,17 +40,8 @@
       "last 1 safari version"
     ]
   },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
-  "main": "index.js",
-  "devDependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/carpenjk/my-work-flows.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/carpenjk/my-work-flows/issues"
-  },
-  "homepage": "https://github.com/carpenjk/my-work-flows#readme"
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "tailwindcss": "^3.3.2"
+  }
 }
