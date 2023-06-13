@@ -4,6 +4,7 @@ import { User } from '../models/User'
 import { Workflow } from '../models/Workflow';
 import { sequelize } from '../adapters/sequelize'
 import { Dependency } from '../models/Dependency';
+import {sequelizeStore } from '../middleware/session';
 
 require('dotenv').config();
 
@@ -12,6 +13,7 @@ const isDev = process.env.NODE_ENV === 'development'
 const init = async () => {
   await sequelize.query('SET FOREIGN_KEY_CHECKS = 0')
   await sequelize.sync({ force: isDev });
+  await sequelizeStore.sync({force: isDev})
   await sequelize.query('SET FOREIGN_KEY_CHECKS = 1')
 
   await User.bulkCreate([

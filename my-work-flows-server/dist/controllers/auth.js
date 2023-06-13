@@ -32,6 +32,7 @@ exports.register = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaite
     res.status(http_status_codes_1.StatusCodes.CREATED).json({ user: tokenUser });
 }));
 exports.login = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // console.log(req.session)
     const { email, password } = req.body;
     if (!email || !password) {
         throw new badRequestError_1.BadRequestError('Please provide email and password');

@@ -27,6 +27,7 @@ export const register = asyncWrapper(async (req: Request, res: Response, next: N
 });
 
 export const login = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  // console.log(req.session)
   const { email, password } = req.body;
   if (!email || !password) {
     throw new BadRequestError('Please provide email and password');
