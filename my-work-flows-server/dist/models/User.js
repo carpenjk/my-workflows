@@ -24,6 +24,30 @@ class User extends sequelize_1.Model {
             return isMatch;
         });
     }
+    static serializeUser(user, cb) {
+        process.nextTick(function () {
+            return cb(null, {
+                userID: user.userID,
+                email: user.email,
+                name: user.name
+            });
+        });
+    }
+    static deserializeUser(user, cb) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const dbUser = yield User.findOne({ where: { email: user.email } });
+                if (!dbUser) {
+                    return cb(null, false);
+                }
+                const sessionUser = { userID: dbUser.userID, email: dbUser.email, name: dbUser.name };
+                return cb(null, sessionUser);
+            }
+            catch (e) {
+                return cb(e);
+            }
+        });
+    }
 }
 exports.User = User;
 User.init({
