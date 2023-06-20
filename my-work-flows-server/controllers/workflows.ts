@@ -5,7 +5,6 @@ import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
 
 export const getWorkflows = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-  console.log('getworkflows');
   const workflows = await Workflow.findAll({
     where: {
       completedDate: { [Op.eq]: null }

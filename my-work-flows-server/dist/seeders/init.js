@@ -20,8 +20,8 @@ const isDev = process.env.NODE_ENV === 'development';
 const init = () => __awaiter(void 0, void 0, void 0, function* () {
     yield sequelize_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
     yield sequelize_1.sequelize.sync({ force: isDev });
-    yield sequelize_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
     yield session_1.sequelizeStore.sync({ force: isDev });
+    yield sequelize_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
     yield User_1.User.bulkCreate([
         { name: 'Guest One', email: 'guest1@example.com', password: 'password', createdAt: new Date() },
         { name: 'Guest Two', email: 'guest2@example.com', password: 'password', createdAt: new Date() }

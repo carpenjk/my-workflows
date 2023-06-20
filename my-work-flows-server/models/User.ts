@@ -4,6 +4,19 @@ require('dotenv').config();
 
 import { sequelize } from '../adapters/sequelize';
 
+
+export interface SessionUser {
+  userID: bigint,
+  email: string,
+  name: string
+}
+
+declare global {
+  namespace Express {
+    interface User extends SessionUser{}
+  }
+}
+
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare userID: CreationOptional<bigint>;
   declare name: string;
@@ -14,10 +27,34 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
+
   async comparePassword(enteredPassword: string) {
 
     const isMatch = await bcrypt.compare(enteredPassword, this.password);
     return isMatch;
+  }
+
+  static serializeUser(user:Express.User, cb: Function) {
+    process.nextTick(function() {
+      return cb(null, {
+        userID: user.userID,
+        email: user.email,
+        name: user.name
+      });
+    });
+  }
+
+  static async deserializeUser(user: Express.User, cb: Function) {
+    try{
+      const dbUser: User | null = await User.findOne({where:{email: user.email}});
+      if(!dbUser){
+        return cb(null, false);
+      }
+      const sessionUser: Express.User = {userID: dbUser.userID, email: dbUser.email, name: dbUser.name}
+      return cb(null, sessionUser);
+    } catch(e){
+      return cb(e);
+    }
   }
 }
 
@@ -68,7 +105,7 @@ User.init({
   sequelize,
   timestamps: true,
   modelName: 'User'
-})
+});
 
 async function hashPassword(p: string): Promise<string> {
   const hashedPassword = await bcrypt.hash(p, 10);

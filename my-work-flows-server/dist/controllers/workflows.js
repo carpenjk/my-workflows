@@ -26,7 +26,6 @@ const Workflow_1 = require("../models/Workflow");
 const asyncWrapper_1 = require("../middleware/asyncWrapper");
 const notFoundError_1 = require("../errors/notFoundError");
 exports.getWorkflows = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('getworkflows');
     const workflows = yield Workflow_1.Workflow.findAll({
         where: {
             completedDate: { [sequelize_1.Op.eq]: null }

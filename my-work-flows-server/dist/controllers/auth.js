@@ -9,13 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.register = void 0;
+exports.verify = exports.register = void 0;
 const asyncWrapper_1 = require("../middleware/asyncWrapper");
 const User_1 = require("../models/User");
 const badRequestError_1 = require("../errors/badRequestError");
-const unauthenticatedError_1 = require("../errors/unauthenticatedError");
 const http_status_codes_1 = require("http-status-codes");
-const jwt_1 = require("../utils/jwt");
 exports.register = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, name, password } = req.body;
     const emailAlreadyExists = yield User_1.User.findOne({ where: { email } });
@@ -27,25 +25,26 @@ exports.register = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaite
         email,
         password,
     });
-    const tokenUser = { userID: user.userID, email: user.email, name: user.name };
-    // attachCookiesToResponse({ res, user: tokenUser });
-    res.status(http_status_codes_1.StatusCodes.CREATED).json({ user: tokenUser });
+    res.status(http_status_codes_1.StatusCodes.CREATED).send({ redirect: '/login' });
 }));
-exports.login = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // console.log(req.session)
-    const { email, password } = req.body;
+const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, function* () {
     if (!email || !password) {
-        throw new badRequestError_1.BadRequestError('Please provide email and password');
+        return cb(null, false, { message: 'Please provide email and password' });
     }
-    const user = yield User_1.User.findOne({ where: { email } });
-    if (!user) {
-        throw new unauthenticatedError_1.UnauthenticatedError('Invalid Credentials');
+    try {
+        const user = yield User_1.User.findOne({ where: { email } });
+        if (!user) {
+            return cb(null, false, { message: 'Please provide email and password' });
+        }
+        const isPasswordCorrect = yield (user === null || user === void 0 ? void 0 : user.comparePassword(password));
+        if (!isPasswordCorrect) {
+            return cb(null, false, { message: 'Please provide email and password' });
+        }
+        const sessionUser = { userID: user.userID, email: user.email, name: user.name };
+        return cb(null, sessionUser);
     }
-    const isPasswordCorrect = yield user.comparePassword(password);
-    if (!isPasswordCorrect) {
-        throw new unauthenticatedError_1.UnauthenticatedError('Invalid Credentials');
+    catch (e) {
+        cb(e);
     }
-    // compare password
-    const token = (0, jwt_1.createJWT)({ userID: user.userID, name: user.name, email: user.email });
-    res.status(http_status_codes_1.StatusCodes.OK).json({ user: { name: user.name }, token });
-}));
+});
+exports.verify = verify;
