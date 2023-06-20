@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express'
 import { register } from '../controllers/auth'
 import { passport } from '../middleware/passport'
-import { SessionUser } from '../models/User'
 import { UnauthenticatedError } from '../errors/unauthenticatedError'
 
 const router = express.Router()

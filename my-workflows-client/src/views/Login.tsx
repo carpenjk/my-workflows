@@ -1,6 +1,6 @@
 import Header from "../components/Header";
-import LoginCard from "../components/LoginCard";
-import Logo from "../components/Logo";
+import LoginCard from "../UI/LoginCard";
+import Logo from "../UI/Logo";
 
 const Login = () => {
   return ( 
