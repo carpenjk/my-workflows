@@ -1,12 +1,9 @@
-import Header from "../components/Header";
-import LoginCard from "../components/LoginCard";
-import Logo from "../components/Logo";
+import LoginCard from "../UI/LoginCard";
 
 const Login = () => {
   return ( 
       <>
-         <Header logo={<Logo/>}></Header>
-         <div className="container w-fill pt-20 flex justify-center mx-auto">
+         <div className="container w-fill flex justify-center mx-auto">
             <div className="">
                <LoginCard/>
             </div>

@@ -16,25 +16,25 @@
   }
 
   h1 {
-    @apply text-white text-3xl;
+    @apply text-3xl;
     font-family: 'Maven Pro', sans-serif;
   }
 
   h2 {
-    @apply text-white text-2xl;
+    @apply  text-2xl;
     font-family: 'Maven Pro', sans-serif;
   }
 
   h3 {
-    @apply text-white text-xl;
+    @apply  text-xl;
     font-family: 'Maven Pro', sans-serif;
   }
   h4 {
-    @apply text-white text-lg;
+    @apply  text-lg;
     font-family: 'Maven Pro', sans-serif;
   }
   h5 {
-    @apply text-white text-base;
+    @apply  text-base;
     font-family: 'Maven Pro', sans-serif;
   }
   p {

@@ -1,7 +1,7 @@
 import React from "react";
 
 const Logo = () => {
-  return ( <h1>Workflow Tracker</h1> );
+  return ( <h3>Workflow Tracker</h3> );
 }
  
 export default Logo;

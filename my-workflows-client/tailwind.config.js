@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        Maven: ['Maven Pro', 'sans-serif']
+        maven: ['Maven Pro', 'sans-serif']
       },
       animation: {
         text:'text 5s ease infinite',
