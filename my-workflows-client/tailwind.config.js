@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        "3xl": "1792px",
+      },
       fontFamily: {
         maven: ['Maven Pro', 'sans-serif']
       },

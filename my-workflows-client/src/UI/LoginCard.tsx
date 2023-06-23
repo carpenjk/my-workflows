@@ -27,24 +27,24 @@ const LoginCard = () => {
   const displayErrors: string = getErrors();
 
   return ( 
-    <div className="container space-y-2 w-full max-w-md mx-auto p-4 rounded-md shadow-md md:p-6 bg-slate-700 md:max-w-3xl">
+    <div className="container max-w-md p-6 mx-auto space-y-2 rounded-md shadow-md w-fill shrink-0 grow basis-80 bg-slate-700">
       <h1 className="text-gray-100">Welcome Back!</h1>
       <h5>Standardize and track your most important work flows.</h5>
       <div className="w-full max-w-md p-4">
         <form className="w-full" onSubmit={handleSubmit(handleLogin)}>
           <div className="w-full mb-4">
-            <label className="block text-sm font-bold mb-2" htmlFor="email">
+            <label className="block mb-2 text-sm font-bold" htmlFor="email">
               Email
             </label>
             <input
               {...register("email",  { required: true }) } 
-              className=" w-full " 
+              className="w-full " 
               id="email"
               type="text"
               placeholder="example@email.com"/>
           </div>
           <div className="mb-6">
-            <label className="block text-sm font-bold mb-2" htmlFor="password">
+            <label className="block mb-2 text-sm font-bold" htmlFor="password">
               Password
             </label>
             <input 
@@ -54,14 +54,14 @@ const LoginCard = () => {
               type="password" 
               placeholder="******************"
             />
-            {displayErrors && <p className="text-red-300 text-xs font-bold italic">{displayErrors}</p>}
+            {displayErrors && <p className="text-xs italic font-bold text-red-300">{displayErrors}</p>}
           </div>
-          <div className="mb-6 flex flex-col justify-center items-center space-y-2">
+          <div className="flex flex-col items-center justify-center mb-6 space-y-2">
               <span className="text-sm">Or</span>
               <TextButton>Login as Guest</TextButton>
           </div>
           <div className="flex items-center justify-between mt-10 space-x-6">
-            <button onClick={handleLogin} className="bg-sky-600/80 hover:bg-sky-700/80 transition-colors duration-300 text-white font-bold py-2 px-4 rounded" type="submit">
+            <button onClick={handleLogin} className="px-4 py-2 font-bold text-white transition-colors duration-300 rounded bg-sky-600/80 hover:bg-sky-700/80" type="submit">
               Sign In
             </button>
             <div className="md:w-18">
