@@ -13,7 +13,7 @@ const Header = ({logo, className, ...divProps}: Props) => {
           , className)}
       {...divProps}>
       <div>{Logo}</div>
-      <div><h4>Dark Mode</h4></div>    
+      <div className="hidden sm:flex"><h4>Dark Mode</h4></div>
     </header>
   );
 }

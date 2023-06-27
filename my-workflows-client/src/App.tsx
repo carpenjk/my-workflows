@@ -14,7 +14,7 @@ import Layout from './views/Layout';
 
 function App() {
   return (
-    <div className="App min-w-full min-h-screen bg-gradient-to-r from-slate-800 via-slate-900 to-gray-900" >
+    <div className="w-full min-h-screen min-w-screen App bg-slate-900" >
     <BrowserRouter>
     <Routes >
       <Route path="/" element={<Layout />}>

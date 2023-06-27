@@ -8,11 +8,11 @@
 
 @layer base{
   html {
-    @apply  text-gray-100 text-base min-w-full min-h-screen;
+    @apply   min-w-full min-h-screen text-base text-gray-100 bg-slate-900;
   }
 
   body {
-    @apply min-w-full min-h-full text-gray-100 text-base;
+    @apply min-w-full min-h-full text-base text-gray-100;
   }
 
   h1 {
@@ -38,9 +38,9 @@
     font-family: 'Maven Pro', sans-serif;
   }
   p {
-    @apply text-gray-100 text-base;
+    @apply text-base text-gray-100;
   }
   input {
-    @apply text-gray-700 shadow appearance-none border rounded py-2 px-3 leading-tight focus:outline-none;
+    @apply px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none;
   }
 }
