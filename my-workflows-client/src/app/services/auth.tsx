@@ -55,7 +55,7 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
-    getUserDetails: builder.query({
+    getUserDetails: builder.query<UserResponse, void>({
       query: () => ({
         url: 'api/v1/auth/login',
         method: 'GET',

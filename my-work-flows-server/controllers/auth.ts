@@ -23,6 +23,11 @@ export const register = asyncWrapper(async (req: Request, res: Response, next: N
   res.status(StatusCodes.CREATED).send({redirect: '/login'});
 });
 
+export const getUserWithSession = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("getUserWithSession: ", req.user);
+  res.send({msg: req.user})
+});
+
 export const verify: VerifyFunction = async (email: string, password: string, cb ) => {
   if (!email || !password) {
     return cb(null, false, {message:'Please provide email and password'});
@@ -44,3 +49,10 @@ export const verify: VerifyFunction = async (email: string, password: string, cb
     cb(e);
   }
 }
+
+export const logout = async function(req:Request, res: Response, next: NextFunction){
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/login');
+  });
+};

@@ -1,17 +1,35 @@
 import { useForm } from "react-hook-form";
 import TextButton from "./TextButton";
-import { LoginRequest, LoginRequestSchema, useLoginMutation } from "../app/services/auth";
+import { LoginRequest, LoginRequestSchema, User, useLoginMutation } from "../app/services/auth";
 import { yupResolver } from '@hookform/resolvers/yup';
-
-
-
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../features/auth/auth";
+import { useEffect } from "react";
 
 const LoginCard = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginRequest>( {resolver: yupResolver(LoginRequestSchema)});
+  const { register, handleSubmit, formState: {errors }, getValues } = useForm<LoginRequest>( {resolver: yupResolver(LoginRequestSchema)});
+  const navigate = useNavigate();
   const [logIn] = useLoginMutation();
+  const dispatch = useDispatch();
+  const loggedInUser: User | null = useSelector(getUser);
+  
+  useEffect(() => {
+    console.log(loggedInUser)
+    if(loggedInUser){
+      navigate('/');
+    }
+  },[loggedInUser, navigate])
 
-  const handleLogin = () => {
-    logIn({email: 'guest1@example.com', password:'password'})
+  const handleLogin = async () => {
+    try{
+      const {user} = await logIn({email: getValues("email"), password:getValues("password")}).unwrap();
+      if(user)
+      navigate('/')
+    }
+    catch(e){
+      
+    }    
   }
 
   const getErrors = (): string => {
@@ -23,6 +41,7 @@ const LoginCard = () => {
     }
     return "";
   }
+
 
   const displayErrors: string = getErrors();
 

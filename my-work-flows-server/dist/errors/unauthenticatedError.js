@@ -8,4 +8,8 @@ class UnauthenticatedError extends customAPIError_1.CustomAPIError {
         super(message, http_status_codes_1.StatusCodes.UNAUTHORIZED);
     }
 }
+UnauthenticatedError.messages = {
+    INVALID: 'Invalid email or password.',
+    LOGGED_OUT: 'User must log in.'
+};
 exports.UnauthenticatedError = UnauthenticatedError;

@@ -1,7 +1,9 @@
 import express, { NextFunction, Request, Response } from 'express'
-import { register } from '../controllers/auth'
+import { getUserWithSession, logout, register } from '../controllers/auth'
 import { passport } from '../middleware/passport'
 import { UnauthenticatedError } from '../errors/unauthenticatedError'
+import { getUsers } from '../controllers/user'
+import { isAuthenticated } from '../middleware/auth'
 
 const router = express.Router()
 
@@ -13,8 +15,14 @@ router.post('/login',
     if (req.user){
       res.send({user: req.user});
     } else {
-      next(new UnauthenticatedError('Invalid email or password.'));
+      next(new UnauthenticatedError(UnauthenticatedError.messages.INVALID));
     }
 })
+
+router.get('/me', isAuthenticated, getUserWithSession);
+router.get('/', getUsers);
+
+router.post('/logout', logout);
+
 
 export default router;

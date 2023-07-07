@@ -5,23 +5,26 @@ import {
   Routes
 } from "react-router-dom";
 
-import Login from './views/Login';
-import Dashboard from './views/Dashboard';
-import Manage from './views/Manage';
-import Workflows from './views/Workflows';
-import Layout from './views/Layout';
+import Login from './routes/Login';
+import Dashboard from './routes/Dashboard';
+import Manage from './routes/Manage';
+import Workflows from './routes/Workflows';
+import Layout from './components/Layout';
+import ProtectedRoute from './routes/ProtectedRoute';
 
 
 function App() {
   return (
-    <div className="w-full min-h-screen min-w-screen App bg-slate-900" >
+    <div className="w-full min-h-screen min-w-screen App " >
     <BrowserRouter>
     <Routes >
       <Route path="/" element={<Layout />}>
         <Route path="/login" element={<Login/>}></Route>
-        <Route path="/" element={<Dashboard/>}></Route>
-        <Route path="/manage" element={<Manage/>}></Route>
-        <Route path="/workflows" element={<Workflows/>}></Route>
+        <Route element={<ProtectedRoute/>}>
+          <Route path="/" element={<Dashboard/>}></Route>
+          <Route path="/manage" element={<Manage/>}></Route>
+          <Route path="/workflows" element={<Workflows/>}></Route>
+        </Route>
       </Route>
     </Routes>
     </BrowserRouter>

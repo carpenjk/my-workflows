@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verify = exports.register = void 0;
+exports.logout = exports.verify = exports.getUserWithSession = exports.register = void 0;
 const asyncWrapper_1 = require("../middleware/asyncWrapper");
 const User_1 = require("../models/User");
 const badRequestError_1 = require("../errors/badRequestError");
@@ -26,6 +26,10 @@ exports.register = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaite
         password,
     });
     res.status(http_status_codes_1.StatusCodes.CREATED).send({ redirect: '/login' });
+}));
+exports.getUserWithSession = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("getUserWithSession: ", req.user);
+    res.send({ msg: req.user });
 }));
 const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, function* () {
     if (!email || !password) {
@@ -48,3 +52,14 @@ const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.verify = verify;
+const logout = function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        req.logout(function (err) {
+            if (err) {
+                return next(err);
+            }
+            res.redirect('/login');
+        });
+    });
+};
+exports.logout = logout;

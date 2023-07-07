@@ -5,11 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sequelizeStore = void 0;
 const express_1 = __importDefault(require("express"));
+const fs_1 = __importDefault(require("fs"));
+const https_1 = __importDefault(require("https"));
 const workflow_1 = __importDefault(require("./routes/workflow"));
 const task_1 = __importDefault(require("./routes/task"));
-const auth_1 = __importDefault(require("./routes/auth"));
+const user_1 = __importDefault(require("./routes/user"));
 const passport_1 = require("./middleware/passport");
-const auth_2 = require("./middleware/auth");
+const auth_1 = require("./middleware/auth");
 const errorHandler_1 = require("./middleware/errorHandler");
 const notFoundHandler_1 = require("./middleware/notFoundHandler");
 const sequelize_1 = require("./adapters/sequelize");
@@ -24,30 +26,18 @@ exports.sequelizeStore = new SequelizeStore({
 const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT;
+console.log('NODE_TLS_REJECT_UNAUTHORIZED', process.env.NODE_TLS_REJECT_UNAUTHORIZED);
 const app = (0, express_1.default)();
-// const domainsFromEnv = process.env.CORS_DOMAINS || ""
-// const whitelist = domainsFromEnv.split(",").map(item => item.trim())
-// const corsOptions = {
-//   origin: function (origin: string, callback: Function) {
-//     if (!origin || whitelist.indexOf(origin) !== -1) {
-//       callback(null, true)
-//     } else {
-//       callback(new Error("Not allowed by CORS"))
-//     }
-//   },
-//   credentials: true,
-// }
 var corsOptions = {
     origin: 'http://localhost:3000',
     credentials: true,
     // allowedHeaders: [
-    //   'authorization',
+    //   // 'authorization',
     //   'Content-Type'
     // ],
-    // methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
 };
-// app.options('*', cors());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express_1.default.urlencoded({
     extended: true
 }));
@@ -58,20 +48,35 @@ app.use(session({
     saveUninitialized: true,
     resave: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        maxAge: 1000 * 60 * 60 * 24 // Equals 1 day (1 day * 24 hr/1 day * 60 min/1 hr * 60 sec/1 min * 1000 ms / 1 sec)
+        // secure: process.env.NODE_ENV === 'production' ? true : false,
+        secure: true,
+        sameSite: 'none',
+        httpOnly: true,
+        // maxAge: 1000 * 60 * 60 * 24 // Equals 1 day (1 day * 24 hr/1 day * 60 min/1 hr * 60 sec/1 min * 1000 ms / 1 sec)
+        maxAge: 1000 * 90 // test 1.5 minutes
     }
 }));
 app.use(passport_1.passport.initialize());
 app.use(passport_1.passport.session());
-app.use('/api/v1/auth', auth_1.default);
-app.use('/api/v1/workflow', auth_2.isAuthenticated, workflow_1.default);
-app.use('/api/v1/workflow/:workflowID/task', auth_2.isAuthenticated, task_1.default);
+app.use('/api/v1/user', user_1.default);
+app.use('/api/v1/workflow', auth_1.isAuthenticated, workflow_1.default);
+app.use('/api/v1/workflow/:workflowID/task', auth_1.isAuthenticated, task_1.default);
 app.use(notFoundHandler_1.notFoundHandler);
 app.use(errorHandler_1.errorHandler);
 try {
-    app.listen(port, () => {
-        console.log(`⚡️[server]: Server is running at http://localhost:${port}.`);
+    // app.listen(port, () => {
+    //   console.log(`⚡️[server]: Server is running at http://localhost:${port}.`);
+    // });
+    const key = fs_1.default.readFileSync("./config/key.pem");
+    const cert = fs_1.default.readFileSync("./config/cert.pem");
+    const options = {
+        rejectUnauthorized: false,
+        requestCert: false,
+        key: key,
+        cert: cert
+    };
+    https_1.default.createServer(options, app).listen(port, () => {
+        console.log(`⚡️[server]: Server is running at https://localhost:${port}.`);
     });
 }
 catch (error) {
