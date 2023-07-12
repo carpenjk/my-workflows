@@ -6,6 +6,10 @@ import { StatusCodes } from "http-status-codes";
 import { SessionUser } from "../models/User";
 import { VerifyFunction } from "passport-local";
 
+type MessageResponse = {
+  message: string
+}
+
 export const register = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { email, name, password } = req.body;
   const emailAlreadyExists = await User.findOne({ where: { email } });
@@ -20,12 +24,12 @@ export const register = asyncWrapper(async (req: Request, res: Response, next: N
     password,
   });
 
-  res.status(StatusCodes.CREATED).send({redirect: '/login'});
+  res.status(StatusCodes.CREATED).end();
 });
 
 export const getUserWithSession = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   console.log("getUserWithSession: ", req.user);
-  res.send({msg: req.user})
+  res.send(req.user)
 });
 
 export const verify: VerifyFunction = async (email: string, password: string, cb ) => {
@@ -50,9 +54,12 @@ export const verify: VerifyFunction = async (email: string, password: string, cb
   }
 }
 
-export const logout = async function(req:Request, res: Response, next: NextFunction){
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('/login');
-  });
+export const logout =  async function(req:Request, res: Response, next: NextFunction){
+  const userName = req.user?.name;
+  res.clearCookie('connect.sid');  // clear the session cookie
+	req.logout(function(err) {  // logout of passport
+		req.session.destroy(function (err) { // destroy the session
+			res.send({message: `${userName ?? 'User'} is logged out`})
+		});
+	});
 };

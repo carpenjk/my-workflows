@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
 import fs from 'fs';
-import https from 'https';
+import https, { ServerOptions } from 'https';
 
 import workflowRouter from './routes/workflow'
 import taskRouter from './routes/task'
@@ -57,7 +57,7 @@ app.use(session({
     // secure: process.env.NODE_ENV === 'production' ? true : false,
     secure: true,
     sameSite: 'none',
-    httpOnly: true,
+    // httpOnly: true,
     // maxAge: 1000 * 60 * 60 * 24 // Equals 1 day (1 day * 24 hr/1 day * 60 min/1 hr * 60 sec/1 min * 1000 ms / 1 sec)
     maxAge: 1000 * 90 // test 1.5 minutes
 }
@@ -73,16 +73,15 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 try {
-  // app.listen(port, () => {
-  //   console.log(`⚡️[server]: Server is running at http://localhost:${port}.`);
-  // });
-  const key = fs.readFileSync("./config/key.pem");
-  const cert = fs.readFileSync("./config/cert.pem");
-  const options = {
+  const key = fs.readFileSync(process.env.SSL_KEY as string);
+  const cert = fs.readFileSync(process.env.SSL_CERT as string);
+
+  
+  const options: ServerOptions = {
     rejectUnauthorized: false,
     requestCert: false,
     key: key,
-    cert: cert
+    cert: cert,
   }
   https.createServer(options, app).listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}.`);
@@ -90,4 +89,4 @@ try {
 
 } catch (error) {
   console.log(error);
-}
+ }

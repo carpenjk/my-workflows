@@ -3,11 +3,10 @@ import { getUserWithSession, logout, register } from '../controllers/auth'
 import { passport } from '../middleware/passport'
 import { UnauthenticatedError } from '../errors/unauthenticatedError'
 import { getUsers } from '../controllers/user'
-import { isAuthenticated } from '../middleware/auth'
 
 const router = express.Router()
 
-router.post('/register', register)
+router.put('/register', register)
 
 router.post('/login',
   passport.authenticate('local', {failureMessage: true}),
@@ -19,10 +18,8 @@ router.post('/login',
     }
 })
 
-router.get('/me', isAuthenticated, getUserWithSession);
+router.get('/me', getUserWithSession);
 router.get('/', getUsers);
-
 router.post('/logout', logout);
-
 
 export default router;

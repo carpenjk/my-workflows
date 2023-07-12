@@ -1,10 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { RootState } from '../store';
-
-// export interface LoginRequest {
-//   email: string,
-//   password: string,
-// }
 
 import * as yup from "yup";
 
@@ -19,18 +13,33 @@ export interface UserResponse {
   token: string
 }
 
+export interface LogoutResponse {
+  message: string
+}
+
 export const LoginRequestSchema = yup.object({
   email: yup.string().email().required(),
   password: yup.string()
-  .required('No password provided.') 
+  .required('You must provide a password.') 
   .min(8, 'Password is too short - should be 8 chars minimum.')
   .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*?])[A-Za-z\d$#@$!%*?&].{7,}/, 'Password must be 8 characters long containing 1 uppercase, lowercase, and $#@$!%*?&')
-  
 }).required();
 
+export const RegisterRequestSchema = yup.object({
+  email: yup.string().email().required(),
+  password: yup.string()
+    .required('You must provide a valid password.') 
+    .min(8, 'Password is too short - should be 8 chars minimum.')
+    .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*?])[A-Za-z\d$#@$!%*?&].{7,}/, 'Password must be 8 characters long containing 1 uppercase, lowercase, and $#@$!%*?&'),
+  confirmPassword: yup.string()
+    .required('You must provide a matching password') 
+    .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*?])[A-Za-z\d$#@$!%*?&].{7,}/, 'Password must be 8 characters long containing 1 uppercase, lowercase, and $#@$!%*?&'),
+  name: yup.string().max(100).required('You must enter a name')
+}).required();
+
+
 export type LoginRequest = yup.InferType<typeof LoginRequestSchema>;
-
-
+export type RegisterRequest = yup.InferType<typeof RegisterRequestSchema>;
 
 const baseUrl = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/`;
 
@@ -38,34 +47,41 @@ export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
     baseUrl,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-        return headers
-      }
-      return headers;
-    }
+    credentials: "include",
   }),
+  tagTypes: ['User'],
   endpoints: (builder) => ({
     login: builder.mutation<UserResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/api/v1/auth/login',
+        url: '/api/v1/user/login',
         method: 'POST',
         body: credentials,
       }),
+      invalidatesTags: ['User']
     }),
-    getUserDetails: builder.query<UserResponse, void>({
+    logout: builder.mutation<LogoutResponse, void >({
       query: () => ({
-        url: 'api/v1/auth/login',
-        method: 'GET',
+        url: 'api/v1/user/logout',
+        method:'POST'
+      }),
+      invalidatesTags: ['User']
+    }),
+    register: builder.mutation<void, RegisterRequest>({
+      query: (data) => ({
+        url: 'api/v1/user/register',
+        method: 'PUT',
+        body: data
       }),
     }),
-    protected: builder.mutation<{ message: string }, void>({
-      query: () => 'api/v1/auth/protected',
+    getUserDetails: builder.query<User, void>({
+      query: () => ({
+        url: 'api/v1/user/me',
+        method: 'GET',
+      }),
+      providesTags: ['User']
     }),
   }),
 })
 
 // export react hook
-export const { useGetUserDetailsQuery, useLoginMutation, useProtectedMutation } = authApi
+export const { useGetUserDetailsQuery, useLoginMutation, useLogoutMutation, useRegisterMutation } = authApi

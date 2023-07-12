@@ -51,7 +51,7 @@ app.use(session({
         // secure: process.env.NODE_ENV === 'production' ? true : false,
         secure: true,
         sameSite: 'none',
-        httpOnly: true,
+        // httpOnly: true,
         // maxAge: 1000 * 60 * 60 * 24 // Equals 1 day (1 day * 24 hr/1 day * 60 min/1 hr * 60 sec/1 min * 1000 ms / 1 sec)
         maxAge: 1000 * 90 // test 1.5 minutes
     }
@@ -64,16 +64,13 @@ app.use('/api/v1/workflow/:workflowID/task', auth_1.isAuthenticated, task_1.defa
 app.use(notFoundHandler_1.notFoundHandler);
 app.use(errorHandler_1.errorHandler);
 try {
-    // app.listen(port, () => {
-    //   console.log(`⚡️[server]: Server is running at http://localhost:${port}.`);
-    // });
-    const key = fs_1.default.readFileSync("./config/key.pem");
-    const cert = fs_1.default.readFileSync("./config/cert.pem");
+    const key = fs_1.default.readFileSync(process.env.SSL_KEY);
+    const cert = fs_1.default.readFileSync(process.env.SSL_CERT);
     const options = {
         rejectUnauthorized: false,
         requestCert: false,
         key: key,
-        cert: cert
+        cert: cert,
     };
     https_1.default.createServer(options, app).listen(port, () => {
         console.log(`⚡️[server]: Server is running at https://localhost:${port}.`);

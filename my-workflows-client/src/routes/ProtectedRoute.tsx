@@ -1,6 +1,4 @@
-import { useSelector } from 'react-redux';
-import { User, useGetUserDetailsQuery } from '../app/services/auth';
-import { getUser } from '../features/auth/auth'
+import {  useGetUserDetailsQuery } from '../app/services/auth';
 import { NavLink, Outlet } from 'react-router-dom'
 
 const ProtectedRoute = () => {
@@ -8,7 +6,7 @@ const ProtectedRoute = () => {
   const {data: user} = useGetUserDetailsQuery();
   console.log("🚀 ~ file: ProtectedRoute.tsx:8 ~ ProtectedRoute ~ user:", user)
 
-  if (!user) {
+  if (!user?.email) {
     return (
       <div className='unauthorized'>
         <h1>Unauthorized :(</h1>

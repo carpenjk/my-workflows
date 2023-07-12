@@ -9,10 +9,9 @@ export const getUsers = asyncWrapper(async (req: Request, res: Response, next: N
   console.log('get users')
 });
 
-export const getUserWithSession = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {  
-  
-  if(!req.user){
-    return next(new UnauthenticatedError(UnauthenticatedError.messages.LOGGED_OUT))
-  }
-  res.send({msg: req.user})
-});
+// export const getUserWithSession = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {  
+//   if(!req.user){
+//     return next(new UnauthenticatedError(UnauthenticatedError.messages.LOGGED_OUT))
+//   }
+//   res.send({msg: req.user})
+// });

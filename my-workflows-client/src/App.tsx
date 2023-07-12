@@ -11,6 +11,8 @@ import Manage from './routes/Manage';
 import Workflows from './routes/Workflows';
 import Layout from './components/Layout';
 import ProtectedRoute from './routes/ProtectedRoute';
+import Logout from './routes/Logout';
+import Register from './routes/Register';
 
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
     <Routes >
       <Route path="/" element={<Layout />}>
         <Route path="/login" element={<Login/>}></Route>
+        <Route path="/logout" element={<Logout/>}></Route>
+        <Route path="/register" element={<Register/>}></Route>
         <Route element={<ProtectedRoute/>}>
           <Route path="/" element={<Dashboard/>}></Route>
           <Route path="/manage" element={<Manage/>}></Route>

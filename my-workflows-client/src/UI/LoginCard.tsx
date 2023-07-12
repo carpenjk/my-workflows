@@ -1,22 +1,24 @@
 import { useForm } from "react-hook-form";
-import TextButton from "./TextButton";
-import { LoginRequest, LoginRequestSchema, User, useLoginMutation } from "../app/services/auth";
+import InlineLink from "./InlineLink";
+import { LoginRequest, LoginRequestSchema, User, useGetUserDetailsQuery, useLoginMutation } from "../app/services/auth";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../features/auth/auth";
 import { useEffect } from "react";
+import ItemContainer from "./ItemContainer";
 
 const LoginCard = () => {
   const { register, handleSubmit, formState: {errors }, getValues } = useForm<LoginRequest>( {resolver: yupResolver(LoginRequestSchema)});
   const navigate = useNavigate();
+  const {data: loggedInUser} = useGetUserDetailsQuery();
   const [logIn] = useLoginMutation();
   const dispatch = useDispatch();
-  const loggedInUser: User | null = useSelector(getUser);
+  // const loggedInUser: User | null = useSelector(getUser);
   
   useEffect(() => {
     console.log(loggedInUser)
-    if(loggedInUser){
+    if(loggedInUser?.email){
       navigate('/');
     }
   },[loggedInUser, navigate])
@@ -46,7 +48,7 @@ const LoginCard = () => {
   const displayErrors: string = getErrors();
 
   return ( 
-    <div className="container max-w-md p-6 mx-auto space-y-2 rounded-md shadow-md w-fill shrink-0 grow basis-80 bg-slate-700">
+    <ItemContainer >
       <h1 className="text-gray-100">Welcome Back!</h1>
       <h5>Standardize and track your most important work flows.</h5>
       <div className="w-full max-w-md p-4">
@@ -77,21 +79,21 @@ const LoginCard = () => {
           </div>
           <div className="flex flex-col items-center justify-center mb-6 space-y-2">
               <span className="text-sm">Or</span>
-              <TextButton>Login as Guest</TextButton>
+              <InlineLink>Login as Guest</InlineLink>
           </div>
           <div className="flex items-center justify-between mt-10 space-x-6">
             <button onClick={handleLogin} className="px-4 py-2 font-bold text-white transition-colors duration-300 rounded bg-sky-600/80 hover:bg-sky-700/80" type="submit">
               Sign In
             </button>
             <div className="md:w-18">
-              <TextButton>
+              <InlineLink>
                 Don't have an account? Sign Up!
-              </TextButton>
+              </InlineLink>
             </div>
           </div>
         </form>
         </div>
-    </div>
+    </ItemContainer>
   );
 }
  

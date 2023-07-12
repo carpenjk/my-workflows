@@ -25,11 +25,11 @@ exports.register = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaite
         email,
         password,
     });
-    res.status(http_status_codes_1.StatusCodes.CREATED).send({ redirect: '/login' });
+    res.status(http_status_codes_1.StatusCodes.CREATED).end();
 }));
 exports.getUserWithSession = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("getUserWithSession: ", req.user);
-    res.send({ msg: req.user });
+    res.send(req.user);
 }));
 const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, function* () {
     if (!email || !password) {
@@ -53,12 +53,14 @@ const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.verify = verify;
 const logout = function (req, res, next) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        const userName = (_a = req.user) === null || _a === void 0 ? void 0 : _a.name;
+        res.clearCookie('connect.sid'); // clear the session cookie
         req.logout(function (err) {
-            if (err) {
-                return next(err);
-            }
-            res.redirect('/login');
+            req.session.destroy(function (err) {
+                res.send({ message: `${userName !== null && userName !== void 0 ? userName : 'User'} is logged out` });
+            });
         });
     });
 };
