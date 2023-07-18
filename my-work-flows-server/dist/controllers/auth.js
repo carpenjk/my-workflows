@@ -28,7 +28,6 @@ exports.register = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaite
     res.status(http_status_codes_1.StatusCodes.CREATED).end();
 }));
 exports.getUserWithSession = (0, asyncWrapper_1.asyncWrapper)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("getUserWithSession: ", req.user);
     res.send(req.user);
 }));
 const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,7 +41,8 @@ const verify = (email, password, cb) => __awaiter(void 0, void 0, void 0, functi
         }
         const isPasswordCorrect = yield (user === null || user === void 0 ? void 0 : user.comparePassword(password));
         if (!isPasswordCorrect) {
-            return cb(null, false, { message: 'Please provide email and password' });
+            console.log('invalid credentials');
+            return cb(null, false, { message: 'Email and password are invalid.' });
         }
         const sessionUser = { userID: user.userID, email: user.email, name: user.name };
         return cb(null, sessionUser);

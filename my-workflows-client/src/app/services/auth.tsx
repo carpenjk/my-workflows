@@ -17,23 +17,29 @@ export interface LogoutResponse {
   message: string
 }
 
+export interface MessageResponse  {
+  msg: string
+}
+
 export const LoginRequestSchema = yup.object({
-  email: yup.string().email().required(),
+  email: yup.string()
+    .email('The email provided is not a valid email.')
+    .required('You must provide an email'),
   password: yup.string()
-  .required('You must provide a password.') 
-  .min(8, 'Password is too short - should be 8 chars minimum.')
-  .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*?])[A-Za-z\d$#@$!%*?&].{7,}/, 'Password must be 8 characters long containing 1 uppercase, lowercase, and $#@$!%*?&')
+    .required('You must provide a password.') 
+    .max(128, 'Password must be less than or equal to 128 characters.')
 }).required();
 
 export const RegisterRequestSchema = yup.object({
-  email: yup.string().email().required(),
+  email: yup.string()
+    .email('The email provided is not a valid email.')
+    .required('You must provide an email'),
   password: yup.string()
-    .required('You must provide a valid password.') 
+    .required('You must provide a password.') 
     .min(8, 'Password is too short - should be 8 chars minimum.')
     .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*?])[A-Za-z\d$#@$!%*?&].{7,}/, 'Password must be 8 characters long containing 1 uppercase, lowercase, and $#@$!%*?&'),
-  confirmPassword: yup.string()
-    .required('You must provide a matching password') 
-    .matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*?])[A-Za-z\d$#@$!%*?&].{7,}/, 'Password must be 8 characters long containing 1 uppercase, lowercase, and $#@$!%*?&'),
+  confirmPassword: yup.string().required()
+  .oneOf([yup.ref('password')], 'Passwords must match'),
   name: yup.string().max(100).required('You must enter a name')
 }).required();
 
@@ -66,7 +72,7 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['User']
     }),
-    register: builder.mutation<void, RegisterRequest>({
+    register: builder.mutation<MessageResponse | void, RegisterRequest>({
       query: (data) => ({
         url: 'api/v1/user/register',
         method: 'PUT',

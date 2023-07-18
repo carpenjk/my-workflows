@@ -28,7 +28,6 @@ export const register = asyncWrapper(async (req: Request, res: Response, next: N
 });
 
 export const getUserWithSession = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-  console.log("getUserWithSession: ", req.user);
   res.send(req.user)
 });
 
@@ -45,7 +44,8 @@ export const verify: VerifyFunction = async (email: string, password: string, cb
     }
     const isPasswordCorrect = await user?.comparePassword(password);
     if (!isPasswordCorrect) {
-      return cb(null, false, {message:'Please provide email and password'});
+      console.log('invalid credentials')
+      return cb(null, false, {message:'Email and password are invalid.'});
     }
   const sessionUser: SessionUser = {userID: user.userID, email: user.email, name: user.name}
   return cb(null, sessionUser);

@@ -26,7 +26,6 @@ exports.sequelizeStore = new SequelizeStore({
 const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT;
-console.log('NODE_TLS_REJECT_UNAUTHORIZED', process.env.NODE_TLS_REJECT_UNAUTHORIZED);
 const app = (0, express_1.default)();
 var corsOptions = {
     origin: 'http://localhost:3000',

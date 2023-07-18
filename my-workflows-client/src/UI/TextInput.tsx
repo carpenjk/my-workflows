@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react';
 import React from 'react'
-import { UseFormRegister, FieldValues } from 'react-hook-form';
+
 interface Props extends ComponentProps<"input"> {
   label: string,
   id: string,

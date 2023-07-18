@@ -2,9 +2,7 @@ import {  useGetUserDetailsQuery } from '../app/services/auth';
 import { NavLink, Outlet } from 'react-router-dom'
 
 const ProtectedRoute = () => {
-  // const user:User | null = useSelector(getUser);
   const {data: user} = useGetUserDetailsQuery();
-  console.log("🚀 ~ file: ProtectedRoute.tsx:8 ~ ProtectedRoute ~ user:", user)
 
   if (!user?.email) {
     return (

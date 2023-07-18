@@ -23,8 +23,8 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
     yield session_1.sequelizeStore.sync({ force: isDev });
     yield sequelize_1.sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
     yield User_1.User.bulkCreate([
-        { name: 'Guest One', email: 'guest1@example.com', password: 'password', createdAt: new Date() },
-        { name: 'Guest Two', email: 'guest2@example.com', password: 'password', createdAt: new Date() }
+        { name: 'Guest One', email: 'guest1@example.com', password: '1Pa$$word', createdAt: new Date() },
+        { name: 'Guest Two', email: 'guest2@example.com', password: '1Pa$$word', createdAt: new Date() }
     ]);
     yield Workflow_1.Workflow.bulkCreate([
         { name: 'Workflow 1', description: 'This is Workflow 1' }

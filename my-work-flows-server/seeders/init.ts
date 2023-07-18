@@ -17,8 +17,8 @@ const init = async () => {
   await sequelize.query('SET FOREIGN_KEY_CHECKS = 1')
 
   await User.bulkCreate([
-    { name: 'Guest One', email: 'guest1@example.com', password: 'password', createdAt: new Date() },
-    { name: 'Guest Two', email: 'guest2@example.com', password: 'password', createdAt: new Date() }
+    { name: 'Guest One', email: 'guest1@example.com', password: '1Pa$$word', createdAt: new Date() },
+    { name: 'Guest Two', email: 'guest2@example.com', password: '1Pa$$word', createdAt: new Date() }
   ]);
 
   await Workflow.bulkCreate([
