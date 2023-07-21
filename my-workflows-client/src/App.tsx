@@ -1,5 +1,6 @@
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import 'animate.css';
 
 import {
   BrowserRouter,
@@ -7,14 +8,14 @@ import {
   Routes
 } from "react-router-dom";
 
-import Login from './routes/Login';
-import Dashboard from './routes/Dashboard';
-import Manage from './routes/Manage';
-import Workflows from './routes/Workflows';
-import Layout from './components/Layout';
-import ProtectedRoute from './routes/ProtectedRoute';
-import Logout from './routes/Logout';
-import Register from './routes/Register';
+import Login from 'routes/Login';
+import Dashboard from 'routes/Dashboard';
+import Manage from 'routes/Manage';
+import Workflows from 'routes/Workflows';
+import Layout from 'features/ui/layout/Layout';
+import ProtectedRoute from 'routes/ProtectedRoute';
+import Logout from 'routes/Logout';
+import Register from 'routes/Register';
 
 
 function App() {

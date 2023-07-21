@@ -21,7 +21,8 @@ module.exports = {
         "3xl": "1792px",
       },
       fontFamily: {
-        maven: ['Maven Pro', 'sans-serif']
+        maven: ['Maven Pro', 'sans-serif'],
+        roboto: ['RobotoMono', 'monospace']
       },
       animation: {
         text:'text 5s ease infinite',

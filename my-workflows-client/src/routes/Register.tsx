@@ -1,13 +1,12 @@
 import { useForm } from "react-hook-form";
-import { useRegisterMutation, useGetUserDetailsQuery, RegisterRequest, RegisterRequestSchema } from "../app/services/auth";
+import { useRegisterMutation, useGetUserDetailsQuery, RegisterRequest, RegisterRequestSchema } from "app/services/auth";
 import { yupResolver } from '@hookform/resolvers/yup';
-import ItemContainer from "../UI/ItemContainer";
+import ItemContainer from "features/ui/shared/ItemContainer";
 import { useNavigate } from "react-router-dom";
-import TextInput from "../UI/TextInput";
-import SubmitButton from "../UI/SubmitButton";
-import { useEffect, useState } from "react";
-import { CustomAPIError } from "../error/CustomAPIError";
-import { ToastContainer, toast } from "react-toastify";
+import TextInput from "features/ui/shared/TextInput";
+import SubmitButton from "features/ui/shared/SubmitButton";
+import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 
 
 const Register = () => {
@@ -18,21 +17,10 @@ const Register = () => {
   const [registerUser, status] = useRegisterMutation();
   const {data: loggedInUser} = useGetUserDetailsQuery();
 
-  const [serverError, setServerError] = useState('');
   
 
   
   const getErrors = (): string => {
-    const {error} = status;
-    console.log("🚀 ~ file: Register.tsx:26 ~ getErrors ~ status:", status)
-    if(error){
-      if('data' in error){
-        const data = error.data as {msg: string};
-        if(data?.msg){
-          return data.msg;
-        }
-      }
-    }
     if(typeof errors.email?.message === 'string'){
       return errors.email?.message;
     }
@@ -48,53 +36,6 @@ const Register = () => {
     return "";
   }
 
-
-  // useEffect(() => {
-  //   const getErrors = (): string => {
-  //     // const {error} = status;
-  //     // console.log("🚀 ~ file: Register.tsx:26 ~ getErrors ~ status:", status)
-  //     // if(error){
-  //     //   if('data' in error){
-  //     //     const data = error.data as {msg: string};
-  //     //     if(data?.msg){
-  //     //       return data.msg;
-  //     //     }
-  //     //   }
-  //     // }
-  //     if(typeof errors.email?.message === 'string'){
-  //       return errors.email?.message;
-  //     }
-  //     if(typeof errors.name?.message === 'string') {
-  //       return errors.name?.message;
-  //     }
-  //     if(typeof errors.password?.message === 'string') {
-  //       return errors.password?.message;
-  //     }
-  //     if(typeof errors.confirmPassword?.message === 'string') {
-  //       return errors.confirmPassword?.message;
-  //     }
-  //     return "";
-  //   }
-
-  //   if(Object.keys(errors).length > 0){
-  //     setDisplayError(getErrors());
-  //   }
-  // },[errors, errors.email, errors.name, errors.password, errors.confirmPassword])
-
-
-  const serverToast = (msg: string) => {
-    toast(msg, {
-      position: "top-center",
-      autoClose: false,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-      });
-  }
-
   const handleRegister = async () => {
     try{
       const response = await registerUser({
@@ -102,11 +43,11 @@ const Register = () => {
         name: getValues('name'),
         password: getValues('password'),
         confirmPassword: getValues('confirmPassword')
-      })
-      console.log("🚀 ~ file: Register.tsx:60 ~ handleRegister ~ response:", response)
-      
+      }).unwrap();
+      console.log('response returned', response);      
       if(!status.isError){
-        // navigate('/login');
+        console.log('redirect')
+        setTimeout(()=>navigate('/login'), 5000);
       }
     } catch(e) {
       if(e){
@@ -126,6 +67,13 @@ const Register = () => {
    }
   }
 
+  useEffect(() => {
+    console.log('loggedInUser', loggedInUser);
+    if(loggedInUser){
+      navigate('/')
+    }
+  }, [loggedInUser, navigate])
+
   return (
     <>
       <ItemContainer >
@@ -133,7 +81,7 @@ const Register = () => {
         <h5>Standardize and track your most important work flows.</h5>
         <div className="w-full max-w-md p-4">
           <form className="w-full" onSubmit={handleSubmit(handleRegister)}>
-            <div className="w-full mb-4">
+            <div className="w-full mb-4 sm:mb-6">
               <TextInput
                 id="email"
                 label="Email"
@@ -141,7 +89,7 @@ const Register = () => {
                 {...register("email",  { required: true })}
               />
             </div>
-            <div className="w-full mb-4">
+            <div className="w-full mb-4 sm:mb-6">
               <TextInput
                 id="name"
                 label="Full Name"
@@ -149,7 +97,7 @@ const Register = () => {
                 {...register("name",  { required: true })}
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-4 sm:mb-6">
               <TextInput
                 id="password"
                 label="Password"
@@ -158,7 +106,7 @@ const Register = () => {
                 {...register("password",  { required: true })}
               />
             </div>
-            <div className="relative pb-8">
+            <div className="relative pb-8 sm:pb-10">
               <TextInput
                 id="confirmPassword"
                 label="Confirm Password"

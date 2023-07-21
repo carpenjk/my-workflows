@@ -1,4 +1,4 @@
-import {  useGetUserDetailsQuery } from '../app/services/auth';
+import {  useGetUserDetailsQuery } from 'app/services/auth';
 import { NavLink, Outlet } from 'react-router-dom'
 
 const ProtectedRoute = () => {

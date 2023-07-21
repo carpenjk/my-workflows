@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLogoutMutation } from "../app/services/auth";
+import { useLogoutMutation } from "app/services/auth";
 import { useNavigate } from "react-router-dom";
-import ItemContainer from "../UI/ItemContainer";
+import ItemContainer from "features/ui/shared/ItemContainer";
 
 const Logout = () => {
   const [logout] = useLogoutMutation();

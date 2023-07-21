@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer from '../features/auth/auth'
+import authReducer from 'features/auth/auth'
 import { authApi } from './services/auth'
 import { authListenerMiddleware } from './services/authMiddleware'
 

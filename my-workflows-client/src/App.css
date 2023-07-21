@@ -1,15 +1,6 @@
-@tailwind utilities;
-
-.Toastify__toast-container.content-centered {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 :root {
   --toastify-color-light: #fff;
-  --toastify-color-dark: @apply bg-slate-900;
+  --toastify-color-dark: #475569;
   --toastify-color-info: #3498db;
   --toastify-color-success: #07bc0c;
   --toastify-color-warning: #f1c40f;
@@ -23,13 +14,13 @@
 
   --toastify-toast-width: 320px;
   --toastify-toast-background: #fff;
-  --toastify-toast-min-height: 320px;
+  --toastify-toast-min-height: 240px;
   --toastify-toast-max-height: 800px;
   --toastify-font-family: sans-serif; 
   --toastify-z-index: 9999;
 
   --toastify-text-color-light: #757575;
-  --toastify-text-color-dark: @apply text-gray-200;
+  --toastify-text-color-dark: #e2e8f0;
 
   /* Used only for colored theme */
   --toastify-text-color-info: #fff;
@@ -57,4 +48,63 @@
   --toastify-color-progress-success: var(--toastify-color-success);
   --toastify-color-progress-warning: var(--toastify-color-warning);
   --toastify-color-progress-error: var(--toastify-color-error);
+}
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400&display=swap');
+
+
+@layer base{
+  html {
+    @apply   min-w-full min-h-screen text-base text-gray-200 bg-slate-900;
+  }
+
+  body {
+    @apply min-w-full min-h-full text-base text-gray-200;
+    font-family: 'Maven Pro', sans-serif;
+  }
+
+  h1 {
+    @apply text-3xl;
+    font-family: 'Maven Pro', sans-serif;
+  }
+
+  h2 {
+    @apply  text-2xl;
+    font-family: 'Maven Pro', sans-serif;
+  }
+
+  h3 {
+    @apply  text-xl;
+    font-family: 'Maven Pro', sans-serif;
+  }
+  h4 {
+    @apply  text-lg;
+    font-family: 'Maven Pro', sans-serif;
+  }
+  h5 {
+    @apply  text-base;
+    font-family: 'Maven Pro', sans-serif;
+  }
+  p {
+    @apply text-base text-gray-200;
+    
+  }
+  input {
+    @apply px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none;
+    font-family: 'Roboto Mono', monospace;
+  }
+}
+
+.Toastify__toast-container.content-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
