@@ -10,6 +10,7 @@ const Login = () => {
    const navigate = useNavigate();
    const {data: loggedInUser, isLoading: isLoadingUser} = useGetUserDetailsQuery();
    const [isFadingOut, setIsFadingOut] =useState(false);
+   const [isLoginLoading, setIsLoginLoading] = useState(false);   
 
    useEffect(() => {
       if(loggedInUser?.email){
@@ -20,7 +21,7 @@ const Login = () => {
       return(
             <Loading 
                fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-               trigger={(!isLoadingUser)}
+               trigger={(!isLoadingUser || isLoginLoading)}
                delay={FADE_OUT_DELAY}
                minLoading={MIN_LOADING}
                onTrigger={()=> setIsFadingOut(true)}

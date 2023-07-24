@@ -1,7 +1,8 @@
 import {  useGetUserDetailsQuery } from 'app/services/auth';
 import Loading from 'features/loading/Loading';
 import LoadingOverlay from 'features/loading/LoadingOverlay';
-import { NavLink, Outlet } from 'react-router-dom'
+import { InlineLink } from 'features/ui';
+import { Outlet } from 'react-router-dom'
 
 const ProtectedRoute = () => {
   const {data: user, isLoading, isUninitialized, isFetching} = useGetUserDetailsQuery();
@@ -12,11 +13,9 @@ const ProtectedRoute = () => {
       fallback={<LoadingOverlay fadeOut={false}/>}
       trigger={!isUninitialized && !isLoading && !isFetching }
     >
-      <div className='unauthorized'>
+      <div >
         <h1>Unauthorized :(</h1>
-        <span>
-          <NavLink to='/login'>Login</NavLink> to gain access
-        </span>
+        <InlineLink to='/login'>Login  to gain access</InlineLink>
       </div>
       </Loading>
     )

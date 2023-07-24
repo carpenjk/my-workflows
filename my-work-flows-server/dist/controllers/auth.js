@@ -59,7 +59,7 @@ const logout = function (req, res, next) {
         res.clearCookie('connect.sid'); // clear the session cookie
         req.logout(function (err) {
             req.session.destroy(function (err) {
-                res.send({ message: `${userName !== null && userName !== void 0 ? userName : 'User'} is logged out` });
+                res.send({ message: `${userName !== null && userName !== void 0 ? userName : 'User'} is logged out.` });
             });
         });
     });

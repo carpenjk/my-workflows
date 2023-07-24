@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "app/services/auth";
 import { useNavigate } from "react-router-dom";
-import ItemContainer from "features/ui/shared/ItemContainer";
 import Loading from "features/loading/Loading";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
@@ -33,17 +32,14 @@ const Logout = () => {
     minLoading={MIN_LOADING}
     onTrigger={() => setIsFadingOut(true)}
   >
-    <ItemContainer>
-      <div  className="flex flex-col items-center justify-center ">
-        <div className="container min-h-[10rem] flex items-center justify-center p-6 mx-auto w-fill">
-          {message}
+        <div className="container flex flex-col items-center justify-center w-fill">
+          <div>
+            <h1>
+            {message}
+            </h1>
+            <InlineLink to="/login">Go to login</InlineLink>
+          </div>
         </div>
-        <div>
-          <InlineLink to="/login">Go to login</InlineLink>
-        </div>
-      </div>
-
-    </ItemContainer>
   </Loading>
   )
 }
