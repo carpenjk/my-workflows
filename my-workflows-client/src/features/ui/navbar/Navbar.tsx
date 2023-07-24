@@ -2,11 +2,8 @@ import { HTMLProps, useState } from 'react';
 import NavItem from './NavItem';
 import {HomeIcon, SquaresPlusIcon, TableCellsIcon, UserIcon, ArrowsRightLeftIcon} from '@heroicons/react/24/outline'
 import { twMerge } from 'tailwind-merge';
-// import { useSelector } from 'react-redux';
-// import { getUser } from 'features/auth/auth';
-import { User, useGetUserDetailsQuery, useLogoutMutation } from 'app/services/auth';
+import { useGetUserDetailsQuery } from 'app/services/auth';
 import NavText from './Navtext';
-import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 type Props = {
@@ -14,23 +11,8 @@ type Props = {
 }
 
 const Navbar = ({className}: Props) => {
-  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const {data: user} = useGetUserDetailsQuery();
-  const [logout, status] = useLogoutMutation();
-  // const [logOut] = useLogoutMutation();
-  // const loggedInUser: User | null = useSelector(getUser);
-
-  // const handleLogout = async ()=> {
-  //   try{
-  //     const {message} = await logout().unwrap();
-
-  //   }catch(e){
-  //     console.log(e);
-  //   }finally{
-  //     setTimeout(()=> navigate('/login'),300);
-  //   }
-  // }
 
   return (
     <>

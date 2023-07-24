@@ -7,7 +7,9 @@ import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const {data: loggedInUser, isLoading: isLoadingUser} = useGetUserDetailsQuery();
+  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized} = useGetUserDetailsQuery();
+  console.log("🚀 ~ file: Dashboard.tsx:11 ~ Dashboard ~ isUninitialized:", isUninitialized)
+  console.log("🚀 ~ file: Dashboard.tsx:11 ~ Dashboard ~ isLoadingUser:", isLoadingUser)
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ const Dashboard = () => {
   return (  
     <Loading
       fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-      trigger={!isLoadingUser}
+      trigger={!isUninitialized && !isLoadingUser}
       delay={FADE_OUT_DELAY}
       minLoading={MIN_LOADING}
       onTrigger={()=> setIsFadingOut(true)}

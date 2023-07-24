@@ -6,10 +6,6 @@ import { StatusCodes } from "http-status-codes";
 import { SessionUser } from "../models/User";
 import { VerifyFunction } from "passport-local";
 
-type MessageResponse = {
-  message: string
-}
-
 export const register = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { email, name, password } = req.body;
   const emailAlreadyExists = await User.findOne({ where: { email } });
@@ -59,7 +55,7 @@ export const logout =  async function(req:Request, res: Response, next: NextFunc
   res.clearCookie('connect.sid');  // clear the session cookie
 	req.logout(function(err) {  // logout of passport
 		req.session.destroy(function (err) { // destroy the session
-			res.send({message: `${userName ?? 'User'} is logged out`})
+			res.send({message: `${userName ?? 'User'} is logged out.`})
 		});
 	});
 };
