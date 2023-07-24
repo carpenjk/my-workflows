@@ -14,7 +14,7 @@ const Layout = () => {
           <Navbar className="sm:pt-28"/>
         </aside>
       </div>
-      <main className="z-40 flex items-center justify-center flex-1" >
+      <main className="relative z-40 flex items-center justify-center flex-1 w-full h-full px-4 sm:px-16" >
         <Outlet/>
       </main>
     </div> 

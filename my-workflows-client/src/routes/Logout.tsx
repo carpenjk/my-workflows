@@ -24,14 +24,14 @@ const Logout = () => {
 
   useEffect(() => {
     if(message){
-      setTimeout(() => {navigate('/login')}, 2000)
+      setTimeout(() => {navigate('/login')}, 1000 * 10)
     }
   }, [message, navigate]);
   
   if(message){
     return ( 
       <ItemContainer>
-        <div className="container flex items-center justify-center mx-auto w-fill">
+        <div className="container min-h-[20rem] flex items-center justify-center mx-auto w-fill">
           {message}
        </div>
       </ItemContainer>

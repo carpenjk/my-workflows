@@ -1,22 +1,35 @@
+import { MouseEventHandler } from "react";
 import NavLink from "./NavLink";
 
 type Props = {
   to: string,
   collapsed: boolean,
-  children: React.ReactNode
+  children: React.ReactNode,
+  button?: boolean,
+  onClick?: MouseEventHandler<HTMLButtonElement>
 }
-const NavItem = ({to, collapsed, children}: Props) => {
+
+const NavItem = ({to, button, collapsed, children, onClick}: Props) => {
   return ( 
     <li className='w-1/4 sm:w-full'>
       <div className="w-full">
-      <NavLink to={to} collapsed={collapsed} >
-        <div className='flex flex-col items-center justify-center p-4 sm:flex-row sm:space-x-4 '>
-          {children}
-        </div>
-      </NavLink>
+        {!button && (
+          <NavLink to={to} collapsed={collapsed} >
+            <div className='flex flex-col items-center justify-center p-4 sm:flex-row sm:space-x-4 '>
+              {children}
+            </div>
+        </NavLink>
+        )}
+        {(button)  && (
+          <button type='button' onClick={onClick} >
+            <div className='flex flex-col items-center justify-center p-4 sm:flex-row sm:space-x-4 '>
+              {children}
+            </div>
+          </button>  
+          )}
       </div>
     </li>
-   );
+    );
 }
- 
+  
 export default NavItem;

@@ -3,36 +3,30 @@ import LoginCard from "features/login/LoginCard";
 import { useGetUserDetailsQuery } from "app/services/auth";
 import { useEffect, useState } from "react";
 import LoadingOverlay from "features/loading/LoadingOverlay";
-import Suspend from "features/loading/Suspend";
+import Loading from "features/loading/Loading";
+import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 
 const Login = () => {
    const navigate = useNavigate();
    const {data: loggedInUser, isLoading: isLoadingUser} = useGetUserDetailsQuery();
-   const [showLoading, setShowLoading]= useState<boolean>(true);
-   let isFadingOut = false;
-   if(!isLoadingUser && !loggedInUser?.email && showLoading){
-      isFadingOut = true;
-      setTimeout(()=> setShowLoading(false), 300);
-   }
+   const [isFadingOut, setIsFadingOut] =useState(false);
 
-   // useEffect(() => {
-   //    if(loggedInUser?.email){
-   //      navigate('/');
-   //    }
-   //  },[loggedInUser, navigate])
-
-  
+   useEffect(() => {
+      if(loggedInUser?.email){
+        navigate('/');
+      }
+    },[loggedInUser, navigate])
 
       return(
-         <div className="relative flex items-center justify-center w-full h-full px-4 sm:px-16">
-            <Suspend 
+            <Loading 
                fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-               trigger={(loggedInUser && true) as boolean}
-               delay={300}
+               trigger={(!isLoadingUser)}
+               delay={FADE_OUT_DELAY}
+               minLoading={MIN_LOADING}
+               onTrigger={()=> setIsFadingOut(true)}
             >
                <LoginCard />
-            </Suspend>
-         </div>
+            </Loading>
       )
 }
  
