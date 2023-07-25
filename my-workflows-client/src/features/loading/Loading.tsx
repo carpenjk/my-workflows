@@ -10,29 +10,34 @@ type Props = {
   onLoaded?: ()=> void,
 };
 
-function Loading ({children, delay = 0, fallback, isLoading = true, minLoading = 0, onLoaded}:Props) {
-  console.log("🚀 ~ file: Loading.tsx:14 ~ Loading ~ isLoading:", isLoading)
-  const [isComponentMounted, setIsComponentMounted] = useState(false);
+function Loading ({children, delay = 0, fallback, isLoading, minLoading = 0, onLoaded}:Props) {
+  const [isComponentMounted, setIsComponentMounted] = useState(!isLoading);
   const [execOnLoaded, setExecOnLoaded] = useState(false);
   const timeSinceMount = useTimeSinceMount();
-  const previsLoadingRef = useRef<boolean>(isLoading);
+  const previsLoadingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    if(execOnLoaded && onLoaded && !isLoading){
-      const onLoadedDelay = minLoading - timeSinceMount.get();
-      if(onLoadedDelay){
-        setTimeout(onLoaded, onLoadedDelay);
-      } else {
-        onLoaded();
+    if(isLoading && previsLoadingRef.current === false){
+      setIsComponentMounted(false);
+    } else{
+      if(execOnLoaded && onLoaded && !isLoading){
+        const onLoadedDelay = minLoading - timeSinceMount.get();
+        if(onLoadedDelay){
+          setTimeout(onLoaded, onLoadedDelay);
+        } else {
+          onLoaded();
+        }
       }
     }
     previsLoadingRef.current = isLoading;
-  }, [execOnLoaded, isLoading , onLoaded, minLoading, timeSinceMount]);
+  },[isLoading, execOnLoaded, onLoaded, minLoading, timeSinceMount])
 
   const mountingDelay = Math.max(minLoading - timeSinceMount.get(), 0) + delay;
 
   function mountComponent(){
-    const mountCallback = ()=> setIsComponentMounted(true);
+    const mountCallback = ()=> {
+      return setIsComponentMounted(true);
+    };
       const _mountComponent = mountingDelay
         ? ()=> setTimeout(mountCallback, mountingDelay)
         : mountCallback;

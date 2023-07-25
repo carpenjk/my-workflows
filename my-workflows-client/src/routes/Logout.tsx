@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "app/services/auth";
-import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 import { InlineLink } from "features/ui";
@@ -10,7 +9,6 @@ const Logout = () => {
   const [logout, status] = useLogoutMutation();
   const {Loading, setLoading, isLoading} = useLoading(true);
   const [isFadingOut, setIsFadingOut] =useState(false);
-  const navigate = useNavigate();
   const [message, setMessage] = useState('');
   
   useEffect(() => {
@@ -23,17 +21,11 @@ const Logout = () => {
       }
     }
     asyncLogout();
-  }, [logout,navigate]);
+  }, [logout]);
   
   useEffect(() => {
     if(!status.isUninitialized){
-      if(status.isLoading && !isLoading){
-        setLoading(true);
-      }
-    } else {
-      if( !status.isLoading){
-        setLoading(false);
-      }
+      setLoading(status.isLoading)
     }
     
   }, [isLoading, status.isLoading, status.isUninitialized, setLoading]);

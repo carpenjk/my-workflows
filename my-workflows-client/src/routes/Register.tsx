@@ -8,8 +8,8 @@ import useLoading from "features/loading/useLoading";
 
 const Register = () => {
   const navigate = useNavigate();
-  const {Loading, setLoading, isLoading} = useLoading(true);
-  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized} = useGetUserDetailsQuery();
+  const {Loading, setLoading, isLoading, config} = useLoading(true);
+  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
@@ -20,16 +20,12 @@ const Register = () => {
 
   
   useEffect(() => {
-    if(!isUninitialized){
-      if(isLoadingUser && !isLoading){
-         setLoading(true)
-         return;
-      }
-   } else {
-      if(!isLoadingUser)
-      setLoading(false)
-   }
-  }, [isUninitialized, isLoadingUser, isLoading, setLoading]);
+    if(!isFetching){
+      setLoading(isLoadingUser || isFetching)
+      return;
+    } 
+    setLoading(false)
+  }, [isUninitialized, isLoadingUser, isFetching, isLoading, setLoading]);
 
   return (
     <Loading
@@ -38,6 +34,7 @@ const Register = () => {
       delay={FADE_OUT_DELAY}
       minLoading={MIN_LOADING}
       onLoaded={()=> setIsFadingOut(true)}
+      {...config}
     >
      <RegistrationCard />
   </ Loading>

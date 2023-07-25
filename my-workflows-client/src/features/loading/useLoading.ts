@@ -1,60 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Loading from "./Loading";
-
 
 export type Config = {
   minLoading?: number,
   delay?: number,
-  ignoreOnLoad?: boolean,
-  key?: string
-}
-export type ConfigReturn = {
-  props?: Config,
-  key?: Config['key']
+  onLoaded?: ()=> void,
 }
 
+export type LoadingSetter = (val: boolean, configObj?: Config)=> void;
 
-export type LoadingSetter = (val: boolean, config?: Config)=> void;
-
-const useLoading = (initialValue = true ) => {
+const useLoading = (initialValue = true, configObj?: Config ) => {
   const [isLoading, setIsLoading] = useState(initialValue);
-  const [config, setConfig] = useState<ConfigReturn[]>([]);
-  const prevValRef = useRef(initialValue);
+  const [config, setConfig] = useState<Config>(configObj || {});
 
-  const handleSet: LoadingSetter = function(val, config){
-    const {key, ...props} = config || {};
-    if(key){
-      if(props){
-        console.log(`settingIsLoading: ${key}:`, val)
-        setConfig((prev)=> {
-          const original = prev.filter((config) => config.key === key);
-          if(original){
-            const value = prev.filter((config) => config !== original);
-            value.push({...original, ...config})
-            return (value);
-          }
-          return( [...prev, {key, props}])
-        });
-      }
-      
-      return;
+  const handleSet: LoadingSetter = function(val, configObj){
+    if(configObj){
+      setConfig((prev) => ({...prev, ...configObj}));
     }
-    
     setIsLoading(val);
   }
-
-  useEffect(() => {
-    if(prevValRef.current !== isLoading){
-
-    }
-    prevValRef.current = isLoading;
-  }, [isLoading]);
 
   return ( {
     Loading: Loading,
     setLoading: handleSet,
     isLoading: isLoading,
-    config: config
+    config: config || {}
   } );
 }
  

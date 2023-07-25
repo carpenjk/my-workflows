@@ -12,7 +12,6 @@ const ProtectedRoute = () => {
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
-    console.log('effect')
     if(!isUninitialized){
       setLoading(isLoadingUser || isFetching);
     }

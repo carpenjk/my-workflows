@@ -7,11 +7,9 @@ import useLoading from "features/loading/useLoading";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const {Loading, setLoading, isLoading} = useLoading(true);
+  const {Loading, setLoading, isLoading, config} = useLoading(true);
   const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
   const [isFadingOut, setIsFadingOut] =useState(false);
-
-  console.log('render Dashboard')
 
   useEffect(() => {
     if(!loggedInUser){
@@ -20,7 +18,6 @@ const Dashboard = () => {
   }, [loggedInUser, navigate])
   
   useEffect(() => {
-    console.log('Dashboard effect')
     if(!isFetching){
       setLoading(isLoadingUser || isFetching)
       return;
@@ -35,6 +32,7 @@ const Dashboard = () => {
       delay={FADE_OUT_DELAY}
       minLoading={MIN_LOADING}
       onLoaded={()=> setIsFadingOut(true)}
+      {...config}
     >
       <div>Dashboard</div>);
     </Loading>
