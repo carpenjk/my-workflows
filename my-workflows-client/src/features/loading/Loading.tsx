@@ -4,30 +4,30 @@ import useTimeSinceMount from "./useTimeSinceMount";
 type Props = {
   children: React.ReactNode,
   fallback: JSX.Element,
-  trigger: boolean,
+  isLoading: boolean,
   delay?: number,
   minLoading?: number,
-  onTrigger?: ()=> void,
+  onLoaded?: ()=> void,
 };
 
-function Loading ({children, trigger, delay = 0, fallback, minLoading = 0, onTrigger}:Props) {
+function Loading ({children, delay = 0, fallback, isLoading = true, minLoading = 0, onLoaded}:Props) {
+  console.log("🚀 ~ file: Loading.tsx:14 ~ Loading ~ isLoading:", isLoading)
   const [isComponentMounted, setIsComponentMounted] = useState(false);
-  const [execTrigger, setExecTrigger] = useState(false);
+  const [execOnLoaded, setExecOnLoaded] = useState(false);
   const timeSinceMount = useTimeSinceMount();
-  const prevTriggerRef = useRef<boolean>(false);
+  const previsLoadingRef = useRef<boolean>(isLoading);
 
   useEffect(() => {
-    if(execTrigger && onTrigger && trigger){
-      const triggerDelay = minLoading - timeSinceMount.get();
-      if(triggerDelay){
-        setTimeout(onTrigger, triggerDelay);
+    if(execOnLoaded && onLoaded && !isLoading){
+      const onLoadedDelay = minLoading - timeSinceMount.get();
+      if(onLoadedDelay){
+        setTimeout(onLoaded, onLoadedDelay);
       } else {
-        onTrigger();
+        onLoaded();
       }
     }
-    prevTriggerRef.current = trigger && true;
-    
-  }, [trigger, execTrigger, onTrigger, minLoading, timeSinceMount]);
+    previsLoadingRef.current = isLoading;
+  }, [execOnLoaded, isLoading , onLoaded, minLoading, timeSinceMount]);
 
   const mountingDelay = Math.max(minLoading - timeSinceMount.get(), 0) + delay;
 
@@ -43,12 +43,12 @@ function Loading ({children, trigger, delay = 0, fallback, minLoading = 0, onTri
     return (<>{children}</>)
   }
 
-  if(trigger){
-    const justTriggered = prevTriggerRef.current === false
-    if(justTriggered) {
-      mountComponent()
-      if(!execTrigger) {
-        setExecTrigger(true);
+  if(!isLoading){
+    const justLoaded = previsLoadingRef.current === true
+    if(justLoaded) {
+      mountComponent();
+      if(!execOnLoaded) {
+        setExecOnLoaded(true);
       }
       if(!mountingDelay){
         return (<>{children}</>)

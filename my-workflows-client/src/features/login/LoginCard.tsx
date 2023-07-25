@@ -1,45 +1,56 @@
-import { useForm } from "react-hook-form";
+import { FieldErrors, UseFormHandleSubmit, UseFormRegister, useForm } from "react-hook-form";
 import {InlineLink} from "features/ui/shared";
-import { LoginRequest, LoginRequestSchema, useLoginMutation } from "app/services/auth";
+import { LoginRequest, LoginRequestSchema, UserResponse, useLoginMutation } from "app/services/auth";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from "react-router-dom";
 import { ItemContainer } from "features/ui/shared";
 import {TextInput} from "features/ui/shared";
 import { SubmitButton } from "features/ui/shared";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta, MutationDefinition } from "@reduxjs/toolkit/dist/query";
 import { SerializedError } from "@reduxjs/toolkit";
-import Loading from "features/loading/Loading";
-import LoadingOverlay from "features/loading/LoadingOverlay";
-import { useEffect, useState } from "react";
+import {LoadingSetter} from 'features/loading/useLoading';
 
 type Props = {
-  // setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  // error:  FetchBaseQueryError | SerializedError | undefined
+  setLoading: LoadingSetter,
+  serverError:  FetchBaseQueryError | SerializedError | undefined
+  inputErrors: FieldErrors<{
+      email: string;
+      password: string;
+    }>
+  logIn: ReturnType<UseFormHandleSubmit<{
+      email: string;
+      password: string;
+    }, undefined>>,
+  register: UseFormRegister<{
+    email: string;
+    password: string;
+  }>
 }
 
-const LoginCard = () => {
-  const navigate = useNavigate();
-  const [logIn, status] = useLoginMutation();
-  const { register, handleSubmit, formState: {errors: inputErrors }, getValues } = useForm<LoginRequest>( {resolver: yupResolver(LoginRequestSchema)});
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+const LoginCard = ({setLoading, serverError: error, inputErrors, logIn, register}: Props) => {
+  // const navigate = useNavigate();
+  
 
-  const handleLogin = async () => {
-    setIsLoggingIn(true)
-    try{
-      const {user} = await logIn({email: getValues("email"), password:getValues("password")}).unwrap();
-      if(user)
-      navigate('/')
-      }
-    catch(e){
-      console.log(e);      
-    } finally {
-      setIsLoggingIn(false)
-    }
- }
+  // const handleLogin = async () => {
+  //   setLoading(true, {minLoading:0, delay:0, ignoreOnLoad: true});
+  //   try{
+  //     const {user} = await logIn({email: getValues("email"), password:getValues("password")}).unwrap();
+  //     if(user){
+  //       navigate('/')
+  //     }
+  //     }
+  //   catch(e){
+  //     console.log(e);      
+  //   } finally{
+  //     console.log(`logincard set loading ${false}`)
+  //     setLoading(false);
+  //   }
+  // }
 
   const getErrors = (): string => {
-    if(status.error){
-      if('data' in status.error && status.error?.data === 'Unauthorized'){
+    if(error){
+      if('data' in error && error?.data === 'Unauthorized'){
         return 'The email and password provided are invalid.'
       } else {
         return "Something went wrong."
@@ -56,15 +67,11 @@ const LoginCard = () => {
   }
 
   return ( 
-    <Loading
-      fallback={<LoadingOverlay fadeOut={false}/>}
-      trigger={!isLoggingIn }
-    >
       <ItemContainer >
         <h1 className="">Welcome Back!</h1>
         <h5>Standardize and track your most important work flows.</h5>
         <div className="w-full max-w-md p-4">
-          <form className="w-full" onSubmit={handleSubmit(handleLogin)}>
+          <form className="w-full" onSubmit={logIn}>
             <div className="w-full mb-4 sm:mb-6">
               <TextInput
                 id="email"
@@ -102,7 +109,6 @@ const LoginCard = () => {
           </form>
           </div>
       </ItemContainer>
-    </Loading>
   );
 }
  

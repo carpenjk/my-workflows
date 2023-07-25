@@ -1,13 +1,14 @@
 import { useGetUserDetailsQuery } from "app/services/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Loading from "features/loading/Loading";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
+import useLoading from "features/loading/useLoading";
 
 const Manage = () => {
   const navigate = useNavigate();
-  const {data: loggedInUser, isLoading: isLoadingUser} = useGetUserDetailsQuery();
+  const {Loading, setLoading, isLoading} = useLoading(true);
+  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized} = useGetUserDetailsQuery();
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
@@ -15,13 +16,26 @@ const Manage = () => {
       navigate('/login')
     }
   }, [loggedInUser, navigate])
+
+  useEffect(() => {
+    if(!isUninitialized){
+      if(isLoadingUser && !isLoading){
+         setLoading(true)
+         return;
+      }
+   } else {
+      if(!isLoadingUser)
+      setLoading(false)
+   }
+  }, [isUninitialized, isLoadingUser, isLoading, setLoading]);
+
   return (  
     <Loading
       fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-      trigger={!isLoadingUser}
+      isLoading={isLoading}
       delay={FADE_OUT_DELAY}
       minLoading={MIN_LOADING}
-      onTrigger={()=> setIsFadingOut(true)}
+      onLoaded={()=> setIsFadingOut(true)}
     >
       <div>Manage Workflows</div>);
     </Loading>
