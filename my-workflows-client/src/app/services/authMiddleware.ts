@@ -19,7 +19,7 @@ const TOAST_QUERY_ID = "register";
 authListenerMiddleware.startListening({
   matcher: authApi.endpoints.register.matchPending,
   effect: async (action, listenerApi) => {
-    toast(makeToast('Loading'), {
+    toast(makeToast('Registering account'), {
       isLoading: true,
       toastId: TOAST_QUERY_ID,
       type: toast.TYPE.DEFAULT,
@@ -39,7 +39,7 @@ authListenerMiddleware.startListening({
       isLoading: false,
       toastId: TOAST_QUERY_ID,
       type: toast.TYPE.SUCCESS,
-      autoClose: 5000,
+      autoClose: 3000,
       transition: zoomIn,
       onClose: ()=>redirect('/login')
     });

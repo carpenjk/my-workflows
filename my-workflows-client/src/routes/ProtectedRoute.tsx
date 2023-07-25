@@ -4,18 +4,24 @@ import { FADE_OUT_DELAY, MIN_LOADING } from 'features/loading/config';
 import useLoading from 'features/loading/useLoading';
 import { InlineLink } from 'features/ui';
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 
 const ProtectedRoute = () => {
-  const {data: user, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
+  const navigate = useNavigate();
+  const {data: user, isLoading: isLoadingUser, isUninitialized, isFetching: isFetchingUser} = useGetUserDetailsQuery();
   const {Loading, setLoading, isLoading} = useLoading(true);
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
     if(!isUninitialized){
-      setLoading(isLoadingUser || isFetching);
+      if(!isLoadingUser && !isFetchingUser && !user?.email){
+        navigate('./login')
+        return;
+      }
+      setLoading(isLoadingUser || isFetchingUser);
     }
-  },[isUninitialized, isLoadingUser, isFetching, setLoading])
+
+  },[isUninitialized, isLoadingUser, isFetchingUser, setLoading, navigate, user])
 
   const isLoggedIn = user?.email;
   return (

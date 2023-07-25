@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 import TextInput from "features/ui/shared/TextInput";
 import SubmitButton from "features/ui/shared/SubmitButton";
 import { ToastContainer } from "react-toastify";
+import { useEffect } from "react";
 
 const RegistrationCard = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors }, getValues } = useForm<RegisterRequest>( 
     {resolver: yupResolver(RegisterRequestSchema), mode: 'onTouched'});
-  const [registerUser, status] = useRegisterMutation();  
+  const [registerUser, status] = useRegisterMutation();
   
 
   const handleRegister = async () => {
@@ -22,15 +23,19 @@ const RegistrationCard = () => {
         password: getValues('password'),
         confirmPassword: getValues('confirmPassword')
       });
-      if(!status.isError){
-        setTimeout(()=>navigate('/login'), 3000);
-      }
+    
     } catch(e) {
       if(e){
         console.log(e);
       }
    }
   }
+
+  useEffect(() => {
+    if(status.isSuccess){
+      setTimeout(()=>navigate('/login'), 3000);
+    }
+  }, [status.isSuccess, navigate]);
   
   const getErrors = (): string => {
     if(typeof errors.email?.message === 'string'){

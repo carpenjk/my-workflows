@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
-    if(!loggedInUser){
+    if(!loggedInUser?.email){
       navigate('/login')
     }
   }, [loggedInUser, navigate])

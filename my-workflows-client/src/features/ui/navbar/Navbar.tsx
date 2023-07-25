@@ -4,7 +4,6 @@ import {HomeIcon, SquaresPlusIcon, TableCellsIcon, UserIcon, ArrowsRightLeftIcon
 import { twMerge } from 'tailwind-merge';
 import { useGetUserDetailsQuery } from 'app/services/auth';
 import NavText from './Navtext';
-import { ToastContainer } from 'react-toastify';
 
 type Props = {
   className?: HTMLProps<HTMLElement>["className"];
@@ -32,16 +31,6 @@ const Navbar = ({className}: Props) => {
           <button onClick={()=> setIsCollapsed((prev)=> !prev)} className='absolute hidden p-1 border rounded-md sm:flex text-slate-200 slate-400 w-7 h-7 -right-11 top-3 hover:animate-bounce-once border-slate-600'><ArrowsRightLeftIcon/></button>
         </nav>
       </div> 
-      <ToastContainer
-      className="content-centered"
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="dark"
-    />
   </>
   );
 }
