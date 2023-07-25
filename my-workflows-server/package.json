@@ -1,5 +1,5 @@
 {
-  "name": "my-work-flows-server",
+  "name": "my-workflows-server",
   "version": "1.0.0",
   "description": "Server for work flows",
   "main": "index.ts",
