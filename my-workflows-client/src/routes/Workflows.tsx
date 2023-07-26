@@ -34,7 +34,7 @@ const Workflows = () => {
       onLoaded={()=> setIsFadingOut(true)}
       {...config}
     >
-      <div>Create Workflows</div>);
+      <div className="text-text-normal dark:text-dk-text-normal">Create Workflows</div>);
     </Loading>
   )
 }

@@ -2,14 +2,64 @@ import colors from 'tailwindcss/colors';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        'dk-bg': colors.slate['700'],
-        'dk-text': colors.gray['200'],
+        'dk-primary': {
+          9: colors.slate['900'],
+          8: colors.slate['800'],
+          7: colors.slate['700'],
+          6: colors.slate['600'],
+          5: colors.slate['500'],
+          4: colors.slate['400'],
+          3: colors.slate['300'],
+          2: colors.slate['200'],
+          1: colors.slate['100']
+        },
+        'primary': {
+          9: colors.slate['100'],
+          8: colors.slate['200'],
+          7: colors.slate['300'],
+          6: colors.slate['400'],
+          5: colors.slate['500'],
+          4: colors.slate['600'],
+          3: colors.slate['700'],
+          2: colors.slate['800'],
+          1: colors.slate['900'],
+        },
+        'dk-secondary': {
+          95: colors.sky['950'],
+          9: colors.sky['900'],
+          8: colors.sky['800'],
+          7: colors.sky['700'],
+          6: colors.sky['600'],
+          5: colors.sky['500'],
+          4: colors.sky['400'],
+          3: colors.sky['300'],
+          2: colors.sky['200'],
+          1: colors.sky['100'],
+        },
+        'secondary': {
+          9: colors.sky['100'],
+          8: colors.sky['200'],
+          7: colors.sky['300'],
+          6: colors.sky['400'],
+          5: colors.sky['500'],
+          4: colors.sky['600'],
+          3: colors.sky['700'],
+          2: colors.sky['800'],
+          1: colors.sky['900'],
+        },
+        'text': {
+          normal: colors.gray['600']
+        },
+        'dk-text': {
+          normal: colors.gray['200'],
+        },
       },
       width: {
         "navbar-collapsed": '3.2rem',

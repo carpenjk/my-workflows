@@ -34,7 +34,7 @@ const Manage = () => {
       onLoaded={()=> setIsFadingOut(true)}
       {...config}
     >
-      <div>Manage Workflows</div>);
+      <div className="text-text-normal dark:text-dk-text-normal">Manage Workflows</div>);
     </Loading>
   )
 }

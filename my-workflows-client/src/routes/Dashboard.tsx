@@ -34,7 +34,7 @@ const Dashboard = () => {
       onLoaded={()=> setIsFadingOut(true)}
       {...config}
     >
-      <div>Dashboard</div>);
+      <div className=" text-text-normal dark:text-dk-text-normal">Dashboard</div>);
     </Loading>
   )
 }

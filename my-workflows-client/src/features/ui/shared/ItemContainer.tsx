@@ -6,7 +6,9 @@ const ItemContainer = ({children, className, ...passProps}: Props) => {
   return ( 
     <div 
       {...passProps} 
-      className={twMerge("container relative max-w-md p-6  mx-auto space-y-2 bg-slate-700 text-gray-200 rounded-md shadow-inner shadow-slate-600 w-fill shrink-0 grow basis-80 ", className)}>
+      className={twMerge(`container relative max-w-md p-7  mx-auto space-y-2 bg-primary-9 
+        text-text-normal dark:bg-dk-primary-7 dark:text-dk-text-normal rounded-md shadow-inner 
+        shadow-secondary-8/50 dark:shadow-dk-primary-6 w-fill shrink-0 grow basis-80 `, className)}>
         {children}
     </div>
   );

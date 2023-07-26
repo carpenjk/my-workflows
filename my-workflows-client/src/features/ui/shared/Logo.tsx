@@ -1,6 +1,6 @@
 
 const Logo = () => {
-  return ( <h3 className="text-gray-200">Workflow Tracker</h3> );
+  return ( <h3 className=" text-text-normal dark:text-dk-text-normal">Workflow Tracker</h3> );
 }
  
 export default Logo;

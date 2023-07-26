@@ -10,16 +10,18 @@ const LoadingOverlay = ({fadeOut}: Props) => {
       ? "animate__animated animate__zoomOut"
       : ""
    const bgTransitionClasses = fadeOut 
-   ? "opacity-0 bg-slate-900"
-   : "bg-slate-900 opacity-100"
+   ? "opacity-0 bg-primary-8 dark:bg-dk-primary-8"
+   : "bg-primary-8 dark:bg-dk-primary-8 opacity-100"
 
    return ( 
          <div className={`absolute inset-0 flex items-center justify-center`}>
             <div className={` transition duration-500 ${bgTransitionClasses} absolute inset-0`}/>
-            <ItemContainer className={` bg-gradient-to-br from-slate-900/60 via-sky-950/50 to-slate-900/60 ${animateCard} flex items-center justify-center w-full max-w-sm min-h-[18rem]`}>
+            <ItemContainer className={` bg-gradient-to-br from-secondary-6/40 via-secondary-8/60
+               to-secondary-6/40 dark:from-dk-primary-8/20 dark:via-dk-secondary-7/40
+               dark:to-dk-primary-8/20 shadow-secondary-8/80 ${animateCard} flex items-center 
+               justify-center w-full max-w-sm min-h-[18rem]`}>
                <div className="flex flex-col items-center justify-between w-full h-full p-4 space-y-6">
                   <span><Spinner/></span><span className="text-xl">Loading</span>
-
                </div>
             </ItemContainer>
          </div>

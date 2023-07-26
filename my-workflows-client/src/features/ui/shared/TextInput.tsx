@@ -12,7 +12,7 @@ type Ref = HTMLInputElement;
 const TextInput = React.forwardRef<Ref, Props>(({label, id, ...inputProps}, ref) => {
   return ( 
     <>
-      <label className="block mb-2 text-base font-bold font-roboto" htmlFor={id}>
+      <label className="block mb-2 text-base font-bold text-text-normal dark:text-dk-text-normal font-roboto" htmlFor={id}>
         {label}
       </label>
       <input

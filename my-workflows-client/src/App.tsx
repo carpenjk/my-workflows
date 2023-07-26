@@ -20,7 +20,7 @@ import Register from 'routes/Register';
 
 function App() {
   return (
-    <div className="w-full min-h-screen min-w-screen App " >
+    <div className="w-full min-h-screen min-w-screen App dark:bg-dk-primary-9 bg-primary-8" >
     <BrowserRouter>
     <Routes >
       <Route path="/" element={<Layout />}>
