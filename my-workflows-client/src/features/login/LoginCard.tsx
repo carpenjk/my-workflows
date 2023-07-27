@@ -43,14 +43,13 @@ const LoginCard = () => {
     try{
       const {user} = await logIn({email: getValues("email"), password:getValues("password")}).unwrap();
       if(user)
-        console.log('user Loaded, load true no fade for navigate')
         setLoading(true, {minLoading:0, delay:0, onLoaded: undefined})
         navigate('/')
       }
     catch(e){
       console.log(e);      
     } finally{
-      setLoading(false);
+      setLoading(false, {minLoading:MIN_LOADING, delay:FADE_OUT_DELAY});
     }
   }
 
@@ -61,6 +60,7 @@ const LoginCard = () => {
       delay={FADE_OUT_DELAY}
       minLoading={MIN_LOADING}
       onLoaded={()=> setIsFadingOut(true)}
+      onUnmount={()=>setIsFadingOut(false)}
       {...config}
     >
         <ItemContainer >

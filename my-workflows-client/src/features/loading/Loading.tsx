@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useTimeSinceMount from "./useTimeSinceMount";
+import useTimeSince from "./useTimeSince";
 
 type Props = {
   children: React.ReactNode,
@@ -8,20 +8,25 @@ type Props = {
   delay?: number,
   minLoading?: number,
   onLoaded?: ()=> void,
+  onUnmount?: ()=> void,
 };
 
-function Loading ({children, delay = 0, fallback, isLoading, minLoading = 0, onLoaded}:Props) {
+function Loading ({children, delay = 0, fallback, isLoading, minLoading = 0, onLoaded, onUnmount}:Props) {
   const [isComponentMounted, setIsComponentMounted] = useState(!isLoading);
   const [execOnLoaded, setExecOnLoaded] = useState(false);
-  const timeSinceMount = useTimeSinceMount();
-  const previsLoadingRef = useRef<boolean>(false);
+  const timeLoading = useTimeSince();
+  const prevIsLoadingRef = useRef<boolean>(false);
+  const prevIsMountedRef = useRef<boolean>(!isLoading);
 
   useEffect(() => {
-    if(isLoading && previsLoadingRef.current === false){
+    const justStartedLoading = isLoading && prevIsLoadingRef.current === false;
+    const justLoaded = !isLoading && prevIsLoadingRef.current === true;
+    if(justStartedLoading){ //go back into loading state when isLoading changes to true
       setIsComponentMounted(false);
+      timeLoading.reset();
     } else{
-      if(execOnLoaded && onLoaded && !isLoading){
-        const onLoadedDelay = minLoading - timeSinceMount.get();
+      if(justLoaded && onLoaded){ 
+        const onLoadedDelay = minLoading - timeLoading.get();
         if(onLoadedDelay){
           setTimeout(onLoaded, onLoadedDelay);
         } else {
@@ -29,10 +34,18 @@ function Loading ({children, delay = 0, fallback, isLoading, minLoading = 0, onL
         }
       }
     }
-    previsLoadingRef.current = isLoading;
-  },[isLoading, execOnLoaded, onLoaded, minLoading, timeSinceMount])
+    prevIsLoadingRef.current = isLoading;
+  },[isLoading, onLoaded, minLoading, timeLoading])
 
-  const mountingDelay = Math.max(minLoading - timeSinceMount.get(), 0) + delay;
+  useEffect(() => {
+    const justMounted = isComponentMounted && prevIsMountedRef.current === false
+    if(justMounted && onUnmount){
+      onUnmount();
+    }
+    prevIsMountedRef.current = isComponentMounted;
+  }, [isComponentMounted, onUnmount]);
+
+  const mountingDelay = Math.max(minLoading - timeLoading.get(), 0) + delay;
 
   function mountComponent(){
     const mountCallback = ()=> {
@@ -44,12 +57,15 @@ function Loading ({children, delay = 0, fallback, isLoading, minLoading = 0, onL
       _mountComponent();
   }
   
+
+  // render *********************
   if(isComponentMounted){
+    console.log('mount')
     return (<>{children}</>)
   }
 
   if(!isLoading){
-    const justLoaded = previsLoadingRef.current === true
+    const justLoaded = prevIsLoadingRef.current === true
     if(justLoaded) {
       mountComponent();
       if(!execOnLoaded) {

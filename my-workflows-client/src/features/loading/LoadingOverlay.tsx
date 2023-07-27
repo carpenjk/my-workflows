@@ -10,8 +10,8 @@ const LoadingOverlay = ({fadeOut}: Props) => {
       ? "animate__animated animate__zoomOut"
       : ""
    const bgTransitionClasses = fadeOut 
-   ? "opacity-0 bg-primary-8 dark:bg-dk-primary-8"
-   : "bg-primary-8 dark:bg-dk-primary-8 opacity-100"
+   ? "opacity-0 bg-primary-8 dark:bg-dk-primary-9"
+   : "bg-primary-8 dark:bg-dk-primary-9 opacity-100"
 
    return ( 
          <div className={`absolute inset-0 flex items-center justify-center`}>

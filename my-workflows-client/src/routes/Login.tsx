@@ -36,6 +36,7 @@ const Login = () => {
             delay={FADE_OUT_DELAY}
             minLoading={MIN_LOADING}
             onLoaded={()=> setIsFadingOut(true)}
+            onUnmount={()=>setIsFadingOut(false)}
             {...config}
          >
             <LoginCard />

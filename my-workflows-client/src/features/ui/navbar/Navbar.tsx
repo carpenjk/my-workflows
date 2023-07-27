@@ -22,7 +22,7 @@ const Navbar = ({className}: Props) => {
         <nav className='relative w-full'>
           <ul className="flex justify-between w-full sm:space-y-6 sm:flex-col ">
             <NavItem collapsed={isCollapsed} to="/" ><HomeIcon className='flex-none w-5 h-5 fill '/><NavText>Dashboard</NavText></NavItem>
-            <NavItem collapsed={isCollapsed} to="/workflows" ><SquaresPlusIcon className='flex-none w-5 h-5'/><span className='flex space-x-1.5'><NavText>Create</NavText><NavText className='hidden sm:flex'>Workflow</NavText></span></NavItem>
+            <NavItem collapsed={isCollapsed} to="/workflow" ><SquaresPlusIcon className='flex-none w-5 h-5'/><span className='flex space-x-1.5'><NavText>Create</NavText><NavText className='hidden sm:flex'>Workflow</NavText></span></NavItem>
             <NavItem collapsed={isCollapsed} to="/manage" ><TableCellsIcon className='flex-none w-5 h-5'/><span className='flex space-x-1.5'><NavText>Manage</NavText><NavText className='hidden sm:flex'> Workflows</NavText></span></NavItem>
             {!user?.email && 
               <NavItem collapsed={isCollapsed} to="/login" ><UserIcon className='flex-none w-5 h-5'/><NavText>Login</NavText></NavItem>

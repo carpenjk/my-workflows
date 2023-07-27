@@ -5,7 +5,7 @@ import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 import useLoading from "features/loading/useLoading";
 
-const Workflows = () => {
+const Workflow = () => {
   const navigate = useNavigate();
   const {Loading, setLoading, isLoading, config} = useLoading(true);
   const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
@@ -39,4 +39,4 @@ const Workflows = () => {
   )
 }
  
-export default Workflows;
+export default Workflow;
