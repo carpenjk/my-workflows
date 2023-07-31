@@ -18,9 +18,11 @@ module.exports = {
           4: colors.slate['400'],
           3: colors.slate['300'],
           2: colors.slate['200'],
-          1: colors.slate['100']
+          1: colors.slate['100'],
+          "05": colors.slate['50']
         },
         'primary': {
+          95: colors.slate['50'],
           9: colors.slate['100'],
           8: colors.slate['200'],
           7: colors.slate['300'],

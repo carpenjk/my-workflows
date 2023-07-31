@@ -10,7 +10,6 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   declare owner: bigint;
   declare reviewer: bigint;
   declare dueDate: Date;
-  declare startDate: CreationOptional<Date>;
   declare workflowID: bigint;
 
   // timestamps
@@ -67,12 +66,6 @@ Task.init({
         args: new Date().toISOString(),
         msg: 'Due date must be in the future.'
       },
-    }
-  },
-  startDate: {
-    type: DataTypes.DATE,
-    validate: {
-      isDate: true,
     }
   },
   workflowID: {
