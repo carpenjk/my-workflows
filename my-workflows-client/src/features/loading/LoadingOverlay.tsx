@@ -15,7 +15,7 @@ const LoadingOverlay = ({fadeOut}: Props) => {
 
    return ( 
          <div className={`absolute inset-0 flex items-center justify-center`}>
-            <div className={` transition duration-500 ${bgTransitionClasses} absolute inset-0`}/>
+            <div className={`space-y-2 transition duration-500 ${bgTransitionClasses} absolute inset-0`}/>
             <ItemContainer className={` bg-gradient-to-br from-secondary-6/40 via-secondary-8/60
                to-secondary-6/40 dark:from-dk-primary-8/20 dark:via-dk-secondary-7/40
                dark:to-dk-primary-8/20 shadow-secondary-8/80 ${animateCard} flex items-center 

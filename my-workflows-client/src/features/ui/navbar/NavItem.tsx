@@ -11,18 +11,18 @@ type Props = {
 
 const NavItem = ({to, button, collapsed, children, onClick}: Props) => {
   return ( 
-    <li className='w-1/4 sm:w-full'>
-      <div className="w-full">
+    <li className='w-1/4 md:w-full'>
+      <div className="flex items-start justify-start w-full">
         {!button && (
           <NavLink to={to} collapsed={collapsed} >
-            <div className='flex flex-col items-center justify-center p-4 sm:flex-row sm:space-x-4 '>
+            <div className='flex flex-col items-center justify-center p-4 md:flex-row md:space-x-4 '>
               {children}
             </div>
         </NavLink>
         )}
         {(button)  && (
           <button type='button' onClick={onClick} >
-            <div className='flex flex-col items-center justify-center p-4 sm:flex-row sm:space-x-4 '>
+            <div className='flex flex-col items-center justify-center p-4 md:flex-row md:space-x-4 '>
               {children}
             </div>
           </button>  

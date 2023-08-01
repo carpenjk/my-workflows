@@ -6,4 +6,5 @@ export {default as SubmitButton} from './SubmitButton';
 export {default as TextInput} from './TextInput';
 export {default as ToastMsg} from './ToastMsg';
 export {default as ViewContainer} from './ViewContainer';
+export {default as CardHeader} from './CardHeader';
 export * from './spinner'

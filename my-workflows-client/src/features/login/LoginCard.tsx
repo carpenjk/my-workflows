@@ -63,7 +63,7 @@ const LoginCard = () => {
       onUnmount={()=>setIsFadingOut(false)}
       {...config}
     >
-        <ItemContainer >
+        <ItemContainer className="max-w-md space-y-2">
           <h1 className="">Welcome Back!</h1>
           <h5>Standardize and track your most important work flows.</h5>
           <div className="w-full max-w-md p-4">

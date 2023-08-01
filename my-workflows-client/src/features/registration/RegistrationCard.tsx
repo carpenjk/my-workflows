@@ -53,7 +53,7 @@ const RegistrationCard = () => {
     return "";
   }
   return ( 
-      <ItemContainer >
+      <ItemContainer className="max-w-md space-y-2">
       <h1 className="text-gray-100">Welcome Back!</h1>
       <h5>Standardize and track your most important work flows.</h5>
       <div className="w-full max-w-md p-4">

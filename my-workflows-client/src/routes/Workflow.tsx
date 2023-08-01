@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 import useLoading from "features/loading/useLoading";
+import WorkflowCard from "features/workflow/WorkflowCard";
 
 const Workflow = () => {
   const navigate = useNavigate();
@@ -34,7 +35,9 @@ const Workflow = () => {
       onLoaded={()=> setIsFadingOut(true)}
       {...config}
     >
-      <div className="text-text-normal dark:text-dk-text-normal">Create Workflows</div>);
+      <div className="flex items-start w-full h-full justify-stretch md:justify-start pt-28">
+        <WorkflowCard/>);
+      </div>
     </Loading>
   )
 }
