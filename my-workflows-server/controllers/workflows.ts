@@ -3,6 +3,14 @@ import { Op } from "sequelize";
 import { Workflow } from "../models/Workflow";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
+import { TaskArgs, createTasksFromArgs } from "./tasks";
+
+interface WorkflowArgs {
+  name: string,
+  description: string,
+  owner: bigint,
+  tasks?: TaskArgs[]
+}
 
 export const getWorkflows = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const workflows = await Workflow.findAll({
@@ -16,11 +24,30 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
   res.send(workflows);
 })
 
-export const createWorkflow = asyncWrapper(async (req: Request, res: Response) => {
-  const { workflowID, ...colsToCreate } = req.body;
-  await Workflow.create({
-    ...colsToCreate
+export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowArgs>, res: Response) => {
+  const { tasks, ...summaryFields } = req.body;
+  console.log("🚀 ~ file: workflows.ts:29 ~ createWorkflow ~ summaryFields:", summaryFields)
+  
+  function getDuration(): {} | {duration: string} {
+    if(tasks){
+      const duration = Math.max(...tasks?.map(task=> task.dueDay));
+      const durationUnits = duration > 1 ? 'Days' : 'Day';
+      return {duration: `${duration} ${durationUnits}` };
+    }
+    return {};
+  }
+
+  const workflow = await Workflow.create({
+    ...getDuration(),
+    status: 'Draft',
+    ...summaryFields,
   });
+
+  if(tasks){
+    const tasksWithWorkflowID = tasks.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
+    await createTasksFromArgs(tasksWithWorkflowID)
+  }
+
   res.json({ msg: 'Workflow created!' });
 });
 

@@ -1,12 +1,16 @@
 import { DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, Model } from 'sequelize'
 import { Task } from './Task';
 import { sequelize } from '../adapters/sequelize';
+import { User } from './User';
 
 
 export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttributes<Workflow>> {
-  declare workflowID: CreationOptional<BigInt>;
+  declare workflowID: CreationOptional<bigint>;
   declare name: string;
   declare description: string;
+  declare status: string;
+  declare duration: CreationOptional<string| null>;
+  declare owner: bigint;
   declare completedDate: CreationOptional<Date | null>;
 
   // timestamps
@@ -40,6 +44,29 @@ Workflow.init({
       max: 50,
     }
   },
+  status: {
+    type: DataTypes.STRING(15),
+    allowNull: false,
+    validate: {
+      min: 1,
+      max: 15,
+    }
+  },
+  duration: {
+    type: DataTypes.STRING(15),
+    allowNull: true,
+    validate: {
+      min: 1,
+      max: 15,
+    }
+  },
+  owner: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
+    validate: {
+      isInt: { msg: 'owner must be an integer' }
+    }
+  },
   completedDate: {
     type: DataTypes.DATE,
     allowNull: true,
@@ -67,5 +94,8 @@ Workflow.init({
   modelName: 'Workflow'
 })
 
+
+User.hasMany(Workflow, { foreignKey: 'owner' });
+// Workflow.belongsTo(User);
 Workflow.hasMany(Task, { foreignKey: 'workflowID' });
 Task.belongsTo(Workflow, { foreignKey: 'workflowID' });

@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 import * as yup from "yup";
+import { api } from './api';
 
 export interface User {
   userID: bigint,
@@ -49,17 +50,17 @@ export type RegisterRequest = yup.InferType<typeof RegisterRequestSchema>;
 
 const baseUrl = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/`;
 
-export const authApi = createApi({
-  reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl,
-    credentials: "include",
-  }),
-  tagTypes: ['User'],
+export const authApi = api.injectEndpoints({
+  // reducerPath: 'authApi',
+  // baseQuery: fetchBaseQuery({
+  //   baseUrl,
+  //   credentials: "include",
+  // }),
+  // tagTypes: ['User'],
   endpoints: (builder) => ({
     login: builder.mutation<UserResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/api/v1/user/login',
+        url: `${process.env.REACT_APP_API_PATH}/user/login`,
         method: 'POST',
         body: credentials,
       }),

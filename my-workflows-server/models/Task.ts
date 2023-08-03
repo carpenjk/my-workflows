@@ -8,8 +8,9 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   declare name: string;
   declare description: string;
   declare owner: bigint;
-  declare reviewer: bigint;
-  declare dueDate: Date;
+  // declare dependency: CreationOptional<bigint[]>;
+  // declare reviewer: bigint;
+  declare dueDay: number;
   declare workflowID: bigint;
 
   // timestamps
@@ -29,7 +30,7 @@ Task.init({
   name: {
     type: DataTypes.STRING(50),
     allowNull: false,
-    unique: true,
+    // unique: true,
     validate: {
       min: 2,
       max: 50,
@@ -50,15 +51,15 @@ Task.init({
       isInt: { msg: 'owner must be an integer' }
     }
   },
-  reviewer: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    allowNull: false,
-    validate: {
-      isInt: { msg: 'reviewer must be an integer' }
-    }
-  },
-  dueDate: {
-    type: DataTypes.DATE,
+  // reviewer: {
+  //   type: DataTypes.INTEGER.UNSIGNED,
+  //   allowNull: false,
+  //   validate: {
+  //     isInt: { msg: 'reviewer must be an integer' }
+  //   }
+  // },
+  dueDay: {
+    type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
       isDate: true,
@@ -95,9 +96,20 @@ Task.init({
   modelName: 'Task'
 })
 
-Task.hasOne(User, { foreignKey: 'owner' });
-Task.hasOne(User, { foreignKey: 'reviewer' });
-User.belongsTo(Task, { foreignKey: 'owner' });
-User.belongsTo(Task, { foreignKey: 'reviewer' });
+// Task.hasOne(User, { foreignKey: 'owner' });
+User.hasMany(Task, { foreignKey: 'owner' });
+// Task.belongsTo(User);
+// Task.hasOne(User, { foreignKey: 'reviewer' });
+// User.belongsTo(Task, { foreignKey: 'owner',  constraints: false });
+// User.belongsTo(Task, { foreignKey: 'reviewer' });
 
-Task.belongsToMany(Task, { otherKey: 'dependency', foreignKey: 'taskID', as: 'Dependency', through: Dependency });
+Task.belongsToMany(Task, 
+  {
+    otherKey: 'dependencies',
+    foreignKey: 'taskID',
+    as: 'Dependencies',
+    through: Dependency,
+    constraints: false,
+  },
+  
+  );

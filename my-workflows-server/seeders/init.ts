@@ -22,7 +22,36 @@ const init = async () => {
   ]);
 
   await Workflow.bulkCreate([
-    { name: 'Workflow 1', description: 'This is Workflow 1' }
+    {
+      name: 'Month End Close',
+      description: 'Month End Close',
+      status: 'Published',
+      duration: '7 Days',
+      owner: BigInt(1),
+      // createdAt: new Date(),
+    },
+    {
+      name: 'Year End Close',
+      description: 'Year End Close',
+      status: 'Published',
+      duration: '14 Days',
+      owner: BigInt(2),
+      // createdAt: new Date(),
+    }, {
+      name: 'Quarterly Forecast',
+      description: 'Quarterly Forecast',
+      status: 'Draft',
+      duration: '7 Days',
+      owner: BigInt(2),
+      // createdAt: new Date(),
+    }, {
+      name: 'Yearly Budget Process',
+      description: 'Yearly Budget Process',
+      status: 'Published',
+      duration: '20 Days',
+      owner: BigInt(2),
+      // createdAt: new Date(),
+    },
   ]);
 
   await Task.bulkCreate([
@@ -30,17 +59,16 @@ const init = async () => {
       name: 'task 1',
       description: 'task 1 description',
       owner: BigInt(1),
-      reviewer: BigInt(2),
-      dueDate: new Date('2023-05-30T17:00:00'),
-      startDate: new Date(),
+      // reviewer: BigInt(2),
+      dueDay: 1,
       workflowID: BigInt(1),
     },
     {
       name: 'task 2',
       description: 'task 2 description',
       owner: BigInt(1),
-      reviewer: BigInt(2),
-      dueDate: new Date('2023-05-30T17:00:00'),
+      // reviewer: BigInt(2),
+      dueDay: 1,
       workflowID: BigInt(1),
 
     },
@@ -48,17 +76,17 @@ const init = async () => {
       name: 'task 3',
       description: 'task 3 description',
       owner: BigInt(1),
-      reviewer: BigInt(2),
-      dueDate: new Date('2023-05-30T17:00:00'),
+      // reviewer: BigInt(2),
+      dueDay: 1,
       workflowID: BigInt(1),
     }
   ]);
 
-  await Dependency.bulkCreate([
-    { taskID: BigInt(2), dependency: BigInt(1) },
-    { taskID: BigInt(3), dependency: BigInt(1) },
-    { taskID: BigInt(3), dependency: BigInt(2) }
-  ])
+  // await Dependency.bulkCreate([
+  //   { taskID: BigInt(2), dependency: BigInt(1) },
+  //   { taskID: BigInt(3), dependency: BigInt(1) },
+  //   { taskID: BigInt(3), dependency: BigInt(2) }
+  // ])
 
 }
 

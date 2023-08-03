@@ -5,11 +5,14 @@ import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 import useLoading from "features/loading/useLoading";
 import WorkflowCard from "features/workflow/WorkflowCard";
+import { useGetWorkflowsQuery } from "app/services/workflow";
 
 const Workflow = () => {
   const navigate = useNavigate();
   const {Loading, setLoading, isLoading, config} = useLoading(true);
-  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
+  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized: isUserUninitialized, isFetching: isUserFetching} = useGetUserDetailsQuery();
+  const {data: workflows, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isWorkflowsFetching} = useGetWorkflowsQuery();
+  console.log("🚀 ~ file: Workflow.tsx:14 ~ Workflow ~ workflow:", workflows)
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {
@@ -19,12 +22,12 @@ const Workflow = () => {
   }, [loggedInUser, navigate])
 
   useEffect(() => {
-    if(!isFetching){
-      setLoading(isLoadingUser || isFetching)
+    if(!isUserFetching){
+      setLoading(isLoadingUser || isUserFetching)
       return;
     } 
     setLoading(false)
-  }, [isUninitialized, isLoadingUser, isFetching, isLoading, setLoading]);
+  }, [isUserUninitialized, isLoadingUser, isUserFetching, isLoading, setLoading]);
 
   return (  
     <Loading
@@ -36,7 +39,7 @@ const Workflow = () => {
       {...config}
     >
       <div className="flex items-start w-full h-full justify-stretch md:justify-start pt-28">
-        <WorkflowCard/>);
+        <WorkflowCard workflows={workflows || []}/>);
       </div>
     </Loading>
   )

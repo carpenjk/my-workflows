@@ -3,6 +3,15 @@ import { asyncWrapper } from "../middleware/asyncWrapper";
 import { Task } from "../models/Task";
 import { NotFoundError } from "../errors/notFoundError";
 
+export interface TaskArgs {
+  name: string,
+  description: string,
+  dependencies: bigint[],
+  dueDay: number,
+  owner: bigint,
+  workflowID: bigint
+}
+
 export const getTasks = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const filters = req.params;
   const tasks = await Task.findAll({
@@ -26,6 +35,13 @@ export const getTask = asyncWrapper(async (req: Request, res: Response, next: Ne
   }
   res.send(task);
 })
+
+export const createTasksFromArgs = async (tasks: TaskArgs | TaskArgs[]) => {
+  if(Array.isArray(tasks)){
+    return await Task.bulkCreate(tasks);
+  }
+  await Task.create(tasks);
+}
 
 export const createTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const workflowID: string = req.params.workflowID;
