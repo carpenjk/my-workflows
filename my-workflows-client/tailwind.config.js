@@ -62,6 +62,7 @@ module.exports = {
         'dk-text': {
           normal: colors.gray['200'],
         },
+        'link': colors.teal
       },
       width: {
         "navbar-collapsed": '3.2rem',

@@ -60,7 +60,6 @@ function Loading ({children, delay = 0, fallback, isLoading, minLoading = 0, onL
 
   // render *********************
   if(isComponentMounted){
-    console.log('mount')
     return (<>{children}</>)
   }
 
