@@ -1,3 +1,4 @@
+import { enUSFormatter } from "utils/date";
 import { Workflow } from "app/services/workflow";
 import { ItemContainer } from "features/ui";
 import CardHeader from "features/ui/shared/CardHeader";
@@ -10,8 +11,6 @@ interface Props {
   workflows: Workflow[]
 }
 
-
-const enUSFormatter = new Intl.DateTimeFormat('en-US');
 
 const actions = [
   {
@@ -30,7 +29,6 @@ const actions = [
     action: 'deploy',
     to: '/workflow'
   },
-
 ]
 
 const WorkflowCard = ({workflows}: Props) => {
@@ -52,16 +50,15 @@ const WorkflowCard = ({workflows}: Props) => {
           <ColumnHeader>Owner</ColumnHeader>
           <ColumnHeader>Last Modified</ColumnHeader>
           {workflows.map((workflow) => {
-            console.log(workflow.updatedAt)
            return (
             <Fragment key={workflow.workflowID}>
-              <TableCell><ActionMenu actions={actions} /></TableCell>
+              <TableCell><ActionMenu actions={actions}/></TableCell>
               <TableCell>{workflow.name}</TableCell>
               <TableCell>{workflow.description}</TableCell>
               <TableCell>{workflow.status}</TableCell>
               <TableCell>{workflow.duration}</TableCell>
-              <TableCell>{workflow.owner}</TableCell>
-              <TableCell>{workflow.updatedAt.toISOString()}</TableCell>
+              <TableCell>{workflow.workflowOwner.name}</TableCell>
+              <TableCell>{enUSFormatter.format(new Date(workflow.updatedAt))}</TableCell>
             </Fragment>
            ) 
           })}

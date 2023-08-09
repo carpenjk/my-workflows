@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import ActionButton from "./ActionButton";
 import { useRef, useState } from "react";
-import useOnClickOutside from "hooks/useClickOutside";
+import useOnClickOutside from "hooks/useOnClickOutside";
 
 type ButtonAction =   {
   action: string,

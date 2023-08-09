@@ -1,1 +1,1 @@
-export const date = '';
+export const enUSFormatter = new Intl.DateTimeFormat('en-US');

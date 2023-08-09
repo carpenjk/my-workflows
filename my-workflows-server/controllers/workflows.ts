@@ -4,19 +4,55 @@ import { Workflow } from "../models/Workflow";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
 import { TaskArgs, createTasksFromArgs } from "./tasks";
+import { Task } from "../models/Task";
+import { Dependency } from "../models/Dependency";
+import { User } from "../models/User";
 
 interface WorkflowArgs {
   name: string,
   description: string,
-  owner: bigint,
+  ownerID: bigint,
   tasks?: TaskArgs[]
 }
 
 export const getWorkflows = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const limit = Number(req.query.limit);
+  const getLimit = ()=> limit && Number.isInteger(limit) ? {limit: Number(limit)} : {};
   const workflows = await Workflow.findAll({
-    where: {
-      completedDate: { [Op.eq]: null }
-    }
+    ...getLimit(),
+    // where: {
+    //   completedDate: { [Op.eq]: null }
+    // },
+    attributes: {exclude: ['ownerID']},
+    include: [
+      {
+        model: Task,
+        attributes: {exclude: ['ownerID']},
+        include: [
+          {
+            model: User,
+            as: 'taskOwner',
+            attributes: ['userID', 'name', 'email']
+          },
+          // "dependency"
+          {
+            model: Dependency,
+            as: 'dependency',
+            through: {
+              attributes: ['dependencies', 'name']
+            }
+            // include: [{
+            //   model: Task,
+            //   attributes: ['taskID', 'name']
+            // }]
+          }
+        ]
+      },
+      {
+        model: User,
+        as: 'workflowOwner',
+        attributes: ['userID', 'name', 'email']
+      }]
   })
   if (workflows.length === 0) {
     return next(new NotFoundError('No workflows found.'));
@@ -47,7 +83,6 @@ export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowAr
     const tasksWithWorkflowID = tasks.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
     await createTasksFromArgs(tasksWithWorkflowID)
   }
-
   res.json({ msg: 'Workflow created!' });
 });
 

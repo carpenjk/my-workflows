@@ -10,7 +10,7 @@ export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttr
   declare description: string;
   declare status: string;
   declare duration: CreationOptional<string| null>;
-  declare owner: bigint;
+  declare ownerID: bigint;
   declare completedDate: CreationOptional<Date | null>;
 
   // timestamps
@@ -60,7 +60,7 @@ Workflow.init({
       max: 15,
     }
   },
-  owner: {
+  ownerID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     validate: {
@@ -95,7 +95,7 @@ Workflow.init({
 })
 
 
-User.hasMany(Workflow, { foreignKey: 'owner' });
-// Workflow.belongsTo(User);
+User.hasMany(Workflow, { foreignKey: 'ownerID', as: 'workflowOwner' });
+Workflow.belongsTo(User, { foreignKey: 'ownerID', as: 'workflowOwner' });
 Workflow.hasMany(Task, { foreignKey: 'workflowID' });
 Task.belongsTo(Workflow, { foreignKey: 'workflowID' });

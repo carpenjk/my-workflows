@@ -7,6 +7,7 @@ export const asyncWrapper = (fn: RequestCallbackFn): RequestCallbackFn => {
     try {
       await fn(req, res, next)
     } catch (error) {
+      console.log("🚀 ~ file: asyncWrapper.ts:10 ~ return ~ error:", error)
       next(error)
     }
   }

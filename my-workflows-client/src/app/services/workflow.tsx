@@ -1,5 +1,20 @@
 import { api } from './api';
 
+
+export interface Task {
+  taskID: string,
+  name: string,
+  description: string,
+  dueDay: number,
+  workflowID: string,
+  updatedAt: Date,
+  taskOwner: {
+    userID: string,
+    name: string,
+    email: string,
+  }
+}
+
 export interface Workflow{
   workflowID: string,
   name: string,
@@ -7,21 +22,27 @@ export interface Workflow{
   createdAt: Date,
   completedDate: Date | null,
   duration: string,
-  owner: string,
+  workflowOwner: {
+    userID: string,
+    name: string,
+    email: string,
+  }
   status: string,
-  updatedAt: Date
+  updatedAt: Date,
+  tasks: Task[]
 }
 
 export const workflowApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getWorkflows: builder.query<Workflow[], void>({
-      query: () => ({
+    getWorkflows: builder.query<Workflow[], {limit: number} | void>({
+      query: (params) => ({
         url: `${process.env.REACT_APP_API_PATH}/workflow`,
         method: 'GET',
+        params: params ? { ...params } : undefined,
       }),
-      providesTags: ['Workflow']
+      providesTags: ['Workflow'],
     }),
   })
 })
 
-export const {useGetWorkflowsQuery}  = workflowApi;
+export const { useGetWorkflowsQuery }  = workflowApi;

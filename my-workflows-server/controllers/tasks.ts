@@ -8,7 +8,7 @@ export interface TaskArgs {
   description: string,
   dependencies: bigint[],
   dueDay: number,
-  owner: bigint,
+  ownerID: bigint,
   workflowID: bigint
 }
 

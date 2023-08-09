@@ -7,7 +7,7 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   declare taskID: CreationOptional<bigint>;
   declare name: string;
   declare description: string;
-  declare owner: bigint;
+  declare ownerID: bigint;
   // declare dependency: CreationOptional<bigint[]>;
   // declare reviewer: bigint;
   declare dueDay: number;
@@ -44,7 +44,7 @@ Task.init({
       max: 100,
     }
   },
-  owner: {
+  ownerID: {
     type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     validate: {
@@ -96,20 +96,16 @@ Task.init({
   modelName: 'Task'
 })
 
-// Task.hasOne(User, { foreignKey: 'owner' });
-User.hasMany(Task, { foreignKey: 'owner' });
-// Task.belongsTo(User);
-// Task.hasOne(User, { foreignKey: 'reviewer' });
-// User.belongsTo(Task, { foreignKey: 'owner',  constraints: false });
-// User.belongsTo(Task, { foreignKey: 'reviewer' });
+User.hasMany(Task, { foreignKey: 'ownerID', as: 'taskOwner' });
+Task.belongsTo(User, { foreignKey: 'ownerID', as: 'taskOwner' });
 
 Task.belongsToMany(Task, 
-  {
-    otherKey: 'dependencies',
-    foreignKey: 'taskID',
-    as: 'Dependencies',
-    through: Dependency,
-    constraints: false,
-  },
-  
+    {
+      otherKey: 'dependencies',
+      foreignKey: 'taskID',
+      as: 'dependency',
+      through: Dependency,
+      constraints: false,
+    },
   );
+
