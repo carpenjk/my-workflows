@@ -3,6 +3,7 @@ import { User } from './User';
 import { sequelize } from '../adapters/sequelize';
 import { Dependency } from './Dependency';
 
+
 export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<Task>> {
   declare taskID: CreationOptional<bigint>;
   declare name: string;
@@ -99,13 +100,24 @@ Task.init({
 User.hasMany(Task, { foreignKey: 'ownerID', as: 'taskOwner' });
 Task.belongsTo(User, { foreignKey: 'ownerID', as: 'taskOwner' });
 
+
+Task.belongsToMany(Task, 
+    {
+      otherKey: 'taskID',
+      foreignKey: 'dependencies',
+      as: 'dependents',
+      through: Dependency,
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    },
+  );
 Task.belongsToMany(Task, 
     {
       otherKey: 'dependencies',
       foreignKey: 'taskID',
-      as: 'dependency',
+      as: 'dependencies',
       through: Dependency,
-      constraints: false,
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
   );
-

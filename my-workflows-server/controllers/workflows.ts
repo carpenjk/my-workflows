@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { Op } from "sequelize";
 import { Workflow } from "../models/Workflow";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
@@ -37,10 +36,10 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
           // "dependency"
           {
             model: Dependency,
-            as: 'dependency',
-            through: {
-              attributes: ['dependencies', 'name']
-            }
+            as: 'dependents',
+            // through: {
+            //   attributes: ['dependencies', 'name']
+            // }
             // include: [{
             //   model: Task,
             //   attributes: ['taskID', 'name']
@@ -50,8 +49,7 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
       },
       {
         model: User,
-        as: 'workflowOwner',
-        attributes: ['userID', 'name', 'email']
+        // attributes: ['userID', 'name', 'email']
       }]
   })
   if (workflows.length === 0) {
