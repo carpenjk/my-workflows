@@ -4,8 +4,8 @@ import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
 import { TaskArgs, createTasksFromArgs } from "./tasks";
 import { Task } from "../models/Task";
-import { Dependency } from "../models/Dependency";
 import { User } from "../models/User";
+import { sequelize } from "../adapters/sequelize";
 
 interface WorkflowArgs {
   name: string,
@@ -27,29 +27,24 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
       {
         model: Task,
         attributes: {exclude: ['ownerID']},
+        order: sequelize.col('dueDay'),
         include: [
           {
             model: User,
             as: 'taskOwner',
             attributes: ['userID', 'name', 'email']
           },
-          // "dependency"
           {
-            model: Dependency,
-            as: 'dependents',
-            // through: {
-            //   attributes: ['dependencies', 'name']
-            // }
-            // include: [{
-            //   model: Task,
-            //   attributes: ['taskID', 'name']
-            // }]
+            model: Task,
+            as: 'taskDependencies',
+            attributes: ['taskID', 'name', 'dueDay'],
+            through: {attributes: {exclude: ['Dependencies']}},
           }
         ]
       },
       {
         model: User,
-        // attributes: ['userID', 'name', 'email']
+        attributes: ['userID', 'name', 'email']
       }]
   })
   if (workflows.length === 0) {

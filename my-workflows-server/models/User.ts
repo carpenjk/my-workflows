@@ -1,9 +1,10 @@
-import { DataTypes, InferAttributes, InferCreationAttributes, CreationOptional, Model } from 'sequelize'
+import { InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize'
 import bcrypt from 'bcrypt';
 require('dotenv').config();
 
-import { sequelize } from '../adapters/sequelize';
-
+import { BeforeBulkCreate, BeforeCreate, Column, CreatedAt, DataType,HasMany,Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { Workflow } from './Workflow';
+import { Task } from './Task';
 
 export interface SessionUser {
   userID: bigint,
@@ -17,16 +18,52 @@ declare global {
   }
 }
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+@Table({timestamps: true, modelName: 'User'})
+export class User extends Model<InferAttributes<User>, InferCreationAttributes<User, { omit: never; }>> {
+  @Column({
+    type: DataType.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+    validate: {
+      isInt: { msg: "userID must be an integer." },
+    }
+  })
   declare userID: CreationOptional<bigint>;
+
+  @Column({
+    type: DataType.STRING(50),
+    allowNull: false,
+    validate: {
+      min: 2,
+      max: 50,
+    }
+  })
   declare name: string;
+  
+  @Column({
+    type: DataType.STRING(60),
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: { msg: 'Email must be a valid email.' }
+    },
+  })
   declare email: string;
+
+  @Column({
+    type: DataType.STRING(64),
+    allowNull: false,
+  })
   declare password: string;
 
-  // timestamps
+  @CreatedAt
   declare createdAt: CreationOptional<Date>;
-  declare updatedAt: CreationOptional<Date>;
 
+  @HasMany(()=> Workflow, {as: 'workflowOwner'}) 
+  declare workflows: CreationOptional<Workflow[]>;
+
+  @HasMany(()=> Task,{as:'taskOwner'} ) 
+  declare tasks: CreationOptional<Task[]>;
 
   async comparePassword(enteredPassword: string) {
 
@@ -42,6 +79,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
         name: user.name
       });
     });
+
+  
   }
 
   static async deserializeUser(user: Express.User, cb: Function) {
@@ -56,69 +95,22 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       return cb(e);
     }
   }
-}
 
-User.init({
-  userID: {
-    type: DataTypes.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-    validate: {
-      isInt: { msg: "userID must be an integer." },
-    }
-  },
-  name: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    validate: {
-      min: 2,
-      max: 50,
-    }
-  },
-  email: {
-    type: DataTypes.STRING(60),
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: { msg: 'Email must be a valid email.' }
-    },
-  },
-  password: {
-    type: DataTypes.STRING(64),
-    allowNull: false,
-  },
-  createdAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    validate: {
-      isDate: true,
-    }
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    validate: {
-      isDate: true,
-    }
-  }
-}, {
-  sequelize,
-  timestamps: true,
-  modelName: 'User'
-});
+  @BeforeCreate
+  static async hash(user: {password: string}) {
+    const hashedPassword = await hashPassword(user.password);
+    user.password = hashedPassword;
+  };
+
+  @BeforeBulkCreate
+  static async hashPasswords (users: User[]) {
+    const promises: Promise<string>[] = users.map((user: User) => hashPassword(user.password));
+    const hashedPwds: string[] = await Promise.all(promises);
+    users.forEach((user: User, i: number) => user.password = hashedPwds[i]);
+  };
+}
 
 async function hashPassword(p: string): Promise<string> {
   const hashedPassword = await bcrypt.hash(p, 10);
   return hashedPassword;
 }
-
-User.beforeCreate(async (user) => {
-  const hashedPassword = await hashPassword(user.password);
-  user.password = hashedPassword;
-});
-
-User.beforeBulkCreate(async (users: User[]) => {
-  const promises: Promise<string>[] = users.map((user: User) => hashPassword(user.password));
-  const hashedPwds: string[] = await Promise.all(promises);
-  users.forEach((user: User, i: number) => user.password = hashedPwds[i]);
-});

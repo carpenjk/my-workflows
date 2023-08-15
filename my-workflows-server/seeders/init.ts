@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt'
 import { Task } from '../models/Task';
 import { User } from '../models/User'
 import { Workflow } from '../models/Workflow';
@@ -77,7 +76,7 @@ const init = async () => {
       description: 'task 3 description',
       ownerID: BigInt(1),
       // reviewer: BigInt(2),
-      dueDay: 1,
+      dueDay: 2,
       workflowID: BigInt(1),
     }
   ]);
