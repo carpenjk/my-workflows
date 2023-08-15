@@ -26,13 +26,13 @@ const Navbar = ({className}: Props) => {
             <NavItem collapsed={isCollapsed} to="/workflow" >
               <SquaresPlusIcon className='flex-none w-5 h-5'/>
               <span className='flex space-x-1.5'>
-                <NavText>Create</NavText><NavText className='hidden md:flex'>Workflow</NavText>
+                <NavText>Workflows</NavText>
               </span>
             </NavItem>
             <NavItem collapsed={isCollapsed} to="/manage" >
               <TableCellsIcon className='flex-none w-5 h-5'/>
               <span className='flex space-x-1.5'>
-                <NavText>Manage</NavText><NavText className='hidden md:flex'> Workflows</NavText>
+                <NavText>Deployments</NavText>
               </span>
             </NavItem>
             {!user?.email && 

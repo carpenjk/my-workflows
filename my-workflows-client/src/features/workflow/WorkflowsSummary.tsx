@@ -1,11 +1,13 @@
 import { enUSFormatter } from "utils/date";
 import { Workflow } from "app/services/workflow";
-import { ItemContainer } from "features/ui";
+import { InlineLink, ItemContainer } from "features/ui";
 import CardHeader from "features/ui/shared/CardHeader";
 import ColumnHeader from "features/ui/table/ColumnHeader";
 import TableCell from "features/ui/table/TableCell";
 import { Fragment } from "react";
 import { ActionMenu } from "features/ui/ActionMenu";
+import {ChevronDownIcon} from '@heroicons/react/24/outline';
+import InlineButton from "features/ui/shared/InlineButton";
 
 interface Props {
   workflows: Workflow[]
@@ -31,7 +33,7 @@ const actions = [
   },
 ]
 
-const WorkflowCard = ({workflows}: Props) => {
+const WorkflowsSummary = ({workflows}: Props) => {
   
   return(
     <ItemContainer className=" max-w-fit w-full p-6 lg:p-9 min-h-[488px]">
@@ -64,8 +66,15 @@ const WorkflowCard = ({workflows}: Props) => {
           })}
       </div>
     </div>
+    <div className="flex items-center justify-center w-full py-4">
+        <InlineButton>
+          <span>more</span>
+          <span className="duration-500 group-hover:animate-bounce-down"><ChevronDownIcon className="w-6 h-5 "/></span>
+        </InlineButton>
+        <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">New Workflow</InlineLink>
+    </div>
   </ItemContainer>
   )
 }
  
-export default WorkflowCard;
+export default WorkflowsSummary;

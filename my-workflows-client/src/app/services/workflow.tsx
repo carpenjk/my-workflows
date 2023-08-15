@@ -42,7 +42,14 @@ export const workflowApi = api.injectEndpoints({
       }),
       providesTags: ['Workflow'],
     }),
+    createWorkflow: builder.mutation<void , Workflow>({
+      query: (params)=> ({
+        url: `${process.env.REACT_APP_API_PATH}/workflow/new`,
+        method: 'POST',
+        body: params
+      })
+    })
   })
 })
 
-export const { useGetWorkflowsQuery }  = workflowApi;
+export const { useGetWorkflowsQuery, useCreateWorkflowMutation }  = workflowApi;

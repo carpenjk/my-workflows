@@ -79,7 +79,8 @@ module.exports = {
       },
       animation: {
         text:'text 5s ease infinite',
-        "bounce-once": 'bounce-once 0.35s ease 0s 1 normal forwards;'
+        "bounce-once": 'bounce-once 0.35s ease 0s 1 normal forwards;',
+        "bounce-down": 'bounce-down 0.35s ease 0s 1 normal forwards;'
       },
       backgroundSize: {
         "size-200": "200% 200%",
@@ -110,6 +111,28 @@ module.exports = {
             },
             "75%": {
               transform: "translateY(-4%)",
+              "animation-timing-function": "ease-out",
+            },
+            "100%": {
+              transform: "translateY(0%)",
+              "animation-timing-function": "ease-out",
+            },
+          },   
+          "bounce-down": {
+            "0%": {
+              transform: "translateY(0%)",
+              "animation-timing-function": "ease-in",
+            },
+            "25%": {
+              transform: "translateY(4%)",
+              "animation-timing-function": "ease-in",
+            },
+            "50%": {
+              transform: "translateY(8%)",
+              "animation-timing-function": "ease-in",
+            },
+            "75%": {
+              transform: "translateY(4%)",
               "animation-timing-function": "ease-out",
             },
             "100%": {
