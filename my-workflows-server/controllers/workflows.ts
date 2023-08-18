@@ -26,6 +26,8 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
     include: [
       {
         model: Task,
+        as: 'tasks',
+        separate:true, //appears to be a bug that does let you order from outside query
         attributes: {exclude: ['ownerID']},
         order: sequelize.col('dueDay'),
         include: [
@@ -45,7 +47,7 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
       {
         model: User,
         attributes: ['userID', 'name', 'email']
-      }]
+      }],
   })
   if (workflows.length === 0) {
     return next(new NotFoundError('No workflows found.'));

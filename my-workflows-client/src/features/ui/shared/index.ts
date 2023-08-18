@@ -9,4 +9,5 @@ export {default as ToastMsg} from './ToastMsg';
 export {default as ViewContainer} from './ViewContainer';
 export {default as CardHeader} from './CardHeader';
 export {default as TableCard} from './TableCard';
+export {default as Table} from './Table';
 export * from './spinner'

@@ -1,7 +1,8 @@
 import { useCreateWorkflowMutation } from "app/services/workflow";
 import { LoadingOverlay, useLoading } from "features/loading";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import { TableCard } from "features/ui";
+import { InlineLink, TableCard } from "features/ui";
+import WorkflowEdit from "features/workflow/WorkflowEdit";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,10 +28,7 @@ const NewWorkflow = () => {
        onUnmount={()=>setIsFadingOut(false)}
        {...config}
     >
-       <TableCard
-          title="Create New"
-          table={<div>create new form</div>}
-       />
+       <WorkflowEdit/>
     </Loading>
  )
 }

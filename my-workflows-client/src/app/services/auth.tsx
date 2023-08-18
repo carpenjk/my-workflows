@@ -1,5 +1,3 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
 import * as yup from "yup";
 import { api } from './api';
 
@@ -47,8 +45,6 @@ export const RegisterRequestSchema = yup.object({
 
 export type LoginRequest = yup.InferType<typeof LoginRequestSchema>;
 export type RegisterRequest = yup.InferType<typeof RegisterRequestSchema>;
-
-const baseUrl = `${process.env.REACT_APP_SERVER_URL}:${process.env.REACT_APP_SERVER_PORT}/`;
 
 export const authApi = api.injectEndpoints({
   // reducerPath: 'authApi',
