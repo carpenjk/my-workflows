@@ -34,8 +34,8 @@ export interface Workflow{
 }
 
 export const CreateWorkflowSchema = yup.object({
-  name: yup.string().length(50).required(),
-  description: yup.string().length(60).required(),
+  name: yup.string().length(30).required(),
+  description: yup.string().length(50).required(),
   ownerID: yup.number().integer().required(),
   tasks: yup.array().of(
     yup.object().shape({

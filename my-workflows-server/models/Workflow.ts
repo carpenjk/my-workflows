@@ -17,17 +17,17 @@ export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttr
   declare workflowID: CreationOptional<bigint>;
 
   @Column({
-    type: DataType.STRING(50),
+    type: DataType.STRING(25),
     allowNull: false,
     validate: {
       min: 1,
-      max: 50,
+      max: 25,
     }
   })
   declare name: string;
 
   @Column({
-    type: DataType.STRING(60),
+    type: DataType.STRING(50),
     allowNull: false,
     validate: {
       min: 1,
