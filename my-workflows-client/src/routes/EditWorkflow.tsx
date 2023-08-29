@@ -1,12 +1,14 @@
-import { useCreateWorkflowMutation } from "app/services/workflow";
+import { useCreateWorkflowMutation, useGetWorkflowQuery } from "app/services/workflow";
 import { LoadingOverlay, useLoading } from "features/loading";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import { InlineLink, TableCard } from "features/ui";
 import WorkflowCard from "features/workflow/WorkflowCard";
+import WorkflowWrapper from "features/workflow/WorkflowWrapper";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const NewWorkflow = () => {
+const EditWorkflow = () => {
+  const {workflowID} = useParams<{workflowID: string}>();
+  
   const navigate = useNavigate();
   const {Loading, setLoading, isLoading, config} = useLoading(true);
   const [isFadingOut, setIsFadingOut] =useState(false);
@@ -28,9 +30,9 @@ const NewWorkflow = () => {
        onUnmount={()=>setIsFadingOut(false)}
        {...config}
     >
-       <WorkflowCard/>
+      {workflowID ? <WorkflowWrapper workflowID={workflowID}/> : null}
     </Loading>
  )
 }
  
-export default NewWorkflow;
+export default EditWorkflow;

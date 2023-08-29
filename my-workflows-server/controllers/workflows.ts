@@ -14,6 +14,44 @@ interface WorkflowArgs {
   tasks?: TaskArgs[]
 }
 
+
+export const getWorkflow = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { workflowID } = req.params;
+  const workflow = await Workflow.findOne({
+    where: {workflowID: Number(workflowID)},
+    attributes: {exclude: ['ownerID']},
+    include: [
+      {
+        model: Task,
+        as: 'tasks',
+        separate:true, //appears to be a bug that does let you order from outside query
+        attributes: {exclude: ['ownerID']},
+        order: sequelize.col('dueDay'),
+        include: [
+          {
+            model: User,
+            as: 'taskOwner',
+            attributes: ['userID', 'name', 'email']
+          },
+          {
+            model: Task,
+            as: 'taskDependencies',
+            attributes: ['taskID', 'name', 'dueDay'],
+            through: {attributes: {exclude: ['Dependencies']}},
+          }
+        ]
+      },
+      {
+        model: User,
+        attributes: ['userID', 'name', 'email']
+      }],
+  });
+  if (!workflow) {
+    return next(new NotFoundError('No workflows found.'));
+  }
+  res.send(workflow);
+});
+
 export const getWorkflows = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const limit = Number(req.query.limit);
   const getLimit = ()=> limit && Number.isInteger(limit) ? {limit: Number(limit)} : {};

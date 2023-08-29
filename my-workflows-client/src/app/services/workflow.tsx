@@ -3,28 +3,29 @@ import * as yup from "yup";
 
 
 export interface Task {
-  taskID: string,
+  taskID: number,
   name: string,
   description: string,
+  dependencies?: number[]
   dueDay: number,
   workflowID: string,
   updatedAt: Date,
   taskOwner: {
-    userID: string,
+    userID: number,
     name: string,
     email: string,
   }
 }
 
 export interface Workflow{
-  workflowID: string,
+  workflowID: number,
   name: string,
   description: string,
   createdAt: Date,
   completedDate: Date | null,
   duration: string,
   workflowOwner: {
-    userID: string,
+    userID: number,
     name: string,
     email: string,
   }
@@ -39,15 +40,46 @@ export const CreateWorkflowSchema = yup.object({
   ownerID: yup.number().integer().required(),
   tasks: yup.array().of(
     yup.object().shape({
-        name: yup.string().length(50).required(),
-        description: yup.string().length(60).required(),
+        name: yup.string().length(30).required(),
+        description: yup.string().length(50).required(),
+        dependencies: yup.array().of(
+          yup.number().integer().required()
+        ),
         dueDay: yup.number().integer().required(),
-        taskOwner: yup.number().integer().required()
+        taskOwner: yup.object().shape({
+          userID: yup.number().integer().required(),
+          name: yup.string().length(30), // only used to match data format. Not used sent or used by server
+          email: yup.string().email()  // only used to match data format. Not used sent or used by server
+        })
       })
+    ).required(),
+});
+
+export const EditWorkflowSchema = yup.object({
+  workflowID: yup.number().integer().required(),
+  name: yup.string().length(30).required(),
+  description: yup.string().length(50).required(),
+  ownerID: yup.number().integer().required(),
+  tasks: yup.array().of(
+    yup.object().shape({
+        taskID: yup.number().integer().required(),
+        name: yup.string().length(30).required(),
+        description: yup.string().length(50).required(),
+        dependencies: yup.array().of(
+          yup.number().integer().required()
+        ),
+        dueDay: yup.number().integer().required(),
+        taskOwner: yup.object().shape({
+          userID: yup.number().integer().required(),
+          name: yup.string().length(30), // only used to match data format. Not used sent or used by server
+          email: yup.string().email() // only used to match data format. Not used sent or used by server
+        })
+      }).required()
     ).required(),
 })
 
 export type CreateWorkflowRequest = yup.InferType<typeof CreateWorkflowSchema>;
+export type EditWorkflowRequest = yup.InferType<typeof EditWorkflowSchema>;
 
 
 export const workflowApi = api.injectEndpoints({
@@ -60,14 +92,28 @@ export const workflowApi = api.injectEndpoints({
       }),
       providesTags: ['Workflow'],
     }),
+    getWorkflow: builder.query<Workflow, string>({
+      query: (workflow) => ({
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${workflow}`,
+        method: 'GET',
+      }),
+      providesTags: ['Workflow'],
+    }),
     createWorkflow: builder.mutation<void , CreateWorkflowRequest>({
       query: (params)=> ({
         url: `${process.env.REACT_APP_API_PATH}/workflow/new`,
         method: 'POST',
         body: params
       })
+    }),
+    editWorkflow: builder.mutation<void , EditWorkflowRequest>({
+      query: (workflow)=> ({
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${workflow.workflowID}`,
+        method: 'POST',
+        body: workflow
+      })
     })
   })
 })
 
-export const { useGetWorkflowsQuery, useCreateWorkflowMutation }  = workflowApi;
+export const { useGetWorkflowsQuery, useCreateWorkflowMutation, useGetWorkflowQuery }  = workflowApi;

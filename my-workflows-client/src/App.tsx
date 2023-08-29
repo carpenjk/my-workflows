@@ -17,6 +17,7 @@ import ProtectedRoute from 'routes/ProtectedRoute';
 import Logout from 'routes/Logout';
 import Register from 'routes/Register';
 import NewWorkflow from 'routes/NewWorkflow';
+import EditWorkflow from 'routes/EditWorkflow';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/manage" element={<Manage/>}></Route>
               <Route path="/workflow" element={<Workflow/>}></Route>
               <Route path="/workflow/new" element={<NewWorkflow/>}></Route>
+              <Route path="/workflow/:workflowID" element={<EditWorkflow/>}></Route>
             </Route>
           </Route>
         </Routes>

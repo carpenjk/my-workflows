@@ -17,7 +17,7 @@ interface Props {
 const actions = [
   {
     action: 'edit',
-    to: '/workflow'
+    to: '/workflow/1'
   },
   {
     action: 'copy',
