@@ -6,20 +6,23 @@ type PropsWithLoading = {
   loadMoreActive: boolean,
   children: React.ReactNode,
   actionComponent?: React.ReactNode
+  title:  string
 }
 
 type PropsWithoutLoading = {
   children: React.ReactNode,
-  actionComponent?: React.ReactNode
+  actionComponent?: React.ReactNode,
+  title:  string
 }
 
 type Props = PropsWithLoading | PropsWithoutLoading;
 
 const Table = (props: Props) => {
-  const {actionComponent, children} = props;
+  const {actionComponent, children, title} = props;
   return ( 
     <>
-      <div className="flex items-start justify-start w-full overflow-x-auto max-w-fit w-">
+      <div className="flex flex-col items-start justify-start w-full overflow-x-auto">
+        <h2 className="text-lg font-bold lg:text-lg text-text-normal dark:text-dk-text-normal ">{title}</h2>
         {children}
       </div>
       {'loadMore' in props && (

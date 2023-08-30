@@ -20,7 +20,7 @@ const TableCard = (props :PropsWithChildren<Props>) => {
   const {actionComponent, children, title } = props;
 
   return(
-    <ItemContainer className=" max-w-fit w-full p-6 lg:p-9 min-h-[488px]">
+    <ItemContainer className="w-full p-6 lg:p-9 min-h-[488px] lg:max-w-5xl">
     <CardHeader>{title}</CardHeader> 
       {children}  
     </ItemContainer>

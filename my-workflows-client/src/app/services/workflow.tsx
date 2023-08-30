@@ -34,21 +34,36 @@ export interface Workflow{
   tasks: Task[]
 }
 
+export const fieldSizes = {
+  workflow: {
+    name: 30,
+    description: 50,
+  },
+  task: {
+    name: 30,
+    description: 50,
+    dueDay: 4,
+    taskOwner: {
+      name: 30
+    }
+  }
+}
+
 export const CreateWorkflowSchema = yup.object({
-  name: yup.string().length(30).required(),
-  description: yup.string().length(50).required(),
+  name: yup.string().length(fieldSizes.workflow.name).required(),
+  description: yup.string().length(fieldSizes.workflow.description).required(),
   ownerID: yup.number().integer().required(),
   tasks: yup.array().of(
     yup.object().shape({
-        name: yup.string().length(30).required(),
-        description: yup.string().length(50).required(),
+        name: yup.string().length(fieldSizes.task.name).required(),
+        description: yup.string().length(fieldSizes.task.description).required(),
         dependencies: yup.array().of(
           yup.number().integer().required()
         ),
         dueDay: yup.number().integer().required(),
         taskOwner: yup.object().shape({
           userID: yup.number().integer().required(),
-          name: yup.string().length(30), // only used to match data format. Not used sent or used by server
+          name: yup.string().length(fieldSizes.task.taskOwner.name), // only used to match data format. Not used sent or used by server
           email: yup.string().email()  // only used to match data format. Not used sent or used by server
         })
       })
@@ -57,14 +72,14 @@ export const CreateWorkflowSchema = yup.object({
 
 export const EditWorkflowSchema = yup.object({
   workflowID: yup.number().integer().required(),
-  name: yup.string().length(30).required(),
-  description: yup.string().length(50).required(),
+  name: yup.string().length(fieldSizes.workflow.name).required(),
+  description: yup.string().length(fieldSizes.workflow.description).required(),
   ownerID: yup.number().integer().required(),
   tasks: yup.array().of(
     yup.object().shape({
         taskID: yup.number().integer().required(),
-        name: yup.string().length(30).required(),
-        description: yup.string().length(50).required(),
+        name: yup.string().length(fieldSizes.task.name).required(),
+        description: yup.string().length(fieldSizes.task.description).required(),
         dependencies: yup.array().of(
           yup.number().integer().required()
         ),

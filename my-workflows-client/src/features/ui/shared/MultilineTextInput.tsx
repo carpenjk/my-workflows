@@ -15,14 +15,10 @@ interface Props extends ComponentProps<"textarea"> {
 type Ref = HTMLTextAreaElement;
 
 const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelClasses,className, id, placeholder, ...inputProps}, ref) => {
-  const [displayValue, setDisplayValue] =useState('');
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [isCursorInside, setIsCursorInside] = useState(false);
   const inputControl = useWatch({name: id, control: control});
   const containerRef = useRef<HTMLDivElement>(null);
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDisplayValue(e.target.value);
-  }
 
   const handleClick = (e: React.MouseEvent) => {
     setShowPlaceholder(false);
@@ -31,7 +27,7 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelC
 
   const handleClickOutside = (e: MouseEvent | TouchEvent) => {
     setIsCursorInside(false);
-    if(!displayValue){
+    if(!inputControl){
       setShowPlaceholder(true)
     }
   }
@@ -47,19 +43,19 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelC
           {label}
       </label>
       )}
-      <div ref={containerRef} className='relative flex w-full h-full min-h-fit'>
-        <div className={twMerge(`relative flex flex-wrap break-words items-center justify-start 
-          w-full h-full min-h-fit font-maven text-sm bg-transparent`, className)}>
+      <div ref={containerRef} className='relative flex w-full h-full'>
+        <div className={twMerge(`relative flex flex-wrap items-center justify-start 
+          w-full max-w-full h-full min-h-fit font-maven text-sm bg-transparent overflow-hidden`, className)}>
           {!isCursorInside ? inputControl : null}
           {(!inputControl && showPlaceholder) ? placeholder : null}
           <textarea
             className={`${textAreaDisplayClass} resize-none absolute inset-0 p-0 border-none 
-              bg-transparent w-full h-full min-h-fit text-sm`}
-            rows={2}
+              bg-transparent w-full h-full min-h-fit text-sm break-words`}
             id={id}
             ref={ref}
+            // wrap='off'
+            spellCheck={false}
             {...inputProps}
-            onChange={handleInput}
             onClick={handleClick}
           />
         </div>

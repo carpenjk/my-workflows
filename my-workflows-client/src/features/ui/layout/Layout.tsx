@@ -29,7 +29,7 @@ const Layout = () => {
             </div>
           </aside>
         </div>
-          <main ref={mainRef} className="relative z-40 flex items-center justify-center flex-1 w-full h-full px-4 md:px-6 lg:px-12">
+          <main ref={mainRef} className="relative z-40 flex items-center justify-center flex-1 w-full h-full px-6">
             <Outlet/>
           </main>
       </div> 
