@@ -7,8 +7,6 @@ import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
 import { Fragment, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from "react-hook-form";
-import EditRow from './EditRow';
-
 
 const actions = [
   {
@@ -75,6 +73,8 @@ const WorkflowCard = ({workflow}: Props) => {
   },[workflow, replace])
 
 
+
+
   return ( 
     <TableCard
           title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
@@ -86,8 +86,8 @@ const WorkflowCard = ({workflow}: Props) => {
     >
       <div>
       <form className="w-full" onSubmit={handleSubmit(handleSave)}>
-        <div className='relative flex flex-col items-stretch w-full mb-8 lg:flex-row lg:items-center lg:justify-between lg:space-x-4'>
-          <InputCell className='mb-3 lg:mb-0 lg:w-fit ' >
+        <div className='relative flex flex-col items-stretch w-full mx-auto mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
+          <InputCell className='mb-3 xl:mb-0 lg:w-fit ' >
             <MultilineTextInput
               id="name"
               label="Name"
@@ -95,9 +95,11 @@ const WorkflowCard = ({workflow}: Props) => {
               placeholder="Employee Onboarding"
               {...register("name",  { required: true }) }
               control={control}
+              singleLine={{"0":true, 'lg': false}}
+              maxLength={fieldSizes.workflow.name}
             />
           </InputCell>
-          <InputCell className='mb-3 lg:mb-0 lg:w-fit' >
+          <InputCell className='mb-3 xl:mb-0 lg:w-fit' >
             <MultilineTextInput
               id="description"
               label="Description:"
@@ -105,10 +107,11 @@ const WorkflowCard = ({workflow}: Props) => {
               placeholder="New employee onboarding tasks"
               {...register("description",  { required: true }) }
               control={control}
-              maxLength={50}
+              singleLine={{"0":true, 'lg': false}}
+              maxLength={fieldSizes.workflow.description}
             />
           </InputCell>
-          <InputCell className='mb-3 lg:mb-0 lg:w-fit' >
+          <InputCell className='mb-3 xl:mb-0 lg:w-fit' >
             <MultilineTextInput
               id="ownerID"
               label="Owner"
@@ -116,7 +119,7 @@ const WorkflowCard = ({workflow}: Props) => {
               placeholder="John Smith"
               {...register("ownerID",  { required: true }) }
               control={control}
-              maxLength={50}
+              singleLine={{"0":true, 'lg': false}}
             />
           </InputCell>
         </div>
@@ -206,7 +209,7 @@ const WorkflowCard = ({workflow}: Props) => {
             })}
           </div>
         </Table>
-        <div className="flex items-center justify-end w-full mt-10 space-x-6">
+        <div className="flex items-center justify-end w-full mt-6 space-x-6">
         <SubmitButton >Save</SubmitButton>
         </div>
       </form>

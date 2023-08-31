@@ -39,7 +39,7 @@ const Workflow = () => {
       {...config}
     >
       <div className="flex items-start w-full h-full justify-stretch md:justify-start pt-28">
-        <WorkflowsSummary workflows={workflows || []}/>);
+        <WorkflowsSummary workflows={workflows || []}/>
       </div>
     </Loading>
   )

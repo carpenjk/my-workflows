@@ -1,5 +1,6 @@
 import colors from 'tailwindcss/colors';
-
+import {screens} from './src/features/theme/screensExtension'
+ 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
@@ -70,9 +71,7 @@ module.exports = {
       transitionProperty: {
         width: "width"
       },
-      screens: {
-        "3xl": "1792px",
-      },
+      screens: screens,
       fontFamily: {
         maven: ['Maven Pro', 'sans-serif'],
         roboto: ['RobotoMono', 'monospace']

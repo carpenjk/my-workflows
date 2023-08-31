@@ -36,7 +36,7 @@ const actions = [
 const WorkflowsSummary = ({workflows}: Props) => {
   
   return(
-    <ItemContainer className=" max-w-fit w-full p-6 lg:p-9 min-h-[488px]">
+    <ItemContainer className="max-w-full w-full p-6 lg:p-9 min-h-[488px]">
     <CardHeader>My Workflows</CardHeader> 
     <div className="flex items-start justify-start w-full overflow-x-auto max-w-fit w-">
       <div className={`grid w-fit min-h-[288px]

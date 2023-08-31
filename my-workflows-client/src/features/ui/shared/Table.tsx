@@ -22,7 +22,7 @@ const Table = (props: Props) => {
   return ( 
     <>
       <div className="flex flex-col items-start justify-start w-full overflow-x-auto">
-        <h2 className="text-lg font-bold lg:text-lg text-text-normal dark:text-dk-text-normal ">{title}</h2>
+        <h2 className="text-sm font-bold lg:text-lg text-text-normal dark:text-dk-text-normal">{title}</h2>
         {children}
       </div>
       {'loadMore' in props && (

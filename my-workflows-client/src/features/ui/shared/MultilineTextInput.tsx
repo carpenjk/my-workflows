@@ -1,24 +1,51 @@
 import useOnClickOutside from 'hooks/useOnClickOutside';
-import { ComponentProps, useEffect, useRef, useState } from 'react';
+import { ComponentProps, useRef, useState } from 'react';
 import React from 'react'
 import { useWatch, Control } from 'react-hook-form';
-import { twMerge } from 'tailwind-merge';
+import { ClassNameValue, twMerge } from 'tailwind-merge';
 
 interface Props extends ComponentProps<"textarea"> {
   id: string,
   label?: string,
   placeholder: string,
   labelClasses?: string,
+  singleLine?: Partial<{
+    "0": boolean
+    "sm": boolean,
+    "md": boolean,
+    "lg": boolean,
+    "xl": boolean,
+    "2xl": boolean,
+    "3xl": boolean,
+  }>,
   control: Control<any>
 } 
 
 type Ref = HTMLTextAreaElement;
 
-const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelClasses,className, id, placeholder, ...inputProps}, ref) => {
+const MultilineTextInput = React.forwardRef<Ref, Props>(({singleLine, control, label, labelClasses,className, id, placeholder, ...inputProps}, ref) => {
+  console.log("🚀 ~ file: MultilineTextInput.tsx:18 ~ MultilineTextInput ~ inputProps:", inputProps)
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [isCursorInside, setIsCursorInside] = useState(false);
   const inputControl = useWatch({name: id, control: control});
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const getTextAreaHeightClasses = (): ClassNameValue => {
+    function getClass(key: string): string{
+      if(!singleLine) return '';
+      return ((singleLine[key as keyof typeof singleLine]) ? 'h-4' : 'h-full');
+    }
+
+    if(!singleLine) return '';
+    
+    return Object.keys(singleLine).reduce((str, key)=> {
+      const prefix = key === '0' ? '' : `${key}:`
+      return ( `${str} ${prefix}${getClass(key)}`)
+    }, '')
+  }
+
+const textAreaHeightClasses = getTextAreaHeightClasses();
+console.log("🚀 ~ file: MultilineTextInput.tsx:45 ~ MultilineTextInput ~ textAreaHeightClasses:", textAreaHeightClasses)
 
   const handleClick = (e: React.MouseEvent) => {
     setShowPlaceholder(false);
@@ -38,19 +65,20 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelC
   return ( 
     <div className='relative flex items-center justify-start w-full h-full min-h-fit'>
       {label && (
-        <label className={twMerge(`block text-sm font-bold text-text-normal 
+        <label className={twMerge(`block text-xs lg:text-sm font-bold text-text-normal 
         dark:text-dk-text-normal font-maven`, labelClasses)} htmlFor={id}>
           {label}
       </label>
       )}
       <div ref={containerRef} className='relative flex w-full h-full'>
         <div className={twMerge(`relative flex flex-wrap items-center justify-start 
-          w-full max-w-full h-full min-h-fit font-maven text-sm bg-transparent overflow-hidden`, className)}>
+          w-full max-w-full h-full min-h-fit font-maven text-xs lg:text-sm bg-transparent overflow-hidden`, className)}>
           {!isCursorInside ? inputControl : null}
           {(!inputControl && showPlaceholder) ? placeholder : null}
           <textarea
-            className={`${textAreaDisplayClass} resize-none absolute inset-0 p-0 border-none 
-              bg-transparent w-full h-full min-h-fit text-sm break-words`}
+            className={twMerge(`resize-none absolute inset-0 p-0 border-none 
+              bg-transparent w-full h-full min-h-fit text-xs lg:text-sm break-words`,
+              textAreaDisplayClass , getTextAreaHeightClasses())}
             id={id}
             ref={ref}
             // wrap='off'
