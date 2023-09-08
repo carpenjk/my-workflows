@@ -62,7 +62,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   @HasMany(()=> Workflow, {as: 'workflowOwner'}) 
   declare workflows: CreationOptional<Workflow[]>;
 
-  @HasMany(()=> Task,{as:'taskOwner'} ) 
+  @HasMany(()=> Task,{as:'taskOwner'}) 
   declare tasks: CreationOptional<Task[]>;
 
   async comparePassword(enteredPassword: string) {

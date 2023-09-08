@@ -14,38 +14,14 @@ interface WorkflowArgs {
   tasks?: TaskArgs[]
 }
 
+interface UpdateWorkflowArgs extends WorkflowArgs {
+  workflowID: bigint
+}
 
 export const getWorkflow = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { workflowID } = req.params;
-  const workflow = await Workflow.findOne({
-    where: {workflowID: Number(workflowID)},
-    attributes: {exclude: ['ownerID']},
-    include: [
-      {
-        model: Task,
-        as: 'tasks',
-        separate:true, //appears to be a bug that does let you order from outside query
-        attributes: {exclude: ['ownerID']},
-        order: sequelize.col('dueDay'),
-        include: [
-          {
-            model: User,
-            as: 'taskOwner',
-            attributes: ['userID', 'name', 'email']
-          },
-          {
-            model: Task,
-            as: 'taskDependencies',
-            attributes: ['taskID', 'name', 'dueDay'],
-            through: {attributes: {exclude: ['Dependencies']}},
-          }
-        ]
-      },
-      {
-        model: User,
-        attributes: ['userID', 'name', 'email']
-      }],
-  });
+  const workflow = await Workflow.scope('withTasks').findOne({where: {workflowID: Number(workflowID)}})
+
   if (!workflow) {
     return next(new NotFoundError('No workflows found.'));
   }
@@ -94,8 +70,7 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
 })
 
 export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowArgs>, res: Response) => {
-  const { tasks, ...summaryFields } = req.body;
-  console.log("🚀 ~ file: workflows.ts:29 ~ createWorkflow ~ summaryFields:", summaryFields)
+  const {tasks, ...summaryFields } = req.body;
   
   function getDuration(): {} | {duration: string} {
     if(tasks){
@@ -119,16 +94,24 @@ export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowAr
   res.json({ msg: 'Workflow created!' });
 });
 
-export const updateWorkFlow = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-  const { workflowID } = req.params;
-  const workflow = await Workflow.update(
-    { ...req.body },
-    { where: { workflowID: workflowID } }
-  )
-  if (workflow[0] === 0) {
-    return next(new NotFoundError('The workflow does not exist to update.'));
-  }
-  res.send({ msg: 'Workflow updated!' });
+
+export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWorkflowArgs>, res: Response, next: NextFunction) => {
+  const { workflowID: workflowID, tasks, ...workflowParams } = req.body;
+  
+  console.log("🚀 ~ file: workflows.ts:131 ~ updateWorkFlow ~ workflowParams:", workflowParams)
+  await Workflow.scope('withTasks')
+  .update(workflowParams, {where: {workflowID: Number(workflowID)}})
+  .then((workflow) => {
+    if (!workflow[0]) {
+      return next(new NotFoundError('Workflow not found.'));
+    }
+    
+    if (tasks && Array.isArray(tasks)) {
+      createTasksFromArgs(tasks, 
+        {updateOnDuplicate: ["name", "description", "dueDay", "ownerID"]})
+    }
+      res.send({ msg: 'Workflow updated!', workflowID: workflow[0] });
+    })
 })
 
 export const deleteWorkFlow = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {

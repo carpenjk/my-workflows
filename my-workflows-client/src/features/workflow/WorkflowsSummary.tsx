@@ -1,6 +1,6 @@
 import { enUSFormatter } from "utils/date";
 import { Workflow } from "app/services/workflow";
-import { InlineLink, ItemContainer } from "features/ui";
+import { InlineLink, ItemContainer, Table, TableCard } from "features/ui";
 import CardHeader from "features/ui/shared/CardHeader";
 import ColumnHeader from "features/ui/table/ColumnHeader";
 import TableCell from "features/ui/table/TableCell";
@@ -36,15 +36,23 @@ const actions = [
 const WorkflowsSummary = ({workflows}: Props) => {
   
   return(
-    <ItemContainer className="max-w-full w-full p-6 lg:p-9 min-h-[488px]">
-    <CardHeader>My Workflows</CardHeader> 
+    <TableCard
+      title="My workflows"
+      actionComponent={
+        <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">
+               New Task
+        </InlineLink>
+      }
+    >
     <div className="flex items-start justify-start w-full overflow-x-auto max-w-fit w-">
-      <div className={`grid w-fit min-h-[288px]
-        grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(9rem,13rem)_minmax(5rem,7rem)_minmax(5rem,8rem)_minmax(5rem,8.5rem)_minmax(5rem,8rem)]
-        lg:grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(11rem,13rem)_minmax(6rem,7rem)_minmax(6rem,8rem)_minmax(6rem,8.5rem)_minmax(6rem,8rem)] 
-         content-start
-      `}>
-          <div className=""></div>
+      <Table
+        className={`grid w-fit min-h-[288px]
+          grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(9rem,13rem)_minmax(5rem,7rem)_minmax(5rem,8rem)_minmax(5rem,8.5rem)_minmax(5rem,8rem)]
+          lg:grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(11rem,13rem)_minmax(6rem,7rem)_minmax(6rem,8rem)_minmax(6rem,8.5rem)_minmax(6rem,8rem)] 
+          content-start`}
+        loadMore={()=>{}}
+      >
+        <div className=""></div>
           <ColumnHeader>Name</ColumnHeader>
           <ColumnHeader>Description</ColumnHeader>
           <ColumnHeader>Status</ColumnHeader>
@@ -52,7 +60,7 @@ const WorkflowsSummary = ({workflows}: Props) => {
           <ColumnHeader>Owner</ColumnHeader>
           <ColumnHeader>Last Modified</ColumnHeader>
           {workflows.map((workflow) => {
-           return (
+            return (
             <Fragment key={workflow.workflowID}>
               <TableCell><ActionMenu actions={actions}/></TableCell>
               <TableCell>{workflow.name}</TableCell>
@@ -62,18 +70,11 @@ const WorkflowsSummary = ({workflows}: Props) => {
               <TableCell>{workflow.workflowOwner.name}</TableCell>
               <TableCell>{enUSFormatter.format(new Date(workflow.updatedAt))}</TableCell>
             </Fragment>
-           ) 
+            ) 
           })}
-      </div>
+      </Table>
     </div>
-    <div className="flex items-center justify-center w-full py-4">
-        <InlineButton>
-          <span>more</span>
-          <span className="duration-500 group-hover:animate-bounce-down"><ChevronDownIcon className="w-6 h-5 "/></span>
-        </InlineButton>
-        <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">New Workflow</InlineLink>
-    </div>
-  </ItemContainer>
+  </TableCard>
   )
 }
  

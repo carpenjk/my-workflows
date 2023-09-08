@@ -124,7 +124,7 @@ export const workflowApi = api.injectEndpoints({
     editWorkflow: builder.mutation<void , EditWorkflowRequest>({
       query: (workflow)=> ({
         url: `${process.env.REACT_APP_API_PATH}/workflow/${workflow.workflowID}`,
-        method: 'POST',
+        method: 'PUT',
         body: workflow
       })
     })

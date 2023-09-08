@@ -1,6 +1,6 @@
 import { InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize'
 import { User } from './User';
-import { BelongsTo, BelongsToMany, Column, CreatedAt, DataType, ForeignKey, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { AllowNull, BelongsTo, BelongsToMany, Column, CreatedAt, DataType, ForeignKey, IsNull, Model, Table, UpdatedAt } from 'sequelize-typescript';
 import { Workflow } from './Workflow';
 
 @Table({timestamps: true, modelName: 'Task'})
@@ -36,7 +36,11 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   })
   declare description: string;
 
-  @ForeignKey(()=> User) @Column({type: DataType.INTEGER.UNSIGNED})
+  @AllowNull(false)
+  @ForeignKey(()=> User) 
+  @Column({
+    type: DataType.INTEGER.UNSIGNED
+  })
   declare ownerID: bigint;
 
   @BelongsTo(()=> User,{as: 'taskOwner'})
@@ -66,8 +70,11 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   })
   declare dueDay: number;
   
-
-  @ForeignKey(()=> Workflow) @Column({type: DataType.INTEGER.UNSIGNED}) declare workflowID: bigint
+  @AllowNull(false)
+  @ForeignKey(()=> Workflow)
+  @Column({type: DataType.INTEGER.UNSIGNED})
+  declare workflowID: bigint
+  
   @BelongsTo(()=> Workflow,{as: 'tasks'})
   declare workflow: CreationOptional<Workflow>;
 

@@ -8,44 +8,18 @@ interface Props extends ComponentProps<"textarea"> {
   id: string,
   label?: string,
   placeholder: string,
-  labelClasses?: string,
-  singleLine?: Partial<{
-    "0": boolean
-    "sm": boolean,
-    "md": boolean,
-    "lg": boolean,
-    "xl": boolean,
-    "2xl": boolean,
-    "3xl": boolean,
-  }>,
+  labelClasses?: ClassNameValue,
+  textAreaClasses?: ClassNameValue
   control: Control<any>
 } 
 
 type Ref = HTMLTextAreaElement;
 
-const MultilineTextInput = React.forwardRef<Ref, Props>(({singleLine, control, label, labelClasses,className, id, placeholder, ...inputProps}, ref) => {
-  console.log("🚀 ~ file: MultilineTextInput.tsx:18 ~ MultilineTextInput ~ inputProps:", inputProps)
+const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelClasses,className, textAreaClasses, id, placeholder, ...inputProps}, ref) => {
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [isCursorInside, setIsCursorInside] = useState(false);
   const inputControl = useWatch({name: id, control: control});
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const getTextAreaHeightClasses = (): ClassNameValue => {
-    function getClass(key: string): string{
-      if(!singleLine) return '';
-      return ((singleLine[key as keyof typeof singleLine]) ? 'h-4' : 'h-full');
-    }
-
-    if(!singleLine) return '';
-    
-    return Object.keys(singleLine).reduce((str, key)=> {
-      const prefix = key === '0' ? '' : `${key}:`
-      return ( `${str} ${prefix}${getClass(key)}`)
-    }, '')
-  }
-
-const textAreaHeightClasses = getTextAreaHeightClasses();
-console.log("🚀 ~ file: MultilineTextInput.tsx:45 ~ MultilineTextInput ~ textAreaHeightClasses:", textAreaHeightClasses)
 
   const handleClick = (e: React.MouseEvent) => {
     setShowPlaceholder(false);
@@ -72,14 +46,15 @@ console.log("🚀 ~ file: MultilineTextInput.tsx:45 ~ MultilineTextInput ~ textA
       )}
       <div ref={containerRef} className='relative flex w-full h-full'>
         <div className={twMerge(`relative flex flex-wrap items-center justify-start 
-          w-full max-w-full h-full min-h-fit font-maven text-xs lg:text-sm bg-transparent overflow-hidden`, className)}>
+          w-full max-w-full h-full min-h-fit text-text-normal dark:text-dk-text-normal font-maven text-xs lg:text-sm bg-transparent overflow-hidden`, className)}>
           {!isCursorInside ? inputControl : null}
           {(!inputControl && showPlaceholder) ? placeholder : null}
           <textarea
             className={twMerge(`resize-none absolute inset-0 p-0 border-none 
               bg-transparent w-full h-full min-h-fit text-xs lg:text-sm break-words`,
-              textAreaDisplayClass , getTextAreaHeightClasses())}
+              textAreaDisplayClass , textAreaClasses)}
             id={id}
+            rows={2}
             ref={ref}
             // wrap='off'
             spellCheck={false}

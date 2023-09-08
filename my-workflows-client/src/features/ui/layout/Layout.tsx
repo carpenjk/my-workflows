@@ -26,7 +26,7 @@ const Layout = ({sidebarRef}: Props) => {
     <>
         <div className="relative flex w-full h-screen">
           <div className="z-50 h-full w-fit">
-            <Header className="fixed top-0 left-0 z-50 w-full h-24 pl-8 pr-6 max-w-screen-2xl"
+            <Header className="fixed top-0 left-0 z-50 w-full h-16 pl-4 pr-6 sm:pl-8 sm:h-24 max-w-screen-2xl"
               logo={<Logo/>}
             />
             <aside  className="z-40">
@@ -35,7 +35,7 @@ const Layout = ({sidebarRef}: Props) => {
               </div>
             </aside>
           </div>
-            <main ref={mainRef} className="relative z-40 flex items-center justify-center flex-1 w-full h-full px-6">
+            <main ref={mainRef} className="relative z-40 flex items-start justify-center flex-1 w-full h-full p-2 pt-20 sm:py-28 sm:px-6">
               <Outlet/>
             </main>
         </div> 

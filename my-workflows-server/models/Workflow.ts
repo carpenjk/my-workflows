@@ -1,8 +1,38 @@
 import { InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize'
 import { Task } from './Task';
 import { User } from './User';
-import { BelongsTo, Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Table, UpdatedAt } from 'sequelize-typescript';
+import { AllowNull, BelongsTo, Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Scopes, Table, UpdatedAt } from 'sequelize-typescript';
 
+@Scopes(() => ({
+  withTasks: {
+    include: [
+      {
+        model: Task,
+        as: 'tasks',
+        separate:true, //appears to be a bug that does let you order from outside query
+        attributes: {exclude: ['ownerID']},
+        order: [['dueDay', 'asc']],
+        include: [
+          {
+            model: User,
+            as: 'taskOwner',
+            attributes: ['userID', 'name', 'email']
+          },
+          {
+            model: Task,
+            as: 'taskDependencies',
+            attributes: ['taskID', 'name', 'dueDay'],
+            through: {attributes: {exclude: ['Dependencies']}},
+          }
+        ]
+      },
+      {
+        model: User,
+        attributes: ['userID', 'name', 'email']
+      }
+    ],
+  },
+}))
 @Table({timestamps: true, modelName: 'Workflow'})
 export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttributes<Workflow>> {
 
@@ -56,7 +86,11 @@ export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttr
   })
   declare duration: CreationOptional<string| null>;
 
-  @ForeignKey(()=> User) @Column({type: DataType.INTEGER.UNSIGNED}) declare ownerID: bigint;
+  @AllowNull(false)
+  @ForeignKey(()=> User) 
+  @Column({type: DataType.INTEGER.UNSIGNED})
+  declare ownerID: bigint;
+
   @BelongsTo(()=> User,{as: 'workflowOwner'})
   declare owner: CreationOptional<User>;
 
@@ -68,4 +102,7 @@ export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttr
 
   @UpdatedAt
   declare updatedAt: CreationOptional<Date>;
+
+  
+
 }

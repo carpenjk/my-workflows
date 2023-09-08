@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CreateWorkflowRequest, CreateWorkflowSchema, EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, useCreateWorkflowMutation, useGetWorkflowQuery, useGetWorkflowsQuery } from "app/services/workflow";
+import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, useCreateWorkflowMutation, useGetWorkflowQuery, useGetWorkflowsQuery } from "app/services/workflow";
 import { InlineLink, SubmitButton, TableCard, MultilineTextInput, InputCell } from "features/ui";
 import { ActionMenu } from 'features/ui/ActionMenu';
 import Table from 'features/ui/shared/Table';
@@ -32,6 +32,7 @@ type Props = {
 }
 
 const WorkflowCard = ({workflow}: Props) => {
+  console.log("🚀 ~ file: WorkflowCard.tsx:35 ~ workflow:", workflow)
   const [saveWorkflow, status] = useCreateWorkflowMutation();
   const { register, handleSubmit, formState: {errors: inputErrors }, getValues, control } = 
     useForm<EditWorkflowRequest>({
@@ -66,7 +67,6 @@ const WorkflowCard = ({workflow}: Props) => {
 
   useEffect(() => {
     if(workflow){
-      console.log("🚀 ~ file: WorkflowCard.tsx:71 ~ useEffect ~ workflow.tasks:", workflow.tasks)
       setTasks(workflow.tasks)
       replace(workflow.tasks);
     } 
@@ -85,49 +85,55 @@ const WorkflowCard = ({workflow}: Props) => {
           loadMore={()=> {}}
     >
       <div>
-      <form className="w-full" onSubmit={handleSubmit(handleSave)}>
-        <div className='relative flex flex-col items-stretch w-full mx-auto mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
-          <InputCell className='mb-3 xl:mb-0 lg:w-fit ' >
-            <MultilineTextInput
-              id="name"
-              label="Name"
-              className=' lg:w-[11rem] ml-2'
-              placeholder="Employee Onboarding"
-              {...register("name",  { required: true }) }
-              control={control}
-              singleLine={{"0":true, 'lg': false}}
-              maxLength={fieldSizes.workflow.name}
-            />
-          </InputCell>
-          <InputCell className='mb-3 xl:mb-0 lg:w-fit' >
-            <MultilineTextInput
-              id="description"
-              label="Description:"
-              className='lg:w-[250px] ml-2'
-              placeholder="New employee onboarding tasks"
-              {...register("description",  { required: true }) }
-              control={control}
-              singleLine={{"0":true, 'lg': false}}
-              maxLength={fieldSizes.workflow.description}
-            />
-          </InputCell>
-          <InputCell className='mb-3 xl:mb-0 lg:w-fit' >
-            <MultilineTextInput
-              id="ownerID"
-              label="Owner"
-              className='lg:w-[100px] ml-2'
-              placeholder="John Smith"
-              {...register("ownerID",  { required: true }) }
-              control={control}
-              singleLine={{"0":true, 'lg': false}}
-            />
-          </InputCell>
-        </div>
-        <Table title='Tasks'>
-          <div className={`grid w-full min-h-[288px]
-            grid-cols-[3.5rem_minmax(11.5rem,1fr)_minmax(16rem,1fr)_minmax(12rem,1fr)_minmax(5.75rem,_1fr)_minmax(7.5rem,1fr)] 
-            content-start
-          `}>
+        <form className="w-full" onSubmit={handleSubmit(handleSave)}>
+          <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 sm:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
+            <InputCell className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
+              <MultilineTextInput
+                id="name"
+                label="Name"
+                className=' xl:w-[11rem] ml-2'
+                textAreaClasses="h-4 lg:h-5 xl:h-full"
+                placeholder="Employee Onboarding"
+                {...register("name",  { required: true }) }
+                control={control}
+                maxLength={fieldSizes.workflow.name}
+              />
+            </InputCell>
+            <InputCell className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
+              <MultilineTextInput
+                id="description"
+                label="Description:"
+                className='xl:w-[248px] ml-2'
+                textAreaClasses="xs:h-4 md:h-full"
+                placeholder="New employee onboarding tasks"
+                {...register("description",  { required: true }) }
+                control={control}
+                maxLength={fieldSizes.workflow.description}
+              />
+            </InputCell>
+            <InputCell className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
+              <MultilineTextInput
+                id="ownerID"
+                label="Owner"
+                className='xl:w-[100px] ml-2'
+                textAreaClasses="h-4 lg:h-5 xl:h-full"
+                placeholder="John Smith"
+                {...register("ownerID",  { required: true }) }
+                control={control}
+              />
+            </InputCell>
+          </div>
+          <Table 
+            className={`grid w-full min-h-[288px]
+              grid-cols-[3.5rem_minmax(11.5rem,1fr)_minmax(16rem,1fr)_minmax(12rem,1fr)_minmax(5.75rem,_1fr)_minmax(7.5rem,1fr)] 
+              content-start`}
+            title='Tasks'
+            actionComponent={
+              <InlineLink to={'/workflow/new'} className="absolute -bottom-6 right-4 sm:right-8">
+                New Task
+              </InlineLink>
+            }
+          >
             <div className=""></div>
             <ColumnHeader>Name</ColumnHeader>
             <ColumnHeader>Description</ColumnHeader>
@@ -135,7 +141,6 @@ const WorkflowCard = ({workflow}: Props) => {
             <ColumnHeader>Due Day</ColumnHeader>
             <ColumnHeader>Owner</ColumnHeader>
             {fields.map((task, index) => {
-              console.log("🚀 ~ file: WorkflowCard.tsx:136 ~ {fields.map ~ task:", task)
               return (
                 <Fragment key={task.id}>
                   <TableCell><ActionMenu actions={actions}/></TableCell>
@@ -196,23 +201,21 @@ const WorkflowCard = ({workflow}: Props) => {
                     <InputCell>
                       <MultilineTextInput
                         id={`tasks.${index}.taskOwner.name`}
-                        
                         placeholder="Enter owner"
-                        {...register(`tasks.${index}.taskOwner.name`, {required: true})}
+                        {...register(`tasks.${index}.taskOwner.userID`, {required: true})}
                         control={control}
-                        defaultValue={task.taskOwner.name}
+                        defaultValue={task.taskOwner.userID}
                       />
                     </InputCell>
                   </TableCell>
                 </Fragment>
               ) 
             })}
+          </Table>
+          <div className="flex items-center justify-end w-full mt-6 space-x-6">
+          <SubmitButton >Save</SubmitButton>
           </div>
-        </Table>
-        <div className="flex items-center justify-end w-full mt-6 space-x-6">
-        <SubmitButton >Save</SubmitButton>
-        </div>
-      </form>
+        </form>
       </div>
     </TableCard>
    );

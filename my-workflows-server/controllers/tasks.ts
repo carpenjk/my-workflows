@@ -2,11 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { Task } from "../models/Task";
 import { NotFoundError } from "../errors/notFoundError";
+import { BulkCreateOptions, CreateOptions } from "sequelize";
 
 export interface TaskArgs {
+  taskID: bigint,
   name: string,
   description: string,
-  dependencies: bigint[],
+  dependencies?: bigint[],
   dueDay: number,
   ownerID: bigint,
   workflowID: bigint
@@ -27,20 +29,18 @@ export const getTasks = asyncWrapper(async (req: Request, res: Response, next: N
 
 export const getTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const taskID: string = req.params.taskID;
-  console.log(`Getting task for ${taskID}`);
   const task = await Task.findOne({ where: { taskID: taskID } });
-  console.log("🚀 ~ file: tasks.ts:23 ~ getTask ~ task:", task);
   if (!task) {
     return next(new NotFoundError(`No task with id : ${taskID}`));
   }
   res.send(task);
 })
 
-export const createTasksFromArgs = async (tasks: TaskArgs | TaskArgs[]) => {
+export const createTasksFromArgs = async (tasks: TaskArgs | TaskArgs[], options?: BulkCreateOptions | CreateOptions ) => {
   if(Array.isArray(tasks)){
-    return await Task.bulkCreate(tasks);
+    return await Task.bulkCreate(tasks, options as BulkCreateOptions);
   }
-  await Task.create(tasks);
+  await Task.create(tasks, options as CreateOptions);
 }
 
 export const createTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -61,7 +61,6 @@ export const updateTask = asyncWrapper(async (req: Request, res: Response, next:
     { ...colsToUpdate, workflowID: workflowID },
     { where: { taskID: taskID } }
   )
-  console.log(`Creating task for ${taskID}`);
   res.send(`Task updated!`);
 })
 

@@ -7,9 +7,9 @@ type Props = {
 
 const InputCell = ({children, className}: Props) => {
   return ( 
-    <div className={twMerge(`relative flex items-center justify-start w-full min-h-[58px] lg:min-h-[58px] 
+    <div className={twMerge(`relative flex items-center justify-start w-full min-h-[52px] lg:min-h-[58px] 
       pt-2 pb-2 px-3 border border-solid rounded-sm shadow-inner 
-      border-primary-8 bg-primary-9 lg:w-full dark:bg-dk-primary-9`, className)}>
+      border-primary-8 bg-primary-9 dark:bg-dk-primary-9`, className)}>
       {children}
   </div>
    );
