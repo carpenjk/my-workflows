@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, useCreateWorkflowMutation, useGetWorkflowQuery, useGetWorkflowsQuery } from "app/services/workflow";
-import { InlineLink, SubmitButton, TableCard, MultilineTextInput, InputCell } from "features/ui";
+import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import { ActionMenu } from 'features/ui/ActionMenu';
 import Table from 'features/ui/shared/Table';
 import ColumnHeader from 'features/ui/table/ColumnHeader';
@@ -32,7 +32,6 @@ type Props = {
 }
 
 const WorkflowCard = ({workflow}: Props) => {
-  console.log("🚀 ~ file: WorkflowCard.tsx:35 ~ workflow:", workflow)
   const [saveWorkflow, status] = useCreateWorkflowMutation();
   const { register, handleSubmit, formState: {errors: inputErrors }, getValues, control } = 
     useForm<EditWorkflowRequest>({
@@ -42,7 +41,8 @@ const WorkflowCard = ({workflow}: Props) => {
         description: workflow?.description,
         ownerID: workflow?.workflowOwner.userID,
         tasks: workflow?.tasks
-      }
+      },
+
     });
     const { fields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
       control, 
@@ -59,6 +59,21 @@ const WorkflowCard = ({workflow}: Props) => {
     } finally {
 
     }
+  }
+
+  const handleNewTask = () =>{
+    append({
+      taskID: 0,
+      name: '',
+      description: '',
+      dependencies: undefined,
+      dueDay: 0,
+      taskOwner: {
+        userID: 0,
+        name: "",
+        email: ""
+      }
+    })
   }
   
   function getErrors(){
@@ -78,15 +93,9 @@ const WorkflowCard = ({workflow}: Props) => {
   return ( 
     <TableCard
           title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
-          actionComponent={
-            <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">
-               New Task
-            </InlineLink>}
-          loadMore={()=> {}}
     >
-      <div>
         <form className="w-full" onSubmit={handleSubmit(handleSave)}>
-          <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 sm:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
+          <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
             <InputCell className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
               <MultilineTextInput
                 id="name"
@@ -124,22 +133,27 @@ const WorkflowCard = ({workflow}: Props) => {
             </InputCell>
           </div>
           <Table 
-            className={`grid w-full min-h-[288px]
+            className={`grid w-full
               grid-cols-[3.5rem_minmax(11.5rem,1fr)_minmax(16rem,1fr)_minmax(12rem,1fr)_minmax(5.75rem,_1fr)_minmax(7.5rem,1fr)] 
               content-start`}
+            maxHeightClassName='h-[calc(85vh-332px)] sm:h-[calc(85vh-364px)] lg:h-[calc(85vh-418px)] xl:h-[calc(85vh-266px)]'
             title='Tasks'
             actionComponent={
-              <InlineLink to={'/workflow/new'} className="absolute -bottom-6 right-4 sm:right-8">
+              <InlineButton type='button' onClick={handleNewTask} className="absolute bottom-3 right-4 sm:right-8">
                 New Task
-              </InlineLink>
+              </InlineButton>
+            }
+            headers={
+              <>
+                <div className=""></div>
+                <ColumnHeader>Name</ColumnHeader>
+                <ColumnHeader>Description</ColumnHeader>
+                <ColumnHeader>Dependencies</ColumnHeader>
+                <ColumnHeader>Due Day</ColumnHeader>
+                <ColumnHeader>Owner</ColumnHeader>
+              </>
             }
           >
-            <div className=""></div>
-            <ColumnHeader>Name</ColumnHeader>
-            <ColumnHeader>Description</ColumnHeader>
-            <ColumnHeader>Dependencies</ColumnHeader>
-            <ColumnHeader>Due Day</ColumnHeader>
-            <ColumnHeader>Owner</ColumnHeader>
             {fields.map((task, index) => {
               return (
                 <Fragment key={task.id}>
@@ -188,7 +202,6 @@ const WorkflowCard = ({workflow}: Props) => {
                           dark:text-dk-text-normal px-0 py-1 border-none break-words shadow-none`}
                         placeholder="Enter due day"
                         {...register(`tasks.${index}.dueDay`, {required: true})}
-                        // control={control}
                         defaultValue={task.dueDay}
                         type='text'
                         pattern="/d"
@@ -212,11 +225,10 @@ const WorkflowCard = ({workflow}: Props) => {
               ) 
             })}
           </Table>
-          <div className="flex items-center justify-end w-full mt-6 space-x-6">
+          <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
           <SubmitButton >Save</SubmitButton>
           </div>
         </form>
-      </div>
     </TableCard>
    );
 }

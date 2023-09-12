@@ -37,7 +37,7 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelC
   const textAreaDisplayClass = isCursorInside ? 'relative text-text-normal dark:text-dk-text-normal' : 'text-transparent';  
   
   return ( 
-    <div className='relative flex items-center justify-start w-full h-full min-h-fit'>
+    <div className='relative flex items-center justify-start w-full min-h-fit'>
       {label && (
         <label className={twMerge(`block text-xs lg:text-sm font-bold text-text-normal 
         dark:text-dk-text-normal font-maven`, labelClasses)} htmlFor={id}>

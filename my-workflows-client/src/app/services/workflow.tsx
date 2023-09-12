@@ -74,18 +74,18 @@ export const EditWorkflowSchema = yup.object({
   workflowID: yup.number().integer().required(),
   name: yup.string().length(fieldSizes.workflow.name).required(),
   description: yup.string().length(fieldSizes.workflow.description).required(),
-  ownerID: yup.number().integer().required(),
+  ownerID: yup.number().integer().required().positive('A workflow owner must be selected.'),
   tasks: yup.array().of(
     yup.object().shape({
-        taskID: yup.number().integer().required(),
+        taskID: yup.number().integer().required().positive('Invalid task.'),
         name: yup.string().length(fieldSizes.task.name).required(),
         description: yup.string().length(fieldSizes.task.description).required(),
         dependencies: yup.array().of(
           yup.number().integer().required()
         ),
-        dueDay: yup.number().integer().required(),
+        dueDay: yup.number().integer().required().positive('A due day must be selected.'),
         taskOwner: yup.object().shape({
-          userID: yup.number().integer().required(),
+          userID: yup.number().integer().required().positive('A task owner must be selected.'),
           name: yup.string().length(30), // only used to match data format. Not used sent or used by server
           email: yup.string().email() // only used to match data format. Not used sent or used by server
         })

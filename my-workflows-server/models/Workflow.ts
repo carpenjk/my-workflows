@@ -94,7 +94,7 @@ export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttr
   @BelongsTo(()=> User,{as: 'workflowOwner'})
   declare owner: CreationOptional<User>;
 
-  @HasMany(()=> Task,{as: 'tasks'})
+  @HasMany(()=> Task,{as: 'tasks', onDelete: 'CASCADE'})
   declare task: CreationOptional<Task[]>
 
   @CreatedAt

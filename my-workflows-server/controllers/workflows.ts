@@ -98,7 +98,6 @@ export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowAr
 export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWorkflowArgs>, res: Response, next: NextFunction) => {
   const { workflowID: workflowID, tasks, ...workflowParams } = req.body;
   
-  console.log("🚀 ~ file: workflows.ts:131 ~ updateWorkFlow ~ workflowParams:", workflowParams)
   await Workflow.scope('withTasks')
   .update(workflowParams, {where: {workflowID: Number(workflowID)}})
   .then((workflow) => {

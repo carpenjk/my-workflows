@@ -72,7 +72,7 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
   
   @AllowNull(false)
   @ForeignKey(()=> Workflow)
-  @Column({type: DataType.INTEGER.UNSIGNED})
+  @Column({type: DataType.INTEGER.UNSIGNED, onDelete: 'CASCADE'})
   declare workflowID: bigint
   
   @BelongsTo(()=> Workflow,{as: 'tasks'})

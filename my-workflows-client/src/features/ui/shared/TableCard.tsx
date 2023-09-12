@@ -6,20 +6,18 @@ interface PropsWithLoading {
   title: string,
   loadMore: React.MouseEventHandler,
   loadMoreActive?: boolean,
-  actionComponent?: React.ReactNode
 }
 
 interface PropsWithoutLoading {
   title: string,
-  actionComponent?: React.ReactNode
 }
 
 type Props = PropsWithLoading | PropsWithoutLoading;
 
 const TableCard = (props :PropsWithChildren<Props>) => {
-  const {actionComponent, children, title } = props;
+  const {children, title } = props;
   return(
-    <ItemContainer className="w-full max-w-full p-4 sm:p-6 lg:p-9 min-h-[488px] lg:max-w-5xl">
+    <ItemContainer className="w-full h-fit max-w-full max-h-[85vh] p-4 md:p-6 min-h-[488px] lg:max-w-5xl">
     <CardHeader>{title}</CardHeader> 
       {children}  
     </ItemContainer>

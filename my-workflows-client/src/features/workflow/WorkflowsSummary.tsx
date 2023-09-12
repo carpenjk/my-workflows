@@ -1,13 +1,10 @@
 import { enUSFormatter } from "utils/date";
 import { Workflow } from "app/services/workflow";
-import { InlineLink, ItemContainer, Table, TableCard } from "features/ui";
-import CardHeader from "features/ui/shared/CardHeader";
+import { Table, TableCard } from "features/ui";
 import ColumnHeader from "features/ui/table/ColumnHeader";
 import TableCell from "features/ui/table/TableCell";
 import { Fragment } from "react";
 import { ActionMenu } from "features/ui/ActionMenu";
-import {ChevronDownIcon} from '@heroicons/react/24/outline';
-import InlineButton from "features/ui/shared/InlineButton";
 
 interface Props {
   workflows: Workflow[]
@@ -38,11 +35,7 @@ const WorkflowsSummary = ({workflows}: Props) => {
   return(
     <TableCard
       title="My workflows"
-      actionComponent={
-        <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">
-               New Task
-        </InlineLink>
-      }
+      
     >
     <div className="flex items-start justify-start w-full overflow-x-auto max-w-fit w-">
       <Table
@@ -50,6 +43,11 @@ const WorkflowsSummary = ({workflows}: Props) => {
           grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(9rem,13rem)_minmax(5rem,7rem)_minmax(5rem,8rem)_minmax(5rem,8.5rem)_minmax(5rem,8rem)]
           lg:grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(11rem,13rem)_minmax(6rem,7rem)_minmax(6rem,8rem)_minmax(6rem,8.5rem)_minmax(6rem,8rem)] 
           content-start`}
+        // actionComponent={
+        //   <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">
+        //           New Task
+        //   </InlineLink>
+        // }
         loadMore={()=>{}}
       >
         <div className=""></div>

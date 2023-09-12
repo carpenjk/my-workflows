@@ -11,6 +11,7 @@ module.exports = {
     extend: {
       colors: {
         'dk-primary': {
+          95: colors.slate['950'],
           9: colors.slate['900'],
           8: colors.slate['800'],
           7: colors.slate['700'],
