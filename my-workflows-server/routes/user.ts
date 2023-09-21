@@ -3,6 +3,7 @@ import { getUserWithSession, logout, register } from '../controllers/auth'
 import { passport } from '../middleware/passport'
 import { UnauthenticatedError } from '../errors/unauthenticatedError'
 import { getUsers } from '../controllers/user'
+import { isAuthenticated } from '../middleware/auth'
 
 const router = express.Router()
 
@@ -18,8 +19,8 @@ router.post('/login',
     }
 })
 
-router.get('/me', getUserWithSession);
-router.get('/', getUsers);
+router.get('/me', isAuthenticated, getUserWithSession);
+router.get('/', isAuthenticated, getUsers);
 router.post('/logout', logout);
 
 export default router;

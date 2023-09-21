@@ -51,7 +51,7 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({control, label, labelC
           {(!inputControl && showPlaceholder) ? placeholder : null}
           <textarea
             className={twMerge(`resize-none absolute inset-0 p-0 border-none 
-              bg-transparent w-full h-full min-h-fit text-xs lg:text-sm break-words`,
+              bg-transparent w-full h-full min-h-fit text-xs lg:text-sm break-words focus:ring-0`,
               textAreaDisplayClass , textAreaClasses)}
             id={id}
             rows={2}

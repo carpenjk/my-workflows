@@ -1,7 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { User, useGetUsersQuery } from 'app/services/user';
 import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, useCreateWorkflowMutation, useGetWorkflowQuery, useGetWorkflowsQuery } from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import { ActionMenu } from 'features/ui/ActionMenu';
+import SelectInput from 'features/ui/shared/SelectInput';
 import Table from 'features/ui/shared/Table';
 import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
@@ -28,10 +30,15 @@ const actions = [
 ]
 
 type Props = {
-  workflow?: Workflow
+  workflow?: Workflow,
+  users: User[]
 }
 
-const WorkflowCard = ({workflow}: Props) => {
+const getDisplayUsers = (users: User[]) => users.map((user) => (
+  {value: user.userID , displayValue: user.name})
+)
+
+const WorkflowCard = ({workflow, users = []}: Props) => {
   const [saveWorkflow, status] = useCreateWorkflowMutation();
   const { register, handleSubmit, formState: {errors: inputErrors }, getValues, control } = 
     useForm<EditWorkflowRequest>({
@@ -42,15 +49,19 @@ const WorkflowCard = ({workflow}: Props) => {
         ownerID: workflow?.workflowOwner.userID,
         tasks: workflow?.tasks
       },
-
     });
-    const { fields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
+    const { fields: taskFields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
       control, 
       name: "tasks",
     });
-
-  const [tasks, setTasks] = useState<Task[]>([]);
   
+  
+  
+
+    useEffect(()=>{
+      console.log('users:', users)
+    }, [users])
+
   const handleSave = async () => {
     try{
       await  saveWorkflow(getValues());
@@ -82,13 +93,9 @@ const WorkflowCard = ({workflow}: Props) => {
 
   useEffect(() => {
     if(workflow){
-      setTasks(workflow.tasks)
       replace(workflow.tasks);
     } 
   },[workflow, replace])
-
-
-
 
   return ( 
     <TableCard
@@ -121,14 +128,13 @@ const WorkflowCard = ({workflow}: Props) => {
               />
             </InputCell>
             <InputCell className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
-              <MultilineTextInput
+              <SelectInput
                 id="ownerID"
                 label="Owner"
                 className='xl:w-[100px] ml-2'
-                textAreaClasses="h-4 lg:h-5 xl:h-full"
                 placeholder="John Smith"
-                {...register("ownerID",  { required: true }) }
                 control={control}
+                values={getDisplayUsers(users)}
               />
             </InputCell>
           </div>
@@ -145,7 +151,7 @@ const WorkflowCard = ({workflow}: Props) => {
             }
             headers={
               <>
-                <div className=""></div>
+                <ColumnHeader></ColumnHeader>
                 <ColumnHeader>Name</ColumnHeader>
                 <ColumnHeader>Description</ColumnHeader>
                 <ColumnHeader>Dependencies</ColumnHeader>
@@ -154,7 +160,7 @@ const WorkflowCard = ({workflow}: Props) => {
               </>
             }
           >
-            {fields.map((task, index) => {
+            {taskFields.map((task, index) => {
               return (
                 <Fragment key={task.id}>
                   <TableCell><ActionMenu actions={actions}/></TableCell>
@@ -199,7 +205,7 @@ const WorkflowCard = ({workflow}: Props) => {
                         id={`tasks.${index}.dueDay`}
                         className={` relative flex flex-wrap items-center justify-start 
                             w-full max-w-full h-full font-maven text-sm bg-transparent text-text-normal
-                          dark:text-dk-text-normal px-0 py-1 border-none break-words shadow-none`}
+                          dark:text-dk-text-normal px-0 py-1 border-none break-words shadow-none focus:ring-0`}
                         placeholder="Enter due day"
                         {...register(`tasks.${index}.dueDay`, {required: true})}
                         defaultValue={task.dueDay}
@@ -212,12 +218,13 @@ const WorkflowCard = ({workflow}: Props) => {
                   </TableCell>
                   <TableCell>
                     <InputCell>
-                      <MultilineTextInput
-                        id={`tasks.${index}.taskOwner.name`}
+                      <SelectInput
+                        id={`tasks.${index}.taskOwner.userID`}
                         placeholder="Enter owner"
                         {...register(`tasks.${index}.taskOwner.userID`, {required: true})}
                         control={control}
                         defaultValue={task.taskOwner.userID}
+                        values={getDisplayUsers(users)}
                       />
                     </InputCell>
                   </TableCell>

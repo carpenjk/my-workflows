@@ -1,26 +1,21 @@
-import { useCreateWorkflowMutation } from "app/services/workflow";
+import { useGetUsersQuery } from "app/services/user";
 import { LoadingOverlay, useLoading } from "features/loading";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import { InlineLink, TableCard } from "features/ui";
 import WorkflowCard from "features/workflow/WorkflowCard";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const NewWorkflow = () => {
-  const navigate = useNavigate();
   const {Loading, setLoading, isLoading, config} = useLoading(true);
   const [isFadingOut, setIsFadingOut] =useState(false);
-  const [createNew, status] = useCreateWorkflowMutation();
-
+  const {data: users, isLoading: isLoadingUsers, isUninitialized: isUsersUninitialized, isFetching: isFetchingUsers} = useGetUsersQuery();
 
   useEffect(() => {
-    setLoading(false);
+    setLoading(isLoadingUsers || isFetchingUsers);
   })
-
 
   return(
     <Loading 
-       isLoading={isLoading}
+       isLoading={isLoading && isLoadingUsers}
        fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
        delay={FADE_OUT_DELAY}
        minLoading={MIN_LOADING}
@@ -28,7 +23,7 @@ const NewWorkflow = () => {
        onUnmount={()=>setIsFadingOut(false)}
        {...config}
     >
-       <WorkflowCard/>
+       <WorkflowCard users={users || []}/>
     </Loading>
  )
 }

@@ -32,7 +32,6 @@ authListenerMiddleware.startListening({
 authListenerMiddleware.startListening({
   matcher: authApi.endpoints.register.matchFulfilled,
   effect: async (action, listenerApi) => {
-    console.log("🚀 ~ file: authMiddleware.ts:25 ~ effect: ~ action:", action)
     toast.update(TOAST_QUERY_ID, {
       // render: `${action}`,
       render: makeToast(`${action.meta.arg.originalArgs.email} has been signed up!`),
@@ -50,7 +49,6 @@ authListenerMiddleware.startListening({
 authListenerMiddleware.startListening({
   matcher: authApi.endpoints.register.matchRejected,
   effect: async (action, listenerApi) => {
-    console.log("🚀 ~ file: authMiddleware.ts:25 ~ effect: ~ action:", action)
     if(action.payload?.data){
       const {data} = action.payload;
       if(typeof data === 'object' && 'msg' in data && typeof data.msg === 'string'){
@@ -64,7 +62,6 @@ authListenerMiddleware.startListening({
         });
       }
     } else {
-      console.log(JSON.stringify(action.payload))
       toast.update(TOAST_QUERY_ID, {
         render: "An unexpected error occurred.",
         isLoading: false,

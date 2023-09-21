@@ -1,11 +1,8 @@
 import * as yup from "yup";
 import { api } from './api';
+import { User } from './user';
 
-export interface User {
-  userID: bigint,
-  email: string,
-  name: string
-}
+
 
 export interface UserResponse {
   user: User,

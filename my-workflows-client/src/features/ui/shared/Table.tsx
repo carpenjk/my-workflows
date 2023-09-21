@@ -33,7 +33,7 @@ const Table = (props: Props) => {
           <h2 className="flex-none text-sm font-bold xl:text-lg text-text-normal dark:text-dk-text-normal">{title}</h2>
         )}
         
-        <div className={ twMerge("flex-1 overflow-y-auto gap-x-2 gap-y-2", className)}>
+        <div className={ twMerge("flex-1 overflow-y-auto gap-y-2", className)}>
           <div className="z-30 contents">
            {headers}
           </div>
