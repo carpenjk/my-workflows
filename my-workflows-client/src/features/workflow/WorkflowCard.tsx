@@ -3,6 +3,7 @@ import { User, useGetUsersQuery } from 'app/services/user';
 import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, useCreateWorkflowMutation, useGetWorkflowQuery, useGetWorkflowsQuery } from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import { ActionMenu } from 'features/ui/ActionMenu';
+import ActionDropDown from 'features/ui/ActionMenu/ActionDropDown';
 import SelectInput from 'features/ui/shared/SelectInput';
 import Table from 'features/ui/shared/Table';
 import ColumnHeader from 'features/ui/table/ColumnHeader';
@@ -163,7 +164,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
             {taskFields.map((task, index) => {
               return (
                 <Fragment key={task.id}>
-                  <TableCell><ActionMenu actions={actions}/></TableCell>
+                  <TableCell><ActionDropDown actions={actions}/></TableCell>
                   <TableCell>
                     <InputCell>
                       <MultilineTextInput
