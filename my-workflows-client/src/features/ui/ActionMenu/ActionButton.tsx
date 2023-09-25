@@ -1,12 +1,13 @@
+import {forwardRef} from "react";
 import { EllipsisHorizontalCircleIcon } from "@heroicons/react/24/outline";
 
-type Props = {
-  onClick: React.MouseEventHandler
-}
+interface Props extends React.ComponentPropsWithRef<'button'> {}
 
-const ActionButton  = ({onClick}: Props) => {
+
+
+const ActionButton = forwardRef<HTMLButtonElement, Props>(({onClick}: Props, ref) => {
   return ( 
-    <button type="button" onClick={onClick} className={`group flex items-center justify-center w-full h-full  
+    <button ref={ref} type="button" onClick={onClick} className={`group flex items-center justify-center w-full h-full  
       rounded-sm focus:outline-2 focus:outline focus:outline-sky-600/70 focus:-outline-offset-2
     `}>
       <EllipsisHorizontalCircleIcon className={`w-8 h-8 fill-transparent text-text-normal dark:text-dk-text-normal
@@ -14,6 +15,6 @@ const ActionButton  = ({onClick}: Props) => {
       `}/>
     </button>
    );
-}
+})
  
 export default ActionButton;

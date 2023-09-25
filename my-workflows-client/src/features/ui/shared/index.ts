@@ -13,4 +13,5 @@ export {default as CardHeader} from './CardHeader';
 export {default as TableCard} from './TableCard';
 export {default as Table} from './Table';
 export {default as SelectInput} from './SelectInput';
+export {default as ScrollLock} from './ScrollLock'
 export * from './spinner'
