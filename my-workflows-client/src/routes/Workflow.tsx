@@ -12,7 +12,6 @@ const Workflow = () => {
   const {Loading, setLoading, isLoading, config} = useLoading(true);
   const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized: isUserUninitialized, isFetching: isUserFetching} = useGetUserDetailsQuery();
   const {data: workflows, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isWorkflowsFetching} = useGetWorkflowsQuery({limit: 4});
-  console.log("🚀 ~ file: Workflow.tsx:14 ~ Workflow ~ workflow:", workflows)
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {

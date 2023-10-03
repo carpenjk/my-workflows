@@ -1,3 +1,4 @@
+
 export {default as InlineLink} from './InlineLink';
 export {default as InlineButton} from './InlineButton';
 export {default as ItemContainer} from './ItemContainer';
@@ -12,6 +13,6 @@ export {default as ViewContainer} from './ViewContainer';
 export {default as CardHeader} from './CardHeader';
 export {default as TableCard} from './TableCard';
 export {default as Table} from './Table';
-export {default as SelectInput} from './SelectInput';
 export {default as ScrollLock} from './ScrollLock'
+export {default as SelectInput} from './SelectInput';
 export * from './spinner'
