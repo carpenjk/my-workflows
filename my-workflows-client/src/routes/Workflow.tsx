@@ -11,7 +11,7 @@ const Workflow = () => {
   const navigate = useNavigate();
   const {Loading, setLoading, isLoading, config} = useLoading(true);
   const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized: isUserUninitialized, isFetching: isUserFetching} = useGetUserDetailsQuery();
-  const {data: workflows, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isWorkflowsFetching} = useGetWorkflowsQuery({limit: 4});
+  const {data: workflows, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isWorkflowsFetching} = useGetWorkflowsQuery({limit: 10});
   const [isFadingOut, setIsFadingOut] =useState(false);
 
   useEffect(() => {

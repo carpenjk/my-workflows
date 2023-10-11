@@ -33,7 +33,7 @@ const Table = (props: Props) => {
           <h2 className="flex-none text-sm font-bold xl:text-lg text-text-normal dark:text-dk-text-normal">{title}</h2>
         )}
         
-        <div className={ twMerge(`relative flex-1 overflow-auto gap-y-2 ${'loadMore' in props ? 'pb-4' : ''}`, className)}>
+        <div className={ twMerge(`relative flex-1 overflow-auto gap-y-2 ${'loadMore' in props ? 'pb-8' : ''}`, className)}>
           <div className="z-30 contents">
            {headers}
           </div>
@@ -41,7 +41,7 @@ const Table = (props: Props) => {
             {children}
           </div>
           {'loadMore' in props && (
-          <div className="absolute transform -translate-x-1/2 bottom-4 left-1/2">
+          <div className="absolute transform -translate-x-1/2 bottom-2 left-1/2">
             <InlineButton onClick={props.loadMore} type="button">
               <span>more</span>
               <span className="duration-500 group-hover:animate-bounce-down"><ChevronDownIcon className="w-6 h-5"/></span>

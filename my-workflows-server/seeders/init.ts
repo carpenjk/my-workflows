@@ -55,16 +55,16 @@ const init = async () => {
 
   await Task.bulkCreate([
     {
-      name: 'task 1',
-      description: 'task 1 description',
+      name: 'Close ERP',
+      description: 'Close ERP System',
       ownerID: BigInt(1),
       // reviewer: BigInt(2),
       dueDay: 1,
       workflowID: BigInt(1),
     },
     {
-      name: 'task 2',
-      description: 'task 2 description',
+      name: 'Run Validation Reports',
+      description: 'Run Trial Balance and Other Validations',
       ownerID: BigInt(1),
       // reviewer: BigInt(2),
       dueDay: 1,
@@ -72,8 +72,24 @@ const init = async () => {
 
     },
     {
-      name: 'task 3',
-      description: 'task 3 description',
+      name: 'Topside Adjustments',
+      description: 'Topside Adjustment Entries',
+      ownerID: BigInt(1),
+      // reviewer: BigInt(2),
+      dueDay: 2,
+      workflowID: BigInt(1),
+    },
+    {
+      name: 'Run Data Loads',
+      description: 'Load data into Reporting Systems',
+      ownerID: BigInt(1),
+      // reviewer: BigInt(2),
+      dueDay: 2,
+      workflowID: BigInt(1),
+    },
+    {
+      name: 'Run Data Validations',
+      description: 'Run Data Validation Reports',
       ownerID: BigInt(1),
       // reviewer: BigInt(2),
       dueDay: 2,

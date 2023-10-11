@@ -17,6 +17,7 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
 
   @Column({
     type: DataType.STRING(50),
+    primaryKey: true,
     allowNull: false,
     // unique: true,
     validate: {

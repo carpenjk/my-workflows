@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { User } from 'app/services/user';
-import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, useCreateWorkflowMutation} from "app/services/workflow";
+import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, transformTaskOwner, useEditWorkflowMutation} from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
-import ActionDropDown from 'features/ui/ActionMenu/ActionDropDown';
+import {ActionDropDown} from 'features/ui/ActionMenu';
 import {SelectInput} from 'features/ui/shared';
 import Table from 'features/ui/shared/Table';
 import ColumnHeader from 'features/ui/table/ColumnHeader';
@@ -43,11 +43,12 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
 
 const WorkflowCard = ({workflow, users = []}: Props) => {
-  const [saveWorkflow, status] = useCreateWorkflowMutation();
+  const [saveWorkflow, status] = useEditWorkflowMutation();
   const { register, handleSubmit, formState: {errors: inputErrors }, getValues, control } = 
     useForm<EditWorkflowRequest>({
       resolver: yupResolver(EditWorkflowSchema),
       defaultValues: {
+        workflowID: workflow?.workflowID,
         name: workflow?.name,
         description: workflow?.description,
         ownerID: workflow?.workflowOwner.userID,
@@ -59,8 +60,13 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
       name: "tasks",
     });
 
+    useEffect(() => {
+      console.log("🚀 ~ file: WorkflowCard.tsx:66 ~ WorkflowCard ~ taskFields:", taskFields)
+    }, [taskFields]);
+
   const handleSave = async () => {
     try{
+      console.log(`saving ${getValues("workflowID")}:`, getValues())
       await  saveWorkflow(getValues());
     } catch(e) {
       console.log(e);
@@ -72,16 +78,16 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
   const handleNewTask = () =>{
     const defaultDueDate = taskFields[taskFields.length - 1].dueDay; 
     append({
-      taskID: 0,
       name: '',
       description: '',
       dependencies: undefined,
       dueDay: defaultDueDate,
-      taskOwner: {
-        userID: 0,
-        name: "",
-        email: ""
-      }
+      ownerID: 0,
+      // taskOwner: {
+      //   userID: 0,
+      //   name: "",
+      //   email: ""
+      // }
     })
   }
   
@@ -91,7 +97,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
 
   useEffect(() => {
     if(workflow){
-      replace(workflow.tasks);
+      replace(workflow.tasks.map(task=> transformTaskOwner(task)));
     } 
   },[workflow, replace])
 
@@ -102,6 +108,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
     <TableCard
           title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
     >
+      <button className='absolute top-0' type='button' onClick={()=>console.log(getValues())}>console Workflow</button>
         <form className="w-full" onSubmit={handleSubmit(handleSave)}>
           <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
             <InputCell inputName='name' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
@@ -203,6 +210,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
                         control={control}
                         values={getDisplayDependencies(workflow?.tasks ?? [])}
                         multiple={true}
+                        defaultValue={task.dependencies?.map(dep => dep.toString()) ?? []}
                       />
                     </InputCell>  
                   </TableCell>
@@ -215,9 +223,9 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
                           dark:text-dk-text-normal px-0 py-1 border-none break-words shadow-none focus:ring-0`}
                         placeholder="Enter due day"
                         {...register(`tasks.${index}.dueDay`, {required: true})}
-                        defaultValue={task.dueDay === 0 ? undefined : task.dueDay}
+                        defaultValue={task.dueDay === 0 ? undefined : task.dueDay.toString()}
                         type='text'
-                        pattern="/d"
+                        pattern="\d*"
                         maxLength={fieldSizes.task.dueDay}
                         max={"9999"}
                       />
@@ -228,18 +236,19 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
                       <SelectInput
                         id={taskOwnerID}
                         placeholder="Enter owner"
-                        {...register(`tasks.${index}.taskOwner.userID`, {required: true})}
+                        {...register(`tasks.${index}.ownerID`, {required: true})}
                         control={control}
                         values={getDisplayUsers(users)}
+                        defaultValue={task.taskID ? task.taskID : []} // needed to prevent change from uncontrolled to controlled error
                       />
                     </InputCell>
                   </TableCell>
                 </Fragment>
-              ) 
+              )
             })}
           </Table>
           <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
-          <SubmitButton >Save</SubmitButton>
+          <SubmitButton>Save</SubmitButton>
           </div>
         </form>
     </TableCard>

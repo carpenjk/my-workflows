@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { BulkCreateOptions } from "sequelize";
+import { Includeable } from "sequelize";
 import { Workflow } from "../models/Workflow";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
@@ -6,6 +8,8 @@ import { TaskArgs, createTasksFromArgs } from "./tasks";
 import { Task } from "../models/Task";
 import { User } from "../models/User";
 import { sequelize } from "../adapters/sequelize";
+import { Dependency } from "../models/Dependency";
+import { UpdatedAt } from "sequelize-typescript";
 
 interface WorkflowArgs {
   name: string,
@@ -71,6 +75,11 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
 
 export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowArgs>, res: Response) => {
   const {tasks, ...summaryFields } = req.body;
+
+  const tasksWithoutID = tasks?.map(task => {
+      const {taskID, ...taskWithoutID} = task;
+      return taskWithoutID;
+  })
   
   function getDuration(): {} | {duration: string} {
     if(tasks){
@@ -86,14 +95,20 @@ export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowAr
     status: 'Draft',
     ...summaryFields,
   });
+  console.log("🚀 ~ file: workflows.ts:89 ~ createWorkflow ~ workflow:", workflow)
+  console.log("🚀 ~ file: workflows.ts:79 ~ tasksWithoutID ~ tasksWithoutID:", tasksWithoutID)
 
-  if(tasks){
-    const tasksWithWorkflowID = tasks.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
+  if(tasksWithoutID){
+    const tasksWithWorkflowID = tasksWithoutID?.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
     await createTasksFromArgs(tasksWithWorkflowID)
   }
   res.json({ msg: 'Workflow created!' });
 });
 
+
+function withWorkflowID(tasks: TaskArgs[], workflowID: bigint){
+  return tasks.map(task=> ({...task, workflowID: workflowID}));
+}
 
 export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWorkflowArgs>, res: Response, next: NextFunction) => {
   const { workflowID: workflowID, tasks, ...workflowParams } = req.body;
@@ -106,8 +121,18 @@ export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWor
     }
     
     if (tasks && Array.isArray(tasks)) {
-      createTasksFromArgs(tasks, 
-        {updateOnDuplicate: ["name", "description", "dueDay", "ownerID"]})
+      // createTasksFromArgs(tasks, 
+      //   {include: [{model: Task, as: 'taskDependencies', duplicating: true} ], 
+      //   updateOnDuplicate: ["name", "description", "taskDependencies", "dueDay", "ownerID", 'UpdatedAt'],
+      // })
+      const tasksWithoutDeps = tasks.map(task=> {
+        const {dependencies, ...taskWithoutDeps} = task;
+        return taskWithoutDeps
+      });
+      console.log("🚀 ~ file: workflows.ts:129 ~ .then ~ tasks:", tasks)
+      createTasksFromArgs(withWorkflowID(tasks, BigInt(workflowID)), 
+        { updateOnDuplicate: ["name", "description", "taskDependencies", "dueDay", "ownerID", 'UpdatedAt'],
+      })
     }
       res.send({ msg: 'Workflow updated!', workflowID: workflow[0] });
     })
@@ -121,3 +146,4 @@ export const deleteWorkFlow = asyncWrapper(async (req: Request, res: Response, n
   }
   res.send({ msg: `Workflow ${workflowID} has been deleted.` });
 })
+

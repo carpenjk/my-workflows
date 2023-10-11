@@ -47,7 +47,7 @@ const LoginCard = () => {
         navigate('/')
       }
     catch(e){
-      console.log(e);      
+      console.log(e);   
     } finally{
       setLoading(false, {minLoading:MIN_LOADING, delay:FADE_OUT_DELAY});
     }

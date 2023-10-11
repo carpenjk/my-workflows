@@ -22,7 +22,7 @@ interface Props extends ComponentProps<"input"> {
   listboxClasses?: ClassNameValue,
   control: Control<any>,
   values: Value[], 
-  multiple?: boolean
+  multiple?: boolean,
 } 
 
 type Ref = HTMLDivElement;
@@ -40,7 +40,8 @@ function classNames(...classes: any) {
   listboxClasses,
   labelClasses,
   control,
-  multiple
+  multiple,
+  defaultValue,
 }: Props, ref) =>  {
     
   const optionsRef = useRef<HTMLUListElement | null>(null);
@@ -106,14 +107,16 @@ function classNames(...classes: any) {
       return values.find((val) => val.value === field.value)?.displayValue;
     }
     const displayValue = values.filter(val=> field.value.includes(val.value));
-    return (displayValue.length > 0 ? displayValue.map(val=> val.displayValue).toString() : "");
+    return (displayValue.length > 0 ? displayValue.map(val=> val.displayValue).toString() : undefined);
   }
   
   return (
     <Controller
     control={control}
     name={id}
+    defaultValue={defaultValue}
     render={({ field }) => {
+      console.log("🚀 ~ file: SelectInput.tsx:119 ~ field:", field)
       return (
         <Listbox ref={containerRef} value={field.value} onChange={field.onChange} name={id} multiple={multiple}>
           {({ open }: { open: boolean; }) => {

@@ -77,11 +77,11 @@ export class Workflow extends Model<InferAttributes<Workflow>, InferCreationAttr
   declare status: string;
 
   @Column({
-    type: DataType.STRING(15),
+    type: DataType.STRING(20),
     allowNull: true,
     validate: {
       min: 1,
-      max: 15,
+      max: 20,
     }
   })
   declare duration: CreationOptional<string| null>;
