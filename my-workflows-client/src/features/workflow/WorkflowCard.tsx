@@ -175,7 +175,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
               const descriptionID = `${idPrefix}description`;
               const dependenciesID = `${idPrefix}dependencies`;
               const dueDayID = `${idPrefix}dueDay`;
-              const taskOwnerID = `${idPrefix}taskOwner.userID`
+              const taskOwnerID = `${idPrefix}ownerID`
               return (
                 <Fragment key={task.id}>
                   <TableCell><ActionDropDown actions={actions}/></TableCell>
