@@ -121,18 +121,19 @@ export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWor
     }
     
     if (tasks && Array.isArray(tasks)) {
-      // createTasksFromArgs(tasks, 
-      //   {include: [{model: Task, as: 'taskDependencies', duplicating: true} ], 
-      //   updateOnDuplicate: ["name", "description", "taskDependencies", "dueDay", "ownerID", 'UpdatedAt'],
-      // })
+      createTasksFromArgs(withWorkflowID(tasks, workflowID), 
+        {updateOnDuplicate: ["name", "description", "dueDay", "ownerID", 'UpdatedAt']})
+      
+      
+
       const tasksWithoutDeps = tasks.map(task=> {
         const {dependencies, ...taskWithoutDeps} = task;
         return taskWithoutDeps
       });
-      console.log("🚀 ~ file: workflows.ts:129 ~ .then ~ tasks:", tasks)
-      createTasksFromArgs(withWorkflowID(tasks, BigInt(workflowID)), 
-        { updateOnDuplicate: ["name", "description", "taskDependencies", "dueDay", "ownerID", 'UpdatedAt'],
-      })
+      // console.log("🚀 ~ file: workflows.ts:129 ~ .then ~ tasks:", tasks)
+      // createTasksFromArgs(withWorkflowID(tasks, BigInt(workflowID)), 
+      //   { updateOnDuplicate: ["name", "description", "taskDependencies", "dueDay", "ownerID", 'UpdatedAt'],
+      // })
     }
       res.send({ msg: 'Workflow updated!', workflowID: workflow[0] });
     })
