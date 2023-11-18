@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Task, EditTaskSchema, EditTaskRequest, useCreateTaskMutation, useDeleteTaskMutation, useUpdateTaskMutation, EditTasksSchema, EditTasksRequest, NewTasksRequest, NewTaskSchema, NewTasksSchema } from 'app/services/task';
 import { User } from 'app/services/user';
-import { EditWorkflowRequest, EditWorkflowSchema, Task, Workflow, fieldSizes, transformTaskOwner, useEditWorkflowMutation} from "app/services/workflow";
+import { EditWorkflowRequest, EditWorkflowSchema, Workflow, fieldSizes, transformTaskOwner, useEditWorkflowMutation} from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import {ActionDropDown} from 'features/ui/ActionMenu';
 import {SelectInput} from 'features/ui/shared';
@@ -34,6 +35,8 @@ type Props = {
   users: User[]
 }
 
+type FormState = EditWorkflowRequest &  NewTasksRequest;
+
 const getDisplayUsers = (users: User[]) => users.map((user) => ({
   value: user.userID , displayValue: user.name
 }))
@@ -43,31 +46,97 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
 
 const WorkflowCard = ({workflow, users = []}: Props) => {
-  const [saveWorkflow, status] = useEditWorkflowMutation();
-  const { register, handleSubmit, formState: {errors: inputErrors }, getValues, control } = 
-    useForm<EditWorkflowRequest>({
-      resolver: yupResolver(EditWorkflowSchema),
+  const [saveWorkflow, workflowStatus] = useEditWorkflowMutation();
+  const [createTasks, createTaskStatus] = useCreateTaskMutation();
+  const [updateTasks, updateTaskStatus] = useUpdateTaskMutation();
+  const [deleteTasks, deleteTaskStatus] = useDeleteTaskMutation();
+  const { register, handleSubmit, formState, getValues, control } = 
+    useForm<FormState>({
+      resolver: yupResolver(EditWorkflowSchema.concat(NewTasksSchema)),
       defaultValues: {
         workflowID: workflow?.workflowID,
         name: workflow?.name,
         description: workflow?.description,
         ownerID: workflow?.workflowOwner.userID,
-        tasks: workflow?.tasks
+        tasks: workflow?.tasks.map((task)=> {
+          const {taskOwner, taskDependencies, ...taskFields} = task;
+          return({
+          ...taskFields, ownerID: taskOwner?.userID
+        })})
       },
     });
+    const {isDirty, dirtyFields, defaultValues} = formState;
     const { fields: taskFields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
       control, 
       name: "tasks",
     });
 
-    useEffect(() => {
-      console.log("🚀 ~ file: WorkflowCard.tsx:66 ~ WorkflowCard ~ taskFields:", taskFields)
-    }, [taskFields]);
 
   const handleSave = async () => {
+    if(!isDirty) return;
+    const {tasks: dirtyTaskFields, ...dirtyWorkflowFields} = dirtyFields;
+
+    function containsDirtyFields(fieldNode: object | object[] | boolean): boolean{
+      if(typeof fieldNode == 'boolean') return fieldNode;
+      if(typeof fieldNode !== 'object') return false;
+      
+      let isDirty = false;
+      if(Array.isArray(fieldNode)) {
+        fieldNode.forEach(node=> containsDirtyFields(node));
+      }
+      for(const key in fieldNode ){
+        const _key = key as keyof typeof fieldNode;
+        
+        const value =  fieldNode[_key];
+
+        //found a dirty one
+        if(value === true) return true;
+
+        if(typeof value === 'object'){
+          //look at next node
+          return containsDirtyFields(fieldNode[_key]);
+        }
+      }
+      return isDirty;
+    }
+    
     try{
-      console.log(`saving ${getValues("workflowID")}:`, getValues())
-      await  saveWorkflow(getValues());
+      console.log(`saving ${getValues("workflowID")}:`, getValues());
+      console.log('formState.dirtyFields', dirtyFields);
+      console.log('forms.defaultValues', defaultValues);
+      console.log('formState.isDirty', isDirty);
+      const {tasks, ...workflow} = getValues();
+      const {tasks: dirtyTasks, ...dirtyWorkFlowFields} = dirtyFields;
+      const workflowUpdated = containsDirtyFields(dirtyWorkFlowFields);
+      const tasksUpdated = dirtyTasks ? containsDirtyFields(dirtyTasks) : false;
+
+      console.log("🚀 ~ file: WorkflowCard.tsx:105 ~ handleSave ~ workflowUpdated:", workflowUpdated)
+      if(workflowUpdated){
+        await  saveWorkflow(workflow);
+      }
+      if(tasksUpdated){
+        const newTasks = tasks.filter(task=> !task.taskID);
+        const newTasksWithoutDependencies = newTasks.map(task=> {
+          const {dependencies, ...taskWithoutDependencies} = task;
+          return taskWithoutDependencies;
+        })
+        
+        let createdTasks: Task[];
+        if(newTasks.length > 0){
+         createdTasks = await createTasks({tasks: newTasksWithoutDependencies}).unwrap();
+        }
+
+        const tasksWithUpdatedDependencies = tasks
+          .filter(task=> task.dependencies)
+          .map(depTask=> (
+            {...createdTasks.find(createdTask=> createdTask.name === depTask.name),
+              depedencies: depTask.dependencies
+            }));
+        console.log("🚀 ~ file: WorkflowCard.tsx:135 ~ handleSave ~ tasksWithUpdatedDependencies:", tasksWithUpdatedDependencies)
+        // if(tasksWithUpdatedDependencies.length > 0){
+        //   await updateTasks(tasksWithUpdatedDependencies);
+        // }
+      }
     } catch(e) {
       console.log(e);
     } finally {
@@ -76,6 +145,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
   }
 
   const handleNewTask = () =>{
+    if(!workflow) return;
     const defaultDueDate = taskFields[taskFields.length - 1].dueDay; 
     append({
       name: '',
@@ -83,6 +153,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
       dependencies: undefined,
       dueDay: defaultDueDate,
       ownerID: 0,
+      workflowID: workflow?.workflowID,
       // taskOwner: {
       //   userID: 0,
       //   name: "",
@@ -103,12 +174,10 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
 
   const {ref: nameRef, ...nameFields} = register("name",  { required: true });
   const {ref: descriptionRef, ...descriptionFields} = register("description",  { required: true });
-
   return ( 
     <TableCard
           title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
     >
-      <button className='absolute top-0' type='button' onClick={()=>console.log(getValues())}>console Workflow</button>
         <form className="w-full" onSubmit={handleSubmit(handleSave)}>
           <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
             <InputCell inputName='name' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
@@ -239,7 +308,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
                         {...register(`tasks.${index}.ownerID`, {required: true})}
                         control={control}
                         values={getDisplayUsers(users)}
-                        defaultValue={task.taskID ? task.taskID : []} // needed to prevent change from uncontrolled to controlled error
+                        defaultValue={task.ownerID ?? []} // needed to prevent change from uncontrolled to controlled error
                       />
                     </InputCell>
                   </TableCell>
@@ -248,7 +317,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
             })}
           </Table>
           <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
-          <SubmitButton>Save</SubmitButton>
+          <SubmitButton disabled={!formState.isDirty}>Save</SubmitButton>
           </div>
         </form>
     </TableCard>

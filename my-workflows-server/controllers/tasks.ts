@@ -135,13 +135,6 @@ export const deleteTask = asyncWrapper(async (req: Request, res: Response, next:
   res.send({ msg: `Task ${taskID} has been deleted.` });
 })
 
-// export const testTaskUpdate = async () => (task: TaskArgs, options?: BulkCreateOptions | CreateOptions ){
-//   const {dependencies, ...args} = task;
-//     const createdTask = await Task.findOrCreate(args).then(createTask=>{
-//       console.log("🚀 ~ file: tasks.ts:119 ~ createdTask ~ args:", args)
-//     });
-// }
-
 
 async function transactTasks(tasks: TaskArgs[]){
   try {

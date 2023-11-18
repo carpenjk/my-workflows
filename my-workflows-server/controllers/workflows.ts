@@ -15,7 +15,8 @@ interface WorkflowArgs {
   name: string,
   description: string,
   ownerID: bigint,
-  tasks?: TaskArgs[]
+  //Removed to treat as separate resources
+  // tasks?: TaskArgs[] 
 }
 
 interface UpdateWorkflowArgs extends WorkflowArgs {
@@ -73,35 +74,27 @@ export const getWorkflows = asyncWrapper(async (req: Request, res: Response, nex
   res.send(workflows);
 })
 
-export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowArgs>, res: Response) => {
-  const {tasks, ...summaryFields } = req.body;
 
-  const tasksWithoutID = tasks?.map(task => {
-      const {taskID, ...taskWithoutID} = task;
-      return taskWithoutID;
-  })
-  
-  function getDuration(): {} | {duration: string} {
-    if(tasks){
-      const duration = Math.max(...tasks?.map(task=> task.dueDay));
-      const durationUnits = duration > 1 ? 'Days' : 'Day';
-      return {duration: `${duration} ${durationUnits}` };
-    }
-    return {};
+function getDuration(tasks:Task[]): {} | {duration: string} {
+  if(tasks){
+    const duration = Math.max(...tasks?.map(task=> task.dueDay));
+    const durationUnits = duration > 1 ? 'Days' : 'Day';
+    return {duration: `${duration} ${durationUnits}` };
   }
+  return {};
+}
 
+export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowArgs>, res: Response) => {
+  const {...summaryFields } = req.body;
   const workflow = await Workflow.create({
-    ...getDuration(),
     status: 'Draft',
     ...summaryFields,
   });
-  console.log("🚀 ~ file: workflows.ts:89 ~ createWorkflow ~ workflow:", workflow)
-  console.log("🚀 ~ file: workflows.ts:79 ~ tasksWithoutID ~ tasksWithoutID:", tasksWithoutID)
 
-  if(tasksWithoutID){
-    const tasksWithWorkflowID = tasksWithoutID?.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
-    await createTasksFromArgs(tasksWithWorkflowID)
-  }
+  // if(tasksWithoutID){
+  //   const tasksWithWorkflowID = tasksWithoutID?.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
+  //   await createTasksFromArgs(tasksWithWorkflowID)
+  // }
   res.json({ msg: 'Workflow created!' });
 });
 
@@ -111,32 +104,15 @@ function withWorkflowID(tasks: TaskArgs[], workflowID: bigint){
 }
 
 export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWorkflowArgs>, res: Response, next: NextFunction) => {
-  const { workflowID: workflowID, tasks, ...workflowParams } = req.body;
+  const { workflowID: workflowID, ...workflowParams } = req.body;
   
-  await Workflow.scope('withTasks')
-  .update(workflowParams, {where: {workflowID: Number(workflowID)}})
-  .then((workflow) => {
-    if (!workflow[0]) {
-      return next(new NotFoundError('Workflow not found.'));
-    }
-    
-    if (tasks && Array.isArray(tasks)) {
-      createTasksFromArgs(withWorkflowID(tasks, workflowID), 
-        {updateOnDuplicate: ["name", "description", "dueDay", "ownerID", 'UpdatedAt']})
-      
-      
-
-      const tasksWithoutDeps = tasks.map(task=> {
-        const {dependencies, ...taskWithoutDeps} = task;
-        return taskWithoutDeps
-      });
-      // console.log("🚀 ~ file: workflows.ts:129 ~ .then ~ tasks:", tasks)
-      // createTasksFromArgs(withWorkflowID(tasks, BigInt(workflowID)), 
-      //   { updateOnDuplicate: ["name", "description", "taskDependencies", "dueDay", "ownerID", 'UpdatedAt'],
-      // })
-    }
-      res.send({ msg: 'Workflow updated!', workflowID: workflow[0] });
-    })
+  const workflow = await Workflow.scope('withTasks')
+    .update(workflowParams, {where: {workflowID: Number(workflowID)}});
+  console.log("🚀 ~ file: workflows.ts:110 ~ updateWorkFlow ~ workflow:", workflow[0])
+  if (!workflow[0]) {
+    return next(new NotFoundError('Workflow not found.'));
+  }
+  res.send({ msg: 'Workflow updated!', workflowID: workflow[0] });
 })
 
 export const deleteWorkFlow = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {

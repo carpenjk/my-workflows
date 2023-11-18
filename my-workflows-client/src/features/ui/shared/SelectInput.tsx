@@ -116,7 +116,6 @@ function classNames(...classes: any) {
     name={id}
     defaultValue={defaultValue}
     render={({ field }) => {
-      console.log("🚀 ~ file: SelectInput.tsx:119 ~ field:", field)
       return (
         <Listbox ref={containerRef} value={field.value} onChange={field.onChange} name={id} multiple={multiple}>
           {({ open }: { open: boolean; }) => {

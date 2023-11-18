@@ -1,22 +1,8 @@
+import { createEntityAdapter } from '@reduxjs/toolkit';
 import { api } from './api';
 import * as yup from "yup"; 
+import { Task } from './task';
 
-
-export interface Task {
-  taskID: number,
-  name: string,
-  description: string,
-  dependencies?: number[]
-  dueDay: number,
-  workflowID: string,
-  updatedAt: Date,
-  taskDependencies: Task[];
-  taskOwner: {
-    userID: number,
-    name: string,
-    email: string,
-  }
-}
 
 export interface Workflow{
   workflowID: number,
@@ -54,18 +40,6 @@ export const CreateWorkflowSchema = yup.object({
   name: yup.string().length(fieldSizes.workflow.name).required(),
   description: yup.string().length(fieldSizes.workflow.description).required(),
   ownerID: yup.number().integer().required(),
-  tasks: yup.array().of(
-    yup.object().shape({
-        name: yup.string().length(fieldSizes.task.name).required(),
-        description: yup.string().length(fieldSizes.task.description).required(),
-        dependencies: yup.array().of(
-          yup.number().integer().required()
-        ),
-        dueDay: yup.number().integer().required(),
-        // dueDay: yup.string().required(),
-        ownerID: yup.number().integer().required(),
-      })
-    ).required(),
 });
 
 export const EditWorkflowSchema = yup.object({
@@ -73,19 +47,6 @@ export const EditWorkflowSchema = yup.object({
   name: yup.string().max(fieldSizes.workflow.name).required(),
   description: yup.string().max(fieldSizes.workflow.description).required(),
   ownerID: yup.number().integer().required().positive('A workflow owner must be selected.'),
-  tasks: yup.array().of(
-    yup.object().shape({
-        taskID: yup.number().integer().positive('Invalid task.'),
-        name: yup.string().max(fieldSizes.task.name).required(),
-        description: yup.string().max(fieldSizes.task.description).required(),
-        dependencies: yup.array().of(
-          yup.number().integer().required()
-        ),
-        dueDay: yup.number().integer().required().positive('A due day must be selected.'),
-        // dueDay: yup.string().required(),
-        ownerID: yup.number().integer().required(),
-      }).required()
-    ).required(),
 })
 
 export type CreateWorkflowRequest = yup.InferType<typeof CreateWorkflowSchema>;
@@ -97,6 +58,11 @@ export function transformTaskOwner(task: Task){
   return({ownerID: taskOwner.userID, ...copyProps})
 }
 
+export const workflowAdapter = createEntityAdapter<Workflow>({
+  selectId: (workFlow) => workFlow.workflowID,
+  // sortComparer: (a, b) => a.title.localeCompare(b.title),
+})
+
 export function transformWorkflow(workflow: Workflow){
   console.log('copy workflow:', workflow.workflowID);
   const {workflowID, createdAt, updatedAt, completedDate, workflowOwner, tasks, ...copyProps} = workflow;
@@ -107,6 +73,12 @@ export function transformWorkflow(workflow: Workflow){
   })
 }
 
+export function withDependencies(task: Task): Task{
+  // no dependencies
+  if(task.taskDependencies?.length < 1) return task;
+  return ({...task, dependencies: task.taskDependencies.map(dependencies=> dependencies.taskID.toString())})
+}
+
 export const workflowApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getWorkflows: builder.query<Workflow[], {limit: number} | void>({
@@ -114,18 +86,25 @@ export const workflowApi = api.injectEndpoints({
         url: `${process.env.REACT_APP_API_PATH}/workflow`,
         method: 'GET',
         params: params ? { ...params } : undefined,
+        transformResponse: (data: Workflow[]) => (data.map(
+          workflow => ({
+            ...workflow,
+            tasks: workflow.tasks.map(task=> withDependencies(task))
+          })
+        ))
       }),
       providesTags: ['Workflow'],
+      
     }),
     getWorkflow: builder.query<Workflow, string>({
       query: (workflow) => ({
         url: `${process.env.REACT_APP_API_PATH}/workflow/${workflow}`,
         method: 'GET',
       }),
-      transformResponse: (response: Workflow, meta,arg ) => {
-        //! transform for dependencies field used by select dropdown
-        return response;
-      },
+      transformResponse: (data: Workflow) => ({
+          ...data,
+          tasks: data.tasks.map(task=> withDependencies(task))
+      }),
       providesTags: ['Workflow'],
     }),
     createWorkflow: builder.mutation<number , CreateWorkflowRequest>({
