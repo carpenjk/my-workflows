@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Task, EditTaskSchema, EditTaskRequest, useCreateTaskMutation, useDeleteTaskMutation, useUpdateTaskMutation, EditTasksSchema, EditTasksRequest, NewTasksRequest, NewTaskSchema, NewTasksSchema } from 'app/services/task';
+import { Task, useCreateTaskMutation, useDeleteTaskMutation, useUpdateTaskMutation, EditTasksRequest, NewTasksRequest, NewTasksSchema } from 'app/services/task';
 import { User } from 'app/services/user';
 import { EditWorkflowRequest, EditWorkflowSchema, Workflow, fieldSizes, transformTaskOwner, useEditWorkflowMutation} from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
@@ -10,6 +10,7 @@ import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
 import { Fragment, useEffect } from 'react';
 import { useFieldArray, useForm } from "react-hook-form";
+import { number } from 'yup';
 
 const actions = [
   {
@@ -86,7 +87,6 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
       }
       for(const key in fieldNode ){
         const _key = key as keyof typeof fieldNode;
-        
         const value =  fieldNode[_key];
 
         //found a dirty one
@@ -101,16 +101,13 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
     }
     
     try{
-      console.log(`saving ${getValues("workflowID")}:`, getValues());
-      console.log('formState.dirtyFields', dirtyFields);
-      console.log('forms.defaultValues', defaultValues);
-      console.log('formState.isDirty', isDirty);
       const {tasks, ...workflow} = getValues();
       const {tasks: dirtyTasks, ...dirtyWorkFlowFields} = dirtyFields;
       const workflowUpdated = containsDirtyFields(dirtyWorkFlowFields);
       const tasksUpdated = dirtyTasks ? containsDirtyFields(dirtyTasks) : false;
 
       console.log("🚀 ~ file: WorkflowCard.tsx:105 ~ handleSave ~ workflowUpdated:", workflowUpdated)
+      //workflow summary must be saved first
       if(workflowUpdated){
         await  saveWorkflow(workflow);
       }
@@ -121,21 +118,28 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
           return taskWithoutDependencies;
         })
         
-        let createdTasks: Task[];
+        type WorkflowID = {workflowID: number}
+        let createdTasks: (Task & WorkflowID)[];
+        //new tasks must be created before asigning dependencies
         if(newTasks.length > 0){
          createdTasks = await createTasks({tasks: newTasksWithoutDependencies}).unwrap();
         }
+        
 
-        const tasksWithUpdatedDependencies = tasks
-          .filter(task=> task.dependencies)
-          .map(depTask=> (
-            {...createdTasks.find(createdTask=> createdTask.name === depTask.name),
-              depedencies: depTask.dependencies
-            }));
-        console.log("🚀 ~ file: WorkflowCard.tsx:135 ~ handleSave ~ tasksWithUpdatedDependencies:", tasksWithUpdatedDependencies)
-        // if(tasksWithUpdatedDependencies.length > 0){
-        //   await updateTasks(tasksWithUpdatedDependencies);
-        // }
+        //combine new and updated tasks include deps
+        const updatedTasks: EditTasksRequest = {tasks: tasks.map(task=> {
+          const {taskID, ...props} = task; 
+          return ({
+            taskID: taskID ?? createdTasks.find(createdTask=> createdTask.name === task.name)?.taskID,
+            ...props
+          })
+        })} as EditTasksRequest;
+        
+        console.log("🚀 ~ file: WorkflowCard.tsx:141 ~ updatedTasks ~ updatedTasks:", updatedTasks)
+        
+        if(updatedTasks.tasks.length > 0){
+          await updateTasks(updatedTasks);
+        }
       }
     } catch(e) {
       console.log(e);
@@ -154,17 +158,9 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
       dueDay: defaultDueDate,
       ownerID: 0,
       workflowID: workflow?.workflowID,
-      // taskOwner: {
-      //   userID: 0,
-      //   name: "",
-      //   email: ""
-      // }
     })
   }
   
-  function getErrors(){
-    return null;
-  }
 
   useEffect(() => {
     if(workflow){

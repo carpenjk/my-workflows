@@ -1,4 +1,3 @@
-import { createEntityAdapter } from '@reduxjs/toolkit';
 import { api } from './api';
 import * as yup from "yup"; 
 import { Task } from './task';
@@ -57,11 +56,6 @@ export function transformTaskOwner(task: Task){
   const {taskOwner, ...copyProps} = task;
   return({ownerID: taskOwner.userID, ...copyProps})
 }
-
-export const workflowAdapter = createEntityAdapter<Workflow>({
-  selectId: (workFlow) => workFlow.workflowID,
-  // sortComparer: (a, b) => a.title.localeCompare(b.title),
-})
 
 export function transformWorkflow(workflow: Workflow){
   console.log('copy workflow:', workflow.workflowID);

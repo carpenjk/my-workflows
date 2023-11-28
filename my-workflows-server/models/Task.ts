@@ -55,9 +55,6 @@ export class Task extends Model<InferAttributes<Task>, InferCreationAttributes<T
    })
   declare taskDependencies: CreationOptional<Task[]>;
 
-
-  // declare reviewer: bigint;
-  
   @Column({
     type: DataType.INTEGER,
     allowNull: false,

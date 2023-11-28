@@ -9,6 +9,6 @@ export const api = createApi({
      baseUrl: baseUrl,
      credentials: "include"
     }),
-    tagTypes: ['User', 'Workflow', 'Task'],
+    tagTypes: ['User', 'Workflow', 'Task', 'Dependencies'],
   endpoints: () => ({}),
 })

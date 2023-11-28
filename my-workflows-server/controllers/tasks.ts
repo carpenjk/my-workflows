@@ -3,15 +3,11 @@ import { asyncWrapper } from "../middleware/asyncWrapper";
 import { Task } from "../models/Task";
 import { NotFoundError } from "../errors/notFoundError";
 import { BulkCreateOptions, CreateOptions } from "sequelize";
-import { sequelize } from "../adapters/sequelize";
-import { BadRequestError } from "../errors/badRequestError";
-import { Dependency } from "../models/Dependency";
 
 export interface TaskArgs {
   taskID?: bigint,
   name: string,
   description: string,
-  dependencies?: (bigint | string)[],
   dueDay: number,
   ownerID: bigint,
   workflowID: bigint
@@ -45,58 +41,7 @@ export const getTask = asyncWrapper(async (req: Request, res: Response, next: Ne
 export const createTasksFromArgs = async (tasks: TaskArgs | TaskArgs[], options?: BulkCreateOptions | CreateOptions ) => {
   try{
     if(Array.isArray(tasks)){
-      //transform 
-      const transformedTasks = tasks.reduce((ary: any[], task) => {
-        if(Array.isArray(task.dependencies)){
-          const deps = task.dependencies.map(dep => tasks.find(task=> task.taskID == dep));
-          const tasksWithDeps = [...ary, {...task, taskDependencies: deps}];
-          return tasksWithDeps;
-        }
-        return [...ary, task];
-      },[])
-      
-      const createdTasks = (await Task.bulkCreate(transformedTasks, options as BulkCreateOptions))
-        .map(task=> task.dataValues);
-
-
-      const dependencies = tasks.map((task: TaskArgs)=> {
-        if(!("taskID" in task)|| !task.dependencies){
-          return;
-        }
-        const taskDependencies: {taskID: bigint, dependencies:  bigint}[] = task.dependencies.map((dep)=> {
-          function getID(key: bigint | string): bigint | undefined{
-            return (typeof key === "bigint"
-              ? key
-              :  createdTasks.find(task=> task.name === dep )?.taskID)
-          }
-          const taskID = getID(task.taskID ?? task.name);
-          const depID = getID(dep);
-          if(!taskID || !depID){
-            throw new BadRequestError('Invalid dependencies');
-          }
-          return ({
-            taskID: taskID,
-            dependencies: depID
-          });
-        }
-        )
-        return taskDependencies.filter(task=>task.dependencies);
-      })
-      
-      console.log("🚀 ~ file: tasks.ts:68 ~ createTasksFromArgs ~ createdTasks:", createdTasks);
-      console.log("🚀 ~ file: tasks.ts:87 ~ dependencies ~ dependencies:", dependencies);
-      
-      if(dependencies && dependencies.length > 0){
-        // await Dependency.bulkCreate(dependencies)
-      // if(dependencies && dependencies.length > 0){
-      //   const tasksWithDependencies = createdTasks.map(task=> 
-      //     ({taskID: task.taskID, dependencies: dependencies.find(
-      //       (dep=> dep && ('taskID' in dep)
-      //       && (dep.taskID === task.taskID))
-      //   )}));
-        // console.log("🚀 ~ file: tasks.ts:67 ~ createTasksFromArgs ~ tasksWithDependencies:", tasksWithDependencies)
-        console.log("🚀 ~ file: tasks.ts:59 ~ createTasksFromArgs ~ createdTasks:", createdTasks);
-      }
+      await Task.bulkCreate(tasks, options as BulkCreateOptions)
       return;
     }
     await Task.create(tasks as TaskArgs, options as CreateOptions);
@@ -126,6 +71,12 @@ export const updateTask = asyncWrapper(async (req: Request, res: Response, next:
   res.send(`Task updated!`);
 })
 
+export const updateTasks = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { tasks } = req.body;
+  createTasksFromArgs(tasks, {updateOnDuplicate: ['name','description', 'dependencies', 'dueDay', 'ownerID', 'workflowID']})
+  res.send(`Task updated!`);
+})
+
 export const deleteTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { taskID } = req.params;
   const task = await Task.destroy({ where: { taskID: taskID } });
@@ -134,33 +85,3 @@ export const deleteTask = asyncWrapper(async (req: Request, res: Response, next:
   }
   res.send({ msg: `Task ${taskID} has been deleted.` });
 })
-
-
-async function transactTasks(tasks: TaskArgs[]){
-  try {
-    if(tasks.filter((task) => task.taskID).length === 0){
-      return await Task.bulkCreate(tasks);
-    }
-    const result = await sequelize.transaction(async (t) => {
-      const transformedTasks = tasks.reduce((ary: any[], task) => {
-        if(Array.isArray(task.dependencies)){
-          const deps = task.dependencies.map(dep => tasks.find(task=> task.taskID == dep));
-          const tasksWithDeps = [...ary, {...task, taskDependencies: deps}];
-          return tasksWithDeps;
-        }
-        return [...ary, task];
-      },[])
-      const createdTasks = (await Task.bulkCreate(tasks, { transaction: t })).map(task => task.dataValues);
-  
-      return;
-    });
-  
-    // If the execution reaches this line, the transaction has been committed successfully
-    // `result` is whatever was returned from the transaction callback (the `user`, in this case)
-  
-  } catch (error) {
-  
-  
-  }
-
-}

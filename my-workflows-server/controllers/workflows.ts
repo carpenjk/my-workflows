@@ -1,22 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { BulkCreateOptions } from "sequelize";
-import { Includeable } from "sequelize";
 import { Workflow } from "../models/Workflow";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
-import { TaskArgs, createTasksFromArgs } from "./tasks";
+import { TaskArgs } from "./tasks";
 import { Task } from "../models/Task";
 import { User } from "../models/User";
 import { sequelize } from "../adapters/sequelize";
-import { Dependency } from "../models/Dependency";
-import { UpdatedAt } from "sequelize-typescript";
 
 interface WorkflowArgs {
   name: string,
   description: string,
   ownerID: bigint,
-  //Removed to treat as separate resources
-  // tasks?: TaskArgs[] 
 }
 
 interface UpdateWorkflowArgs extends WorkflowArgs {
@@ -90,11 +84,6 @@ export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowAr
     status: 'Draft',
     ...summaryFields,
   });
-
-  // if(tasksWithoutID){
-  //   const tasksWithWorkflowID = tasksWithoutID?.map((task) => ({...task, workflowID: BigInt(workflow.dataValues.workflowID)}));
-  //   await createTasksFromArgs(tasksWithWorkflowID)
-  // }
   res.json({ msg: 'Workflow created!' });
 });
 
@@ -108,7 +97,6 @@ export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWor
   
   const workflow = await Workflow.scope('withTasks')
     .update(workflowParams, {where: {workflowID: Number(workflowID)}});
-  console.log("🚀 ~ file: workflows.ts:110 ~ updateWorkFlow ~ workflow:", workflow[0])
   if (!workflow[0]) {
     return next(new NotFoundError('Workflow not found.'));
   }

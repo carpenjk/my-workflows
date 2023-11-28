@@ -5,5 +5,6 @@ const router = express.Router({ mergeParams: true });
 
 router.route('/').get(getTasks).post(createTask);
 router.route('/:taskID').get(getTask).patch(updateTask);
+router.route('/').put(updateTask)
 
 export default router;
