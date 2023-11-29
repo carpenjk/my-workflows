@@ -42,10 +42,9 @@ export const getTask = asyncWrapper(async (req: Request, res: Response, next: Ne
 export const createTasksFromArgs = async (tasks: TaskArgs | TaskArgs[], options?: BulkCreateOptions | CreateOptions ) => {
   try{
     if(Array.isArray(tasks)){
-      await Task.bulkCreate(tasks, options as BulkCreateOptions)
-      return;
+      return await Task.bulkCreate(tasks, options as BulkCreateOptions)
     }
-    await Task.create(tasks as TaskArgs, options as CreateOptions);
+    return await Task.create(tasks as TaskArgs, options as CreateOptions);
   } catch(e){
     console.log(e);
   }
@@ -80,9 +79,10 @@ export const updateTask = asyncWrapper(async (req: Request, res: Response, next:
 
 export const updateTasks = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { tasks } = req.body;
-  console.log("🚀 ~ file: tasks.ts:83 ~ updateTasks ~ req.body:", req.body)
-  createTasksFromArgs(tasks, {updateOnDuplicate: ['name','description', 'dependencies', 'dueDay', 'ownerID']})
-  res.send({msg: 'Task updated!'});
+  const results = createTasksFromArgs(tasks, {
+    updateOnDuplicate: ['name','description', 'dependencies', 'dueDay', 'ownerID'],
+  })
+  res.send({msg: 'Task updated!', Tasks: results});
 })
 
 export const deleteTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {

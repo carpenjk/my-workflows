@@ -5,8 +5,8 @@ export const DependenciesSchema = yup.object({
   workflowID: yup.number().integer().required(),
   taskID: yup.number().integer().positive('Invalid task.').required(),
   dependencies: yup.array().of(
-    yup.string().integer()
-  ),
+    yup.string().integer().required()
+  ).required(),
 }).required();
 
 export const BulkDependenciesSchema = yup.object({tasks: yup.array().of(DependenciesSchema).required()}).required();

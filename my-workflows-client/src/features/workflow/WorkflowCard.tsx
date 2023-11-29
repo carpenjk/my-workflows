@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useUpdateDependenciesMutation } from 'app/services/dependencies';
-import { Task, useDeleteTaskMutation, EditTasksRequest, NewTasksRequest, NewTasksSchema, useSaveTasksMutation } from 'app/services/task';
+import { TaskDependenciesRequest, TasksDependenciesRequest, useUpdateDependenciesMutation } from 'app/services/dependencies';
+import { Task, useDeleteTaskMutation, EditTasksRequest, NewTasksRequest, NewTasksSchema, useSaveTasksMutation, EditTaskRequest } from 'app/services/task';
 import { User } from 'app/services/user';
 import { EditWorkflowRequest, EditWorkflowSchema, Workflow, fieldSizes, useEditWorkflowMutation} from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
@@ -75,66 +75,83 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
 
   const handleSave = async () => {
     if(!isDirty) return;
-    const {tasks: dirtyTaskFields, ...dirtyWorkflowFields} = dirtyFields;
+    const {tasks: dirtyTasks, ...dirtyWorkflowFields} = dirtyFields;
 
     function containsDirtyFields(fieldNode: object | object[] | boolean): boolean{
       if(typeof fieldNode == 'boolean') return fieldNode;
       if(typeof fieldNode !== 'object') return false;
       if(Array.isArray(fieldNode)) {
-        fieldNode.forEach(node=> {
-          const isDirty = containsDirtyFields(node);
-          console.log(" Task:", node);
-          console.log('isDirty', isDirty);
-          if(isDirty) return true;
-        });
-      }
-      for(const key in fieldNode ){
-        const _key = key as keyof typeof fieldNode;
-        const value =  fieldNode[_key];
-        console.log(" key:", fieldNode);
-        console.log('value', value);
-
-        //found a dirty one
-        if(value === true) return true;
-
-        if(typeof value === 'object'){
-          //look at next node
-          return containsDirtyFields(fieldNode[_key]);
+        return fieldNode.some(node => containsDirtyFields(node));
+      } else {
+        for(const key in fieldNode ){
+          const _key = key as keyof typeof fieldNode;
+          const value =  fieldNode[_key];
+          //found a dirty one
+          if(value === true) return true;
+          if(typeof value === 'object'){
+            //look at next node
+            return containsDirtyFields(value);
+          }
         }
       }
       return false;
     }
-    
+
+    function splitDependencies(tasks: Task[]): EditTasksRequest & {dependencies: TaskDependenciesRequest[]}{
+      let taskDependencies: TaskDependenciesRequest[] = [];
+      let tasksWithoutDependencies: EditTaskRequest[] = [];
+      let deletedDependencies: TaskDependenciesRequest[] = [];
+
+      function dependenciesDeleted(){
+        
+      }
+
+      tasks.forEach(task=> {
+        const {workflowID, taskID, dependencies, ...taskProps} = task;
+        let dependencyDeleted = false;
+
+        if(dependencies && dependencies.length > 0){
+          taskDependencies?.push({workflowID, taskID, dependencies: dependencies})
+        } else if(dependencyDeleted){
+          //add to deleted dependencies
+        }
+
+        tasksWithoutDependencies.push({
+          workflowID,
+          taskID,
+          ownerID: task.taskOwner.userID,
+           ...taskProps
+        });
+      });
+      return ({tasks: tasksWithoutDependencies, dependencies: taskDependencies});
+    }
+
     try{
       const {tasks, ...workflow} = getValues();
-      const {tasks: dirtyTasks, ...dirtyWorkFlowFields} = dirtyFields;
-      console.log("🚀 ~ file: WorkflowCard.tsx:106 ~ handleSave ~ dirtyTasks:", dirtyTasks)
-      const workflowUpdated = containsDirtyFields(dirtyWorkFlowFields);
+      const workflowUpdated = containsDirtyFields(dirtyWorkflowFields);
       const tasksUpdated = dirtyTasks ? containsDirtyFields(dirtyTasks) : false;
-      console.log("🚀 ~ file: WorkflowCard.tsx:109 ~ handleSave ~ tasksUpdated:", tasksUpdated)
-
-      console.log("🚀 ~ file: WorkflowCard.tsx:105 ~ handleSave ~ workflowUpdated:", workflowUpdated)
       //workflow summary must be saved first
       if(workflowUpdated){
         await  saveWorkflow(workflow);
       }
       if(tasksUpdated){
         // const newTasks = tasks.filter(task=> !task.taskID);
+
         const tasksWithoutDependencies = tasks.map(task=> {
           const {dependencies,  ...taskWithoutDependencies} = task;
           return taskWithoutDependencies;
         })
-        console.log("🚀 ~ file: WorkflowCard.tsx:120 ~ tasksWithoutDependencies ~ tasksWithoutDependencies:", tasksWithoutDependencies)
         
         type WorkflowID = {workflowID: number}
         let createdTasks: (Task & WorkflowID)[];
         //tasks must be updated and new tasks must be created before asigning dependencies
         if(tasksWithoutDependencies.length > 0){
          createdTasks = await saveTasks({workflowID: workflow.workflowID, tasks: tasksWithoutDependencies}).unwrap();
+         debugger
         }
         
         //combine new and updated tasks
-        const tasksWithNewID: EditTasksRequest = {tasks: tasksWithoutDependencies.map(task=> {
+        const tasksWithNewID: EditTasksRequest = {tasks: tasksWithoutDependencies.map(task => {
           const {taskID, ...props} = task; 
           return ({
             taskID: taskID ?? createdTasks.find(createdTask=> createdTask.name === task.name)?.taskID,
@@ -143,7 +160,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
         })} as EditTasksRequest;
 
 
-        console.log("🚀 ~ file: WorkflowCard.tsx:141 ~ updatedTasks ~ updatedTasks:", tasksWithNewID)
+        
       }
     } catch(e) {
       console.log(e);
