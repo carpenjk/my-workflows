@@ -3,6 +3,7 @@ import { asyncWrapper } from "../middleware/asyncWrapper";
 import { Task } from "../models/Task";
 import { NotFoundError } from "../errors/notFoundError";
 import { BulkCreateOptions, CreateOptions } from "sequelize";
+import { BadRequestError } from "../errors/badRequestError";
 
 export interface TaskArgs {
   taskID?: bigint,
@@ -60,6 +61,12 @@ export const createTask = asyncWrapper(async (req: Request, res: Response, next:
   res.send({ msg: 'Task created!' });
 })
 
+export const createTasks = asyncWrapper(async(req: Request, res: Response, next: NextFunction) => {
+  if(!Array.isArray(req.body)) return next(new BadRequestError('Tasks are not in an Array'));
+  createTasksFromArgs(req.body);
+  res.send({msg: 'Tasks have been Created!'});
+})
+
 export const updateTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const taskID: string = req.params.taskID;
   const workflowID: string = req.params.workflowID;
@@ -68,13 +75,14 @@ export const updateTask = asyncWrapper(async (req: Request, res: Response, next:
     { ...colsToUpdate, workflowID: workflowID },
     { where: { taskID: taskID } }
   )
-  res.send(`Task updated!`);
+  res.send({msg: 'Task updated!'});
 })
 
 export const updateTasks = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { tasks } = req.body;
-  createTasksFromArgs(tasks, {updateOnDuplicate: ['name','description', 'dependencies', 'dueDay', 'ownerID', 'workflowID']})
-  res.send(`Task updated!`);
+  console.log("🚀 ~ file: tasks.ts:83 ~ updateTasks ~ req.body:", req.body)
+  createTasksFromArgs(tasks, {updateOnDuplicate: ['name','description', 'dependencies', 'dueDay', 'ownerID']})
+  res.send({msg: 'Task updated!'});
 })
 
 export const deleteTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {

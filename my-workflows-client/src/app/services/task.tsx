@@ -9,6 +9,7 @@ export interface Task {
   dueDay: number,
   workflowID: number,
   updatedAt: Date,
+  createdAt: Date,
   taskDependencies: Task[];
   taskOwner: {
     userID: number,
@@ -37,7 +38,6 @@ export const EditTaskSchema = yup.object({
     yup.string().integer()
   ),
   dueDay: yup.number().integer().required().positive('A due day must be selected.'),
-  // dueDay: yup.string().required(),
   ownerID: yup.number().integer().required(),
 }).required();
 
@@ -50,7 +50,6 @@ export const NewTaskSchema = yup.object({
     yup.string().integer().required()
   ),
   dueDay: yup.number().integer().required().positive('A due day must be selected.'),
-  // dueDay: yup.string().required(),
   ownerID: yup.number().integer().required(),
 }).required();
 
@@ -62,6 +61,7 @@ export type EditTasksRequest = yup.InferType<typeof EditTasksSchema>;
 export type NewTaskRequest = yup.InferType<typeof NewTaskSchema>;
 export type NewTasksRequest = yup.InferType<typeof NewTasksSchema>;
 
+
 export function transformTaskOwner(task: Task){
   const {taskOwner, ...copyProps} = task;
   return({ownerID: taskOwner.userID, ...copyProps})
@@ -69,26 +69,34 @@ export function transformTaskOwner(task: Task){
 
 export const taskApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], {limit: number} | void>({
+    getTasks: builder.query< Task[], {limit: number} | void>({
       query: (params) => ({
-        url: `${process.env.REACT_APP_API_PATH}/workflow`,
+        url: `${process.env.REACT_APP_API_PATH}/workflow/`,
         method: 'GET',
         params: params ? { ...params } : undefined,
       }),
       providesTags: ['Task'],
     }),
-    createTask: builder.mutation<Task[] , NewTaskRequest | NewTasksRequest>({
+    createTask: builder.mutation<Task[] , NewTaskRequest>({
       query: (params)=> ({
-        url: `${process.env.REACT_APP_API_PATH}/task`,
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}/task`,
         method: 'POST',
         body: params
       }),
       invalidatesTags: ['Task'],
     }),
-    updateTask: builder.mutation<number , EditTaskRequest | EditTasksRequest>({
+    updateTask: builder.mutation<number , EditTaskRequest>({
       query: (params)=> ({
-        url: `${process.env.REACT_APP_API_PATH}/task`,
-        method: 'POST',
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}task/${params.taskID}`,
+        method: 'PUT',
+        body: params
+      }),
+      invalidatesTags: ['Task'],
+    }),
+    saveTasks: builder.mutation<Task[] ,  {workflowID: number} & NewTasksRequest>({
+      query: (params)=> ({
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}/task`,
+        method: 'PUT',
         body: params
       }),
       invalidatesTags: ['Task'],
@@ -103,4 +111,4 @@ export const taskApi = api.injectEndpoints({
   })
 })
 
-export const { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useDeleteTaskMutation }  = taskApi;
+export const { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useSaveTasksMutation, useDeleteTaskMutation }  = taskApi;
