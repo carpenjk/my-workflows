@@ -12,9 +12,10 @@ export const createDependencies = asyncWrapper(async (req: Request, res: Respons
   function createRecord(dep: DependencyProps){
     return ({taskID: dep.taskID, dependencies: dep.dependencies})
   }
+  console.log('dependencies body:', req.body);
   if(Array.isArray(req.body)){
     const deps = req.body.map(dep=> createRecord(dep))
-    await Dependency.bulkCreate(deps, {updateOnDuplicate: ['taskID', 'dependencies']});
+    await Dependency.bulkCreate(req.body, {updateOnDuplicate: ['dependencies']});
   } else {
     await Dependency.create(createRecord(req.body))
   }
@@ -24,7 +25,6 @@ export const createDependencies = asyncWrapper(async (req: Request, res: Respons
 export const deleteDependencies = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const {taskID, dependencies}= req.body;
   const destroyedDeps = await Dependency.destroy({where: {taskID: taskID, dependencies: dependencies}});
-  console.log("🚀 ~ file: dependencies.ts:27 ~ deleteDependencies ~ destroyedDeps:", destroyedDeps)
   if (!destroyedDeps) {
     return next(new NotFoundError(`No task with id : ${taskID}`));
   }

@@ -87,7 +87,7 @@ export const taskApi = api.injectEndpoints({
     }),
     updateTask: builder.mutation<number , EditTaskRequest>({
       query: (params)=> ({
-        url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}task/${params.taskID}`,
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}/task/${params.taskID}`,
         method: 'PUT',
         body: params
       }),

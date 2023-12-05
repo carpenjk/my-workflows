@@ -1,8 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TaskDependenciesRequest, TasksDependenciesRequest, useUpdateDependenciesMutation } from 'app/services/dependencies';
-import { Task, useDeleteTaskMutation, EditTasksRequest, NewTasksRequest, NewTasksSchema, useSaveTasksMutation, EditTaskRequest } from 'app/services/task';
+import { Task, NewTasksSchema } from 'app/services/task';
 import { User } from 'app/services/user';
-import { EditWorkflowRequest, EditWorkflowSchema, Workflow, fieldSizes, useEditWorkflowMutation} from "app/services/workflow";
+import { EditWorkflowSchema, Workflow, fieldSizes } from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import {ActionDropDown} from 'features/ui/ActionMenu';
 import {SelectInput} from 'features/ui/shared';
@@ -11,6 +10,8 @@ import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
 import { Fragment } from 'react';
 import { useFieldArray, useForm } from "react-hook-form";
+import { useWorkflow } from './useWorkflow';
+import { FormValues } from './useWorkflow';
 
 const actions = [
   {
@@ -36,7 +37,6 @@ type Props = {
   users: User[]
 }
 
-type FormState = EditWorkflowRequest &  NewTasksRequest;
 
 const getDisplayUsers = (users: User[]) => users.map((user) => ({
   value: user.userID , displayValue: user.name
@@ -47,12 +47,9 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
 
 const WorkflowCard = ({workflow, users = []}: Props) => {
-  const [saveWorkflow, workflowStatus] = useEditWorkflowMutation();
-  const [saveTasks, saveTaskStatus] = useSaveTasksMutation();
-  const [deleteTasks, deleteTaskStatus] = useDeleteTaskMutation();
-  const [saveDependencies, saveDependenciesStatus] = useUpdateDependenciesMutation();
+  
   const { register, handleSubmit, formState, getValues, control } = 
-    useForm<FormState>({
+    useForm<FormValues>({
       resolver: yupResolver(EditWorkflowSchema.concat(NewTasksSchema)),
       defaultValues: {
         workflowID: workflow?.workflowID,
@@ -72,102 +69,12 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
       name: "tasks",
     });
 
+    const {saveWorkflow} = useWorkflow();
 
-  const handleSave = async () => {
-    if(!isDirty) return;
-    const {tasks: dirtyTasks, ...dirtyWorkflowFields} = dirtyFields;
-
-    function containsDirtyFields(fieldNode: object | object[] | boolean): boolean{
-      if(typeof fieldNode == 'boolean') return fieldNode;
-      if(typeof fieldNode !== 'object') return false;
-      if(Array.isArray(fieldNode)) {
-        return fieldNode.some(node => containsDirtyFields(node));
-      } else {
-        for(const key in fieldNode ){
-          const _key = key as keyof typeof fieldNode;
-          const value =  fieldNode[_key];
-          //found a dirty one
-          if(value === true) return true;
-          if(typeof value === 'object'){
-            //look at next node
-            return containsDirtyFields(value);
-          }
-        }
-      }
-      return false;
+    const handleSave = async () =>{
+        if(!isDirty) return;
+        await saveWorkflow(getValues(), dirtyFields)
     }
-
-    function splitDependencies(tasks: Task[]): EditTasksRequest & {dependencies: TaskDependenciesRequest[]}{
-      let taskDependencies: TaskDependenciesRequest[] = [];
-      let tasksWithoutDependencies: EditTaskRequest[] = [];
-      let deletedDependencies: TaskDependenciesRequest[] = [];
-
-      function dependenciesDeleted(){
-        
-      }
-
-      tasks.forEach(task=> {
-        const {workflowID, taskID, dependencies, ...taskProps} = task;
-        let dependencyDeleted = false;
-
-        if(dependencies && dependencies.length > 0){
-          taskDependencies?.push({workflowID, taskID, dependencies: dependencies})
-        } else if(dependencyDeleted){
-          //add to deleted dependencies
-        }
-
-        tasksWithoutDependencies.push({
-          workflowID,
-          taskID,
-          ownerID: task.taskOwner.userID,
-           ...taskProps
-        });
-      });
-      return ({tasks: tasksWithoutDependencies, dependencies: taskDependencies});
-    }
-
-    try{
-      const {tasks, ...workflow} = getValues();
-      const workflowUpdated = containsDirtyFields(dirtyWorkflowFields);
-      const tasksUpdated = dirtyTasks ? containsDirtyFields(dirtyTasks) : false;
-      //workflow summary must be saved first
-      if(workflowUpdated){
-        await  saveWorkflow(workflow);
-      }
-      if(tasksUpdated){
-        // const newTasks = tasks.filter(task=> !task.taskID);
-
-        const tasksWithoutDependencies = tasks.map(task=> {
-          const {dependencies,  ...taskWithoutDependencies} = task;
-          return taskWithoutDependencies;
-        })
-        
-        type WorkflowID = {workflowID: number}
-        let createdTasks: (Task & WorkflowID)[];
-        //tasks must be updated and new tasks must be created before asigning dependencies
-        if(tasksWithoutDependencies.length > 0){
-         createdTasks = await saveTasks({workflowID: workflow.workflowID, tasks: tasksWithoutDependencies}).unwrap();
-         debugger
-        }
-        
-        //combine new and updated tasks
-        const tasksWithNewID: EditTasksRequest = {tasks: tasksWithoutDependencies.map(task => {
-          const {taskID, ...props} = task; 
-          return ({
-            taskID: taskID ?? createdTasks.find(createdTask=> createdTask.name === task.name)?.taskID,
-            ...props
-          })
-        })} as EditTasksRequest;
-
-
-        
-      }
-    } catch(e) {
-      console.log(e);
-    } finally {
-
-    }
-  }
 
   const handleNewTask = () =>{
     if(!workflow) return;

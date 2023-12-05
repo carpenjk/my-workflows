@@ -4,6 +4,7 @@ import https, { ServerOptions } from 'https';
 import workflowRouter from './routes/workflow'
 import taskRouter from './routes/task'
 import authRouter from './routes/user'
+import dependenciesRouter from './routes/dependencies'
 import {passport} from './middleware/passport';
 import {isAuthenticated} from './middleware/auth';
 import { errorHandler } from './middleware/errorHandler';
@@ -64,6 +65,7 @@ app.use(passport.session());
 app.use('/api/v1/user', authRouter);
 app.use('/api/v1/workflow', isAuthenticated, workflowRouter);
 app.use('/api/v1/workflow/:workflowID/task', isAuthenticated, taskRouter);
+app.use('/api/v1/workflow/:workflowID/dependencies', isAuthenticated, dependenciesRouter)
 
 app.use(notFoundHandler);
 app.use(errorHandler);
