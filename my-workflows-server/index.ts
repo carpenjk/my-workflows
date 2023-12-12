@@ -32,10 +32,6 @@ const app: Express = express();
 var corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true,
-  // allowedHeaders: [
-  //   // 'authorization',
-  //   'Content-Type'
-  // ],
   methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
 }
 

@@ -2,7 +2,6 @@ import { InferAttributes, InferCreationAttributes, CreationOptional, VIRTUAL } f
 import { Task } from './Task';
 import { User } from './User';
 import { AllowNull, BelongsTo, Column, CreatedAt, DataType, ForeignKey, HasMany, Model, Scopes, Table, UpdatedAt } from 'sequelize-typescript';
-import { BadRequestError } from '../errors/badRequestError';
 
 @Scopes(() => ({
   withTasks: {

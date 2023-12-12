@@ -93,3 +93,12 @@ export const deleteTask = asyncWrapper(async (req: Request, res: Response, next:
   }
   res.send({ msg: `Task ${taskID} has been deleted.` });
 })
+
+export const deleteTasks = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { taskID, workflowID } = req.body;
+  const task = await Task.destroy({ where: { taskID: taskID, workflowID: workflowID }});
+  if (task === 0) {
+    return next(new NotFoundError('The task does not exist to delete.'));
+  }
+  res.send({ msg: `Task ${taskID} has been deleted.` });
+})
