@@ -22,7 +22,7 @@ const WorkflowsSummary = ({workflows}: Props) => {
     const workflowCopy = transformWorkflow(workflow);
     console.log("🚀 ~ file: WorkflowsSummary.tsx:23 ~ handleCopy ~ workflowCopy:", workflowCopy)
     try{
-      const workflowID = await createWorkflow(workflowCopy).unwrap();
+      await createWorkflow(workflowCopy).unwrap();
     }catch(e){
       console.log(e);   
     } finally{

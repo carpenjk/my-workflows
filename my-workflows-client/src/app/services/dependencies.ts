@@ -11,6 +11,8 @@ export const BulkDependenciesSchema = yup.object({tasks: yup.array().of(Dependen
 export type TaskDependenciesRequest = yup.InferType<typeof DependenciesSchema>;
 export type TasksDependenciesRequest = yup.InferType<typeof BulkDependenciesSchema>;
 
+
+
 export const taskApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createDependencies: builder.mutation<void , {workflowID: number, depencies: TaskDependenciesRequest | TaskDependenciesRequest[]}>({
@@ -21,7 +23,7 @@ export const taskApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Dependencies'],
     }),
-    UpdateDependencies: builder.mutation<void , ({workflowID: number, dependencies: TaskDependenciesRequest | TaskDependenciesRequest[]})>({
+    updateDependencies: builder.mutation<void , ({workflowID: number, dependencies: TaskDependenciesRequest | TaskDependenciesRequest[]})>({
       query: (params)=> ({
         url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}/dependencies`,
         method: 'PUT',
@@ -29,7 +31,7 @@ export const taskApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Dependencies'],
     }),
-    deleteDependencies: builder.mutation<void, {workflowID: number, taskID: number}>({
+    deleteDependencies: builder.mutation<void, {workflowID: number, taskID: number, dependencies: number}>({
       query: (params)=> ({
         url: `${process.env.REACT_APP_API_PATH}/dependencies`,
         method: 'DELETE',

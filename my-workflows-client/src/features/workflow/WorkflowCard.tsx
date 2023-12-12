@@ -1,7 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Task, NewTasksSchema } from 'app/services/task';
+import { Task } from 'app/services/task';
 import { User } from 'app/services/user';
-import { EditWorkflowSchema, Workflow, fieldSizes } from "app/services/workflow";
+import { Workflow, fieldSizes } from "app/services/workflow";
 import { SubmitButton, TableCard, MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import {ActionDropDown} from 'features/ui/ActionMenu';
 import {SelectInput} from 'features/ui/shared';
@@ -9,34 +8,12 @@ import Table from 'features/ui/shared/Table';
 import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
 import { Fragment } from 'react';
-import { useFieldArray, useForm } from "react-hook-form";
 import { useWorkflow } from './useWorkflow';
-import { FormValues } from './useWorkflow';
-
-const actions = [
-  {
-    action: 'edit',
-    to: '/workflow'
-  },
-  {
-    action: 'copy',
-    to: '/workflow'
-  },
-  {
-    action: 'delete',
-    fn: ()=> null
-  },
-  {
-    action: 'deploy',
-    to: '/workflow'
-  },
-]
 
 type Props = {
   workflow?: Workflow,
   users: User[]
 }
-
 
 const getDisplayUsers = (users: User[]) => users.map((user) => ({
   value: user.userID , displayValue: user.name
@@ -47,55 +24,27 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
 
 const WorkflowCard = ({workflow, users = []}: Props) => {
-  
-  const { register, handleSubmit, formState, getValues, control } = 
-    useForm<FormValues>({
-      resolver: yupResolver(EditWorkflowSchema.concat(NewTasksSchema)),
-      defaultValues: {
-        workflowID: workflow?.workflowID,
-        name: workflow?.name,
-        description: workflow?.description,
-        ownerID: workflow?.workflowOwner.userID,
-        tasks: workflow?.tasks.map((task)=> {
-          const {taskOwner, taskDependencies, updatedAt, createdAt, ...taskFields} = task;
-          return({
-          ...taskFields, ownerID: taskOwner?.userID
-        })})
-      },
-    });
-    const {isDirty, dirtyFields, defaultValues} = formState;
-    const { fields: taskFields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
-      control, 
-      name: "tasks",
-    });
-
-    const {saveWorkflow} = useWorkflow();
-
-    const handleSave = async () =>{
-        if(!isDirty) return;
-        await saveWorkflow(getValues(), dirtyFields)
-    }
-
-  const handleNewTask = () =>{
-    if(!workflow) return;
-    const defaultDueDate = taskFields[taskFields.length - 1].dueDay; 
-    append({
-      name: '',
-      description: '',
-      dependencies: undefined,
-      dueDay: defaultDueDate,
-      ownerID: 0,
-      workflowID: workflow?.workflowID,
-    })
-  }
+    
+    const {
+      formState,
+      // getValues,
+      register,
+      control,
+      taskFields,
+      saveWorkflow,
+      createNewTask,
+      copyTask,
+      deleteTask
+    } = useWorkflow(workflow);
   
   const {ref: nameRef, ...nameFields} = register("name",  { required: true });
   const {ref: descriptionRef, ...descriptionFields} = register("description",  { required: true });
+
   return ( 
     <TableCard
           title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
     >
-        <form className="w-full" onSubmit={handleSubmit(handleSave)}>
+        <form className="w-full" onSubmit={saveWorkflow()}>
           <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
             <InputCell inputName='name' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
               <MultilineTextInput
@@ -140,7 +89,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
             maxHeightClassName='h-[calc(85vh-332px)] sm:h-[calc(85vh-364px)] lg:h-[calc(85vh-418px)] xl:h-[calc(85vh-266px)]'
             title='Tasks'
             actionComponent={
-              <InlineButton type='button' onClick={handleNewTask} className="absolute bottom-3 right-4 sm:right-8">
+              <InlineButton type='button' onClick={createNewTask} className="absolute bottom-3 right-4 sm:right-8">
                 New Task
               </InlineButton>
             }
@@ -164,7 +113,26 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
               const taskOwnerID = `${idPrefix}ownerID`
               return (
                 <Fragment key={task.id}>
-                  <TableCell><ActionDropDown actions={actions}/></TableCell>
+                  <TableCell>
+                    <ActionDropDown actions={[
+                      {
+                        action: 'edit',
+                        to: '/workflow'
+                      },
+                      {
+                        action: 'copy',
+                        fn: ()=> copyTask(index),
+                      },
+                      {
+                        action: 'delete',
+                        fn: ()=> deleteTask({ taskID: Number(task.taskID), index: index }),
+                      },
+                      {
+                        action: 'deploy',
+                        to: '/workflow'
+                      },
+                    ]}/>
+                  </TableCell>
                   <TableCell>
                     <InputCell inputName={nameID}>
                       <MultilineTextInput

@@ -18,12 +18,6 @@ const InputCell = ({children, className, inputName, focusOnEsc = false}: Props) 
             if(inputElement && focusOnEsc){
               inputElement.focus();
             }
-            // cellRef.current.focus();
-          break;
-        default:
-          if(inputElement instanceof HTMLElement){
-            // inputElement.focus();
-          }
       }
     }
   }

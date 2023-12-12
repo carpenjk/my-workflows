@@ -101,14 +101,15 @@ export const taskApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Task'],
     }),
-    deleteTask: builder.mutation<void, number>({
-      query: (taskID)=> ({
-        url: `${process.env.REACT_APP_API_PATH}/task/${taskID}`,
-        method: 'DELETE'
+    deleteTasks: builder.mutation<void, {workflowID: number, taskID: number[]}>({
+      query: (params)=> ({
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}/task/`,
+        method: 'DELETE',
+        body: params
       }),
       invalidatesTags: ['Task'],
     })
   })
 })
 
-export const { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useSaveTasksMutation, useDeleteTaskMutation }  = taskApi;
+export const { useGetTasksQuery, useCreateTaskMutation, useUpdateTaskMutation, useSaveTasksMutation, useDeleteTasksMutation }  = taskApi;

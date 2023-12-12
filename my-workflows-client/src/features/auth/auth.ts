@@ -37,8 +37,6 @@ const authSlice = createSlice({
   },
 })
 
-// type SelectorFn = <Selected>(state: RootState) => Selected
-
 export const {setCredentials} = authSlice.actions;
 
 export const getUser = (state: RootState) => state.auth.user;

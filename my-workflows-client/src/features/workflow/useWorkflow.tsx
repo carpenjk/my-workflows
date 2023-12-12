@@ -1,22 +1,86 @@
-import { TaskDependenciesRequest, TasksDependenciesRequest, useUpdateDependenciesMutation } from "app/services/dependencies";
-import { EditTaskRequest, EditTasksRequest, NewTaskRequest, NewTasksRequest, Task, useDeleteTaskMutation, useSaveTasksMutation } from "app/services/task";
-import { EditWorkflowRequest, useEditWorkflowMutation } from "app/services/workflow";
-import {FieldNamesMarkedBoolean} from 'react-hook-form';
-
-type TaskWithoutDependencies = Omit<Task, "TaskDependencies" | "dependencies">
+import { yupResolver } from "@hookform/resolvers/yup";
+import { TaskDependenciesRequest, useUpdateDependenciesMutation } from "app/services/dependencies";
+import { NewTaskRequest, NewTasksRequest, NewTasksSchema, useDeleteTasksMutation, useSaveTasksMutation } from "app/services/task";
+import { EditWorkflowRequest, EditWorkflowSchema, Workflow, useEditWorkflowMutation } from "app/services/workflow";
+import { useState } from "react";
+import {Control, FieldNamesMarkedBoolean, FormState, UseFormGetValues, FieldArrayWithId, UseFormHandleSubmit, UseFormRegister, useFieldArray, useForm} from 'react-hook-form';
 
 export type FormValues = EditWorkflowRequest &  NewTasksRequest;
+export type SaveWorkflow = UseFormHandleSubmit<FormValues, undefined>
+export type DeleteTask = ({ taskID, index }: {
+  taskID: number;
+  index: number;
+}) => void;
 
-export const useWorkflow = () => {
-  let taskDependencies: TaskDependenciesRequest[] = [];
-  let tasksWithoutDependencies: NewTaskRequest[] = [];
-  let deletedDependencies: TaskDependenciesRequest[] = [];
+export type UseWorkflowReturn = {
+  register: UseFormRegister<FormValues>,
+  control: Control<FormValues, any>,
+  formState: FormState<FormValues>,
+  taskFields: FieldArrayWithId<FormValues, "tasks", "id">[],
+  getValues: UseFormGetValues<FormValues>,
+  saveWorkflow: () => React.FormEventHandler<HTMLFormElement> | undefined,
+  createNewTask:  () => void,
+  deleteTask: DeleteTask,
+  copyTask: (index: number) => void
+}
 
+export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
+
+  const { register, handleSubmit, formState, getValues, control } = 
+    useForm<FormValues>({
+      resolver: yupResolver(EditWorkflowSchema.concat(NewTasksSchema)),
+      defaultValues: {
+        workflowID: workflow?.workflowID,
+        name: workflow?.name,
+        description: workflow?.description,
+        ownerID: workflow?.workflowOwner.userID,
+        tasks: workflow?.tasks.map((task)=> {
+          const {taskOwner, taskDependencies, updatedAt, createdAt, ...taskFields} = task;
+          return({
+          ...taskFields, ownerID: taskOwner?.userID
+        })})
+      },
+    });
+
+    const { fields: taskFields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
+      control, 
+      name: "tasks",
+    });
+
+  
+    const createNewTask = (values: NewTaskRequest) => {
+      append(values);
+    }
+
+    const handleNewTask = () =>{
+      if(!workflow) return;
+      
+      const defaultDueDate = taskFields[taskFields.length - 1].dueDay; 
+      createNewTask({
+        name: '',
+        description: '',
+        dependencies: undefined,
+        dueDay: defaultDueDate,
+        ownerID: 0,
+        workflowID: workflow?.workflowID,
+      });
+    } 
+
+    const copyTask = (index: number)=> {
+      const {taskID, ...copyFields} = taskFields[index];
+      createNewTask(copyFields);
+    }
+
+  
+  
+  const {dirtyFields, isDirty} = formState;
+  
+
+  const [deletedTasks, setDeletedTasks] = useState<number[]>([]);
   const [saveWorkflow, workflowStatus] = useEditWorkflowMutation();
   const [saveTasks, saveTaskStatus] = useSaveTasksMutation();
-  const [deleteTasks, deleteTaskStatus] = useDeleteTaskMutation();
+  const [deleteTasks, deleteTaskStatus] = useDeleteTasksMutation();
   const [saveDependencies, saveDependenciesStatus] = useUpdateDependenciesMutation();
-
 
   function processTasks(tasks: NewTaskRequest[]) {
     let deps: TaskDependenciesRequest[] = [];
@@ -24,7 +88,6 @@ export const useWorkflow = () => {
 
     tasks.forEach(task=> {
       const {workflowID, taskID, dependencies, ...taskProps} = task;
-      // let depsWithDeletions: TaskDependenciesRequest[] = [];
       splitTasks.push({taskID, workflowID, ...taskProps})
       if(dependencies && taskID){
         deps.push(...dependencies.reduce<TaskDependenciesRequest[]>((records, dep)=> {
@@ -34,20 +97,6 @@ export const useWorkflow = () => {
           return [...records];
         } ,[]))
       }
-      
-      let dependencyDeleted = false;
-
-      
-      if(dependencyDeleted){
-        //add to deleted dependencies
-      }
-
-      // deps.push({
-      //   workflowID,
-      //   taskID,
-      //   ownerID: task.taskOwner.userID,
-      //    ...taskProps
-      // });
     });
     return {tasks: splitTasks, dependencies: deps};
   }
@@ -85,6 +134,9 @@ export const useWorkflow = () => {
       if(tasksUpdated){
         const {tasks: tasksWithoutDependencies, dependencies} = processTasks(tasks);
         await saveTasks({workflowID: workflow.workflowID, tasks: tasksWithoutDependencies})
+        if(deletedTasks.length > 0 ){
+          deleteTasks({taskID: deletedTasks, workflowID: workflow.workflowID})
+        }
         if(dependencies?.length > 0){
           await saveDependencies({workflowID: workflow.workflowID, dependencies});
         }
@@ -95,7 +147,27 @@ export const useWorkflow = () => {
       console.log(e);
     }     
   }
+
+  const handleSave = async () =>{
+    if(!isDirty) return;
+    await _saveWorkflow(getValues(), dirtyFields)
+  }
+
+
+  const _deleteTask = ({taskID, index}: {taskID: number, index: number}) => {
+    remove(index)
+    setDeletedTasks(prev => [...prev, taskID]);
+  }
+
   return ({
-    saveWorkflow: _saveWorkflow,
+    register: register,
+    control: control,
+    formState: formState,
+    getValues: getValues,
+    taskFields: taskFields,
+    saveWorkflow: ()=> handleSubmit(handleSave),
+    createNewTask: handleNewTask,
+    copyTask: copyTask,
+    deleteTask: _deleteTask,
   })
 }

@@ -44,12 +44,6 @@ export type LoginRequest = yup.InferType<typeof LoginRequestSchema>;
 export type RegisterRequest = yup.InferType<typeof RegisterRequestSchema>;
 
 export const authApi = api.injectEndpoints({
-  // reducerPath: 'authApi',
-  // baseQuery: fetchBaseQuery({
-  //   baseUrl,
-  //   credentials: "include",
-  // }),
-  // tagTypes: ['User'],
   endpoints: (builder) => ({
     login: builder.mutation<UserResponse, LoginRequest>({
       query: (credentials) => ({

@@ -1,8 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from 'features/auth/auth'
-import { authApi } from './services/auth'
 import { authListenerMiddleware } from './services/authMiddleware'
-import { workflowApi } from './services/workflow'
 import { api } from './services/api'
 
 const store = configureStore({
