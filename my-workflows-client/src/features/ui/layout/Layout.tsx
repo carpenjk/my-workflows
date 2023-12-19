@@ -1,4 +1,4 @@
-import { RefObject } from "react";
+import { RefObject, memo } from "react";
 import { Header } from "features/ui/header";
 import { Navbar } from 'features/ui/navbar';
 import { Outlet } from "react-router-dom";
@@ -11,7 +11,7 @@ type Props = {
   sidebarRef: RefObject<HTMLDivElement>
 }
 
-const Layout = ({sidebarRef}: Props) => {
+const Layout = memo(({sidebarRef}: Props) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const sidebarWidth = useSidebarWidth();
   
@@ -38,9 +38,9 @@ const Layout = ({sidebarRef}: Props) => {
             <main ref={mainRef} className="relative z-40 flex items-start justify-center flex-1 w-full h-full p-2 pt-20 md:py-28 md:px-6">
               <Outlet/>
             </main>
-        </div> 
+        </div>
     </>
   );
-}
+})
 
 export default Layout; 

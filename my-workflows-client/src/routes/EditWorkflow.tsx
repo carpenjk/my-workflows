@@ -1,37 +1,45 @@
-import { useCreateWorkflowMutation } from "app/services/workflow";
-import { LoadingOverlay, useLoading } from "features/loading";
-import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import WorkflowWrapper from "features/workflow/WorkflowWrapper";
-import { useEffect, useState } from "react";
+import { User, useGetUsersQuery } from "app/services/user";
+import {  useGetWorkflowQuery } from "app/services/workflow";
+import useLoadingEffect from "features/loading/useLoadEffect";
+import { WorkflowCard } from "features/workflow";
+import { memo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const EditWorkflow = () => {
+const EditWorkflow = memo(() => {
   const {workflowID} = useParams<{workflowID: string}>();
+  const {data: workflow, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isFetchingWorkflows} = useGetWorkflowQuery(workflowID as string);
+  const {data: users, isLoading: isLoadingUsers, isUninitialized: isUsersUninitialized, isFetching: isFetchingUsers} = useGetUsersQuery();
   
-  const navigate = useNavigate();
-  const {Loading, setLoading, isLoading, config} = useLoading(true);
-  const [isFadingOut, setIsFadingOut] =useState(false);
-  const [createNew, status] = useCreateWorkflowMutation();
+  const {loading, complete, LoadItem} = useLoadingEffect(true);
+  
+  console.log('render edit workflow')
 
+  const isNotComplete = isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows || isUsersUninitialized || isLoadingUsers || isFetchingUsers;
+  console.log("🚀 ~ file: EditWorkflow.tsx:18 ~ EditWorkflow ~ isNotComplete:", isNotComplete)
 
   useEffect(() => {
-    setLoading(false);
-  })
-
-
-  return(
-    <Loading 
-       isLoading={isLoading}
-       fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-       delay={FADE_OUT_DELAY}
-       minLoading={MIN_LOADING}
-       onLoaded={()=> setIsFadingOut(true)}
-       onUnmount={()=>setIsFadingOut(false)}
-       {...config}
-    >
-      {workflowID ? <WorkflowWrapper workflowID={workflowID}/> : null}
-    </Loading>
- )
-}
+    if(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
+    || isUsersUninitialized || isLoadingUsers || isFetchingUsers){
+      console.log('loading')
+      loading();
+      return;
+    } else {
+      console.log('complete')
+      complete();
+    }
+  },[
+    isLoadingWorkflows,
+    isFetchingWorkflows,
+    isWorkflowsUninitialized,
+    isLoadingUsers,
+    isFetchingUsers,
+    isUsersUninitialized,
+    loading,
+    complete
+  ])
+  
+  const navigate = useNavigate();
+  return(<LoadItem><WorkflowCard workflow={workflow} users={users as User[]}/></LoadItem>)
+})
  
 export default EditWorkflow;
