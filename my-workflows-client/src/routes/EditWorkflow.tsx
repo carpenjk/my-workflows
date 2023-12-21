@@ -1,13 +1,12 @@
 import { memo} from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import WorkflowWrapper from "./WorkflowWrapper";
+import WorkflowLoader from "../features/workflow/WorkflowLoader";
 import { LoadingOverlay, Loading } from "features/loading";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 
 const EditWorkflow = memo(() => {
   const {workflowID} = useParams<{workflowID: string}>();
   
-  console.log('render edit workflow')
   const navigate = useNavigate();
   return(
     <Loading
@@ -15,7 +14,7 @@ const EditWorkflow = memo(() => {
     fallback={<LoadingOverlay fadeOut={false}/>}
     config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
     >
-      {workflowID ? <WorkflowWrapper workflowID={workflowID}/> : null}
+      {workflowID ? <WorkflowLoader workflowID={workflowID}/> : null}
     </Loading>)
 })
  

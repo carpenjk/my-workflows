@@ -2,16 +2,17 @@ import { useContext, useEffect, useRef, useState, JSX, useCallback } from "react
 import { LoadingConfig, LoadingContext } from "./LoadingContext";
 import useTimeSince from "./useTimeSince";
 
+type LoadItemProps = {
+  children: React.ReactNode;
+  fallback?: JSX.Element;
+  onMount?: Function,
+  onLoaded?: Function,
+}
 
 type LoadingEffectReturn = {
   complete: ()=>void,
   loading: ()=>void,
-  LoadItem: ({ children, fallback }: {
-    children: React.ReactNode;
-    fallback?: JSX.Element;
-    onMount?: Function,
-    onLoaded?: Function,
-}) => JSX.Element
+  LoadItem: (props: LoadItemProps) => JSX.Element
 }
 
 type LoadingEventFunctions = {
@@ -20,7 +21,6 @@ type LoadingEventFunctions = {
 }
 
 const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
-  console.log("🚀 ~ file: useLoadingEffect.tsx:23 ~ useLoadingEffect ~ initialLoadValue:", initialLoadValue)
   const {
      loadingState,
      setComponentLoadingState,
@@ -56,7 +56,6 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
       timeLoading.reset();
     } else{
       if(justLoaded && onLoaded){ 
-        const onLoadedDelay = minLoading - timeLoading.get();
         onLoaded();
       }
     }

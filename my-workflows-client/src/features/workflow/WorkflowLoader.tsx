@@ -5,13 +5,13 @@ import useLoadingEffect from "features/loading/useLoadingEffect";
 import { WorkflowCard } from "features/workflow";
 import { useEffect, useState } from "react";
 
-const WorkflowWrapper = ({workflowID}:{workflowID: string}) => {
+const WorkflowLoader = ({workflowID}:{workflowID: string}) => {
   const {data: workflow, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isFetchingWorkflows} = useGetWorkflowQuery(workflowID);
   const {data: users, isLoading: isLoadingUsers, isUninitialized: isUsersUninitialized, isFetching: isFetchingUsers} = useGetUsersQuery();
   
   const {loading, complete, LoadItem} = useLoadingEffect(!(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
     || isUsersUninitialized || isLoadingUsers || isFetchingUsers));
-  const [isFadingout, setIsFadingOut] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   
   useEffect(() => {
     if(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
@@ -37,7 +37,7 @@ const WorkflowWrapper = ({workflowID}:{workflowID: string}) => {
 
   return (
     <LoadItem
-      fallback={<LoadingOverlay fadeOut={isFadingout} />}
+      fallback={<LoadingOverlay fadeOut={isFadingOut} />}
       onLoaded={()=>setIsFadingOut(true)}
       onMount={()=>setIsFadingOut(false)}
     >
@@ -45,4 +45,4 @@ const WorkflowWrapper = ({workflowID}:{workflowID: string}) => {
     </LoadItem> );
 }
  
-export default WorkflowWrapper;
+export default WorkflowLoader;
