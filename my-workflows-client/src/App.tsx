@@ -20,9 +20,7 @@ import NewWorkflow from 'routes/NewWorkflow';
 import EditWorkflow from 'routes/EditWorkflow';
 import { useRef } from 'react';
 import { SidebarProvider } from 'features/sidebar';
-import { Loading } from 'features/loading/LoadingContext';
-import { LoadingOverlay } from 'features/loading';
-import { FADE_OUT_DELAY, MIN_LOADING } from 'features/loading/config';
+import {Loading, LoadingOverlay } from 'features/loading';
 
 function App() {
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -30,7 +28,6 @@ function App() {
     <Loading
       initialLoadState={true}
       fallback={<LoadingOverlay fadeOut={false}/>}
-      config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
     >
     <SidebarProvider sidebarRef={sidebarRef}>
       <div className="w-full min-h-screen min-w-screen App dark:bg-dk-primary-9 bg-primary-8" >
@@ -52,7 +49,7 @@ function App() {
         </BrowserRouter>
       </div>
     </SidebarProvider>
-    </Loading>
+   </Loading>
   );
 }
 

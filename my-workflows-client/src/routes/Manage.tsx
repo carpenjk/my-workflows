@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import useLoading from "features/loading/useLoading";
+// import useLoading from "features/loading/useLoading";
 
 const Manage = () => {
   const navigate = useNavigate();
-  const {Loading, setLoading, isLoading, config} = useLoading(true);
+  // const {Loading, setLoading, isLoading, config} = useLoading(true);
   const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
   const [isFadingOut, setIsFadingOut] =useState(false);
 
@@ -19,23 +19,23 @@ const Manage = () => {
 
   useEffect(() => {
     if(!isFetching){
-      setLoading(isLoadingUser || isFetching)
+      // setLoading(isLoadingUser || isFetching)
       return;
     } 
-    setLoading(false)
-  }, [isUninitialized, isLoadingUser, isFetching, isLoading, setLoading]);
+    // setLoading(false)
+  }, [isUninitialized, isLoadingUser, isFetching]);
 
   return (  
-    <Loading
-      fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-      isLoading={isLoading}
-      delay={FADE_OUT_DELAY}
-      minLoading={MIN_LOADING}
-      onLoaded={()=> setIsFadingOut(true)}
-      {...config}
-    >
-      <div className="text-text-normal dark:text-dk-text-normal">Manage Workflows</div>);
-    </Loading>
+    // <Loading
+    //   fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
+    //   isLoading={isLoading}
+    //   delay={FADE_OUT_DELAY}
+    //   minLoading={MIN_LOADING}
+    //   onLoaded={()=> setIsFadingOut(true)}
+    //   {...config}
+    // >
+      <div className="text-text-normal dark:text-dk-text-normal">Manage Workflows</div>
+    // </Loading>
   )
 }
  

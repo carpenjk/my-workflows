@@ -4,11 +4,11 @@ import { useGetUserDetailsQuery } from "app/services/auth";
 import { useEffect, useState } from "react";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import useLoading from "features/loading/useLoading";
+import { Loading } from "features/loading";
 
 const Login = () => {
    const navigate = useNavigate();
-   const {Loading, setLoading, isLoading, config} = useLoading(true);
+   // const {Loading, setLoading, isLoading, config} = useLoading(true);
    const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized} = useGetUserDetailsQuery();
    const [isFadingOut, setIsFadingOut] =useState(false);
    
@@ -22,22 +22,18 @@ const Login = () => {
    // turn off loading screen
    useEffect(() => {
       if(!isUninitialized){
-         setLoading(isLoadingUser)
+         // setLoading(isLoadingUser)
          return;
       } 
       //included as extra safeguard. Should always be initialized.
-      setLoading(false)
-   }, [isUninitialized, isLoadingUser, isLoading, setLoading]);
+      // setLoading(false)
+   }, [isUninitialized, isLoadingUser]);
    
       return(
-         <Loading 
-            isLoading={isLoading}
-            fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-            delay={FADE_OUT_DELAY}
-            minLoading={MIN_LOADING}
-            onLoaded={()=> setIsFadingOut(true)}
-            onUnmount={()=>setIsFadingOut(false)}
-            {...config}
+         <Loading
+         initialLoadState={true}
+         fallback={<LoadingOverlay fadeOut={false}/>}
+         config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
          >
             <LoginCard />
          </Loading>

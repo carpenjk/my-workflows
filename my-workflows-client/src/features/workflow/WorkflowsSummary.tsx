@@ -5,7 +5,7 @@ import ColumnHeader from "features/ui/table/ColumnHeader";
 import TableCell from "features/ui/table/TableCell";
 import { Fragment, useState } from "react";
 import ActionDropDown from "features/ui/ActionMenu/ActionDropDown";
-import { LoadingOverlay, useLoading } from "features/loading";
+import { LoadingOverlay } from "features/loading";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 const WorkflowsSummary = ({workflows}: Props) => {
   const [deleteWorkflow, deleteStatus] = useDeleteWorkflowMutation();
   const [createWorkflow, createStatus] = useCreateWorkflowMutation();
-  const {Loading, setLoading, isLoading, config} = useLoading(false);
+  // const {Loading, setLoading, isLoading, config} = useLoading(false);
   const [isFadingOut, setIsFadingOut] =useState(false);
   
   async function handleCopy(workflow:Workflow){
@@ -26,20 +26,20 @@ const WorkflowsSummary = ({workflows}: Props) => {
     }catch(e){
       console.log(e);   
     } finally{
-      setLoading(false, {minLoading:MIN_LOADING, delay:FADE_OUT_DELAY});
+      // setLoading(false, {minLoading:MIN_LOADING, delay:FADE_OUT_DELAY});
     }
   }
   
   return(
-    <Loading
-      isLoading={isLoading}
-      fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-      delay={FADE_OUT_DELAY}
-      minLoading={MIN_LOADING}
-      onLoaded={()=> setIsFadingOut(true)}
-      onUnmount={()=>setIsFadingOut(false)}
-      {...config}
-    >
+    // <Loading
+    //   isLoading={isLoading}
+    //   fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
+    //   delay={FADE_OUT_DELAY}
+    //   minLoading={MIN_LOADING}
+    //   onLoaded={()=> setIsFadingOut(true)}
+    //   onUnmount={()=>setIsFadingOut(false)}
+    //   {...config}
+    // >
       <TableCard
         title="My workflows"
         
@@ -103,7 +103,7 @@ const WorkflowsSummary = ({workflows}: Props) => {
         </Table>
       </div>
     </TableCard>
-  </Loading>
+  // </Loading>
   )
 }
  

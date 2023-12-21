@@ -3,7 +3,6 @@ import {FC, ReactNode, JSX, createContext, useState} from 'react';
 export type LoadingConfig = {
   minLoading: number,
   delay: number,
-  onLoaded?: ()=> void,
 }
 
 type Props = {
@@ -11,7 +10,6 @@ type Props = {
   fallback: JSX.Element,
   initialLoadState: boolean,
   config?: Partial<LoadingConfig>,
-  onUnmount?: ()=> void,
 };
 
 type LoadingState = {
@@ -26,7 +24,6 @@ type LoadingContextState = {
     isComponentMounted: boolean;
   }>>,
   fallback: JSX.Element,
-  onUnmount?: Function,
   config:  LoadingConfig,
   
 }
@@ -45,7 +42,6 @@ export const LoadingContext = createContext<LoadingContextState>({
   },
   setComponentLoadingState: ()=> {},
   fallback: DefaultFallback,
-  // onUnmount: undefined,
   config: DEFAULT_CONFIG
 });
 
@@ -56,7 +52,6 @@ export const Loading: FC<Props> = (props) => {
     config,
     fallback,
     initialLoadState,
-    onUnmount
   } = props;
 
   const initialLoadingState = {
@@ -68,7 +63,7 @@ export const Loading: FC<Props> = (props) => {
   const _config = {...DEFAULT_CONFIG, ...config};
 
   return (
-    <LoadingContext.Provider value={{loadingState: componentLoadingState, fallback, onUnmount, config: _config, setComponentLoadingState}} >
+    <LoadingContext.Provider value={{loadingState: componentLoadingState, fallback, config: _config, setComponentLoadingState}} >
       {children}
     </LoadingContext.Provider>)
 }
