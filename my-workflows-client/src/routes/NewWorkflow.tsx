@@ -1,30 +1,27 @@
 import { useGetUsersQuery } from "app/services/user";
-import { LoadingOverlay } from "features/loading";
+import { Loader, Loading, LoadingOverlay } from "features/loading";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 import WorkflowCard from "features/workflow/WorkflowCard";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const NewWorkflow = () => {
-//   const {Loading, setLoading, isLoading, config} = useLoading(true);
   const [isFadingOut, setIsFadingOut] =useState(false);
-  const {data: users, isLoading: isLoadingUsers, isUninitialized: isUsersUninitialized, isFetching: isFetchingUsers} = useGetUsersQuery();
-
-//   useEffect(() => {
-//     setLoading(isLoadingUsers || isFetchingUsers);
-//   })
+  const {data: users, isLoading: isLoadingUsers, isUninitialized: isUninitializedUsers, isFetching: isFetchingUsers} = useGetUsersQuery();
+  const isLoaded = !(isLoadingUsers || isUninitializedUsers || isFetchingUsers)
 
   return(
-   //  <Loading 
-   //     isLoading={isLoading && isLoadingUsers}
-   //     fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-   //     delay={FADE_OUT_DELAY}
-   //     minLoading={MIN_LOADING}
-   //     onLoaded={()=> setIsFadingOut(true)}
-   //     onUnmount={()=>setIsFadingOut(false)}
-   //     {...config}
-   //  >
-       <WorkflowCard users={users || []}/>
-   //  </Loading>
+    <Loading
+    initialLoadState={true}
+    fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
+    config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
+    >
+      <Loader
+        isLoaded={isLoaded}
+        onLoaded={()=>setIsFadingOut(true)}
+        onMount={()=>setIsFadingOut(false)}
+        component={(<WorkflowCard users={users || []}/>)}
+      />
+    </Loading>
  )
 }
  

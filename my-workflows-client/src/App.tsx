@@ -49,7 +49,7 @@ function App() {
         </BrowserRouter>
       </div>
     </SidebarProvider>
-   </Loading>
+  </Loading>
   );
 }
 

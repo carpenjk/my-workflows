@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LoadingOverlay from "features/loading/LoadingOverlay";
 import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-// import useLoading from "features/loading/useLoading";
+import { Loader, Loading } from "features/loading";
 
 const Manage = () => {
   const navigate = useNavigate();
-  // const {Loading, setLoading, isLoading, config} = useLoading(true);
-  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized, isFetching} = useGetUserDetailsQuery();
+  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized: isUninitializedUser, isFetching: isFetchingUser} = useGetUserDetailsQuery();
   const [isFadingOut, setIsFadingOut] =useState(false);
+  const isLoaded = !(isLoadingUser || isLoadingUser || isUninitializedUser || isFetchingUser)
 
   useEffect(() => {
     if(!loggedInUser){
@@ -17,25 +17,19 @@ const Manage = () => {
     }
   }, [loggedInUser, navigate])
 
-  useEffect(() => {
-    if(!isFetching){
-      // setLoading(isLoadingUser || isFetching)
-      return;
-    } 
-    // setLoading(false)
-  }, [isUninitialized, isLoadingUser, isFetching]);
-
   return (  
-    // <Loading
-    //   fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    //   isLoading={isLoading}
-    //   delay={FADE_OUT_DELAY}
-    //   minLoading={MIN_LOADING}
-    //   onLoaded={()=> setIsFadingOut(true)}
-    //   {...config}
-    // >
-      <div className="text-text-normal dark:text-dk-text-normal">Manage Workflows</div>
-    // </Loading>
+    <Loading
+    initialLoadState={true}
+    fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
+    config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
+    >
+       <Loader
+       isLoaded={isLoaded}
+       onLoaded={()=>setIsFadingOut(true)}
+       onMount={()=>setIsFadingOut(false)}
+       component={<div className="text-text-normal dark:text-dk-text-normal">Manage Workflows</div>}
+       />
+    </Loading>
   )
 }
  

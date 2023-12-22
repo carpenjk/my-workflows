@@ -3,10 +3,8 @@ import { Workflow, transformWorkflow, useCreateWorkflowMutation, useDeleteWorkfl
 import { Table, TableCard } from "features/ui";
 import ColumnHeader from "features/ui/table/ColumnHeader";
 import TableCell from "features/ui/table/TableCell";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import ActionDropDown from "features/ui/ActionMenu/ActionDropDown";
-import { LoadingOverlay } from "features/loading";
-import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
 
 interface Props {
   workflows: Workflow[]
@@ -15,8 +13,6 @@ interface Props {
 const WorkflowsSummary = ({workflows}: Props) => {
   const [deleteWorkflow, deleteStatus] = useDeleteWorkflowMutation();
   const [createWorkflow, createStatus] = useCreateWorkflowMutation();
-  // const {Loading, setLoading, isLoading, config} = useLoading(false);
-  const [isFadingOut, setIsFadingOut] =useState(false);
   
   async function handleCopy(workflow:Workflow){
     const workflowCopy = transformWorkflow(workflow);
@@ -25,21 +21,10 @@ const WorkflowsSummary = ({workflows}: Props) => {
       await createWorkflow(workflowCopy).unwrap();
     }catch(e){
       console.log(e);   
-    } finally{
-      // setLoading(false, {minLoading:MIN_LOADING, delay:FADE_OUT_DELAY});
     }
   }
   
   return(
-    // <Loading
-    //   isLoading={isLoading}
-    //   fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    //   delay={FADE_OUT_DELAY}
-    //   minLoading={MIN_LOADING}
-    //   onLoaded={()=> setIsFadingOut(true)}
-    //   onUnmount={()=>setIsFadingOut(false)}
-    //   {...config}
-    // >
       <TableCard
         title="My workflows"
         
@@ -50,11 +35,6 @@ const WorkflowsSummary = ({workflows}: Props) => {
             grid-cols-[4rem_minmax(7.5rem,10rem)_minmax(9rem,13rem)_minmax(4.5rem,7rem)_minmax(5rem,8rem)_minmax(5rem,8.5rem)_minmax(4.5rem,8rem)]
             lg:grid-cols-[3.5rem_minmax(8rem,10rem)_minmax(11rem,13rem)_minmax(6rem,7rem)_minmax(6rem,8rem)_minmax(6rem,8.5rem)_minmax(6rem,8.25rem)] 
             content-start`}
-          // actionComponent={
-          //   <InlineLink to={'/workflow/new'} className="absolute right-4 sm:right-20">
-          //           New Task
-          //   </InlineLink>
-          // }
           headers={
             <>
               <ColumnHeader className=""></ColumnHeader>
@@ -103,7 +83,6 @@ const WorkflowsSummary = ({workflows}: Props) => {
         </Table>
       </div>
     </TableCard>
-  // </Loading>
   )
 }
  
