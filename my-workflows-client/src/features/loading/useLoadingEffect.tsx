@@ -7,6 +7,7 @@ type LoadItemProps = {
   fallback?: JSX.Element;
   onMount?: Function,
   onLoaded?: Function,
+  isLoaded?: boolean
 }
 
 type LoadingEffectReturn = {
@@ -33,7 +34,7 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
   
 
   const timeLoading = useTimeSince();
-  const prevIsLoadingRef = useRef(false);
+  const prevIsLoadingRef = useRef(initialLoadValue);
   const prevIsMountedRef = useRef(!initialLoadValue);
   
   const {isComponentMounted, isLoading} = loadingState;
@@ -111,7 +112,7 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
   },[isLoading, isComponentMounted, mountComponent])
   
 
-  const LoadItem = useCallback(({children, fallback: priorityFallback, onLoaded, onMount}: {children: React.ReactNode, fallback?: React.JSX.Element,onLoaded?: Function, onMount?: Function}) =>{
+  const LoadItem = useCallback(({children, fallback: priorityFallback, onLoaded, onMount, isLoaded}: LoadItemProps) =>{
     eventFunctions.current = {...eventFunctions.current, onLoaded, onMount};
     const _fallback = priorityFallback || fallback;
     // just render component if already mounted
@@ -122,18 +123,19 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
     //first time mounting after loading state. Factor delay for fade out effect
     // go ahead and render if no delay configured
     //? direct render here causes onLoaded to run after mount, but not believed to be an issue
-    if(!isLoading){
+    if(isLoaded){
       const justLoaded = prevIsLoadingRef.current === true
       if(justLoaded) {
-        mountComponent();
+        //! mountComponent();   cannot mount in render. update to still incorporate delay
         if(!mountingDelay){
-          return ( <>children</>)
+          return ( <>{children}</>)
         }
       }
+      return ( <>{children}</>)
     }
     return (<>{_fallback}</>)
   }
-  ,[isComponentMounted, fallback, isLoading, mountComponent, mountingDelay])
+  ,[isComponentMounted, fallback, mountingDelay, ])
 
   return ( {
     complete,

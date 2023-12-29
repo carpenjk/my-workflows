@@ -9,7 +9,10 @@ const Manage = () => {
   const navigate = useNavigate();
   const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized: isUninitializedUser, isFetching: isFetchingUser} = useGetUserDetailsQuery();
   const [isFadingOut, setIsFadingOut] =useState(false);
-  const isLoaded = !(isLoadingUser || isLoadingUser || isUninitializedUser || isFetchingUser)
+  const isLoaded = !(isLoadingUser || isUninitializedUser || isFetchingUser)
+  console.log("🚀 ~ file: Manage.tsx:13 ~ Manage ~ isFetchingUser:", isFetchingUser)
+  console.log("🚀 ~ file: Manage.tsx:13 ~ Manage ~ isUninitializedUser:", isUninitializedUser)
+  console.log("🚀 ~ file: Manage.tsx:13 ~ Manage ~ isLoadingUser:", isLoadingUser)
 
   useEffect(() => {
     if(!loggedInUser){
@@ -19,9 +22,9 @@ const Manage = () => {
 
   return (  
     <Loading
-    initialLoadState={true}
+    initialLoadState={isLoaded}
     fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
+    // config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
     >
        <Loader
        isLoaded={isLoaded}

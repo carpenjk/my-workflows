@@ -21,6 +21,7 @@ const Loader = ({isLoaded, component, ...loadProps}: Props) => {
 
   return ( 
   <LoadItem
+    isLoaded={isLoaded}
     {...loadProps}
   >
     {component}

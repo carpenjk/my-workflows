@@ -32,7 +32,6 @@ const ProtectedRoute = () => {
           </div>)
           : (<Outlet/>)
         }
-
       />
   )
 }
