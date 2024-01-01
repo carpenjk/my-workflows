@@ -2,7 +2,7 @@ import { useGetUserDetailsQuery } from "app/services/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LoadingOverlay from "features/loading/LoadingOverlay";
-import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
+import { FADE_OUT_DELAY } from "features/loading/config";
 import WorkflowsSummary from "features/workflow/WorkflowsSummary";
 import { useGetWorkflowsQuery } from "app/services/workflow";
 import { Loader, Loading } from "features/loading";
@@ -26,18 +26,17 @@ const Workflow = () => {
     <Loading
     initialLoadState={true}
     fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
+    config={{delay: FADE_OUT_DELAY}}
     >
       <Loader
       isLoaded={isLoaded}
       onLoaded={()=>setIsFadingOut(true)}
       onMount={()=>setIsFadingOut(false)}
-      component={
+      >
         <div className="flex items-start w-full h-full justify-stretch md:justify-start pt-28">
           <WorkflowsSummary workflows={workflows || []}/>
-        </div>}
-      />
-      
+        </div>
+      </Loader>
     </Loading>
   )
 }

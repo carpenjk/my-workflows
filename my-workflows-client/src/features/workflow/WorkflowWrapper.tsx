@@ -20,8 +20,11 @@ const WorkflowWrapper = ({workflowID}: {workflowID: string}) => {
       fallback={<LoadingOverlay fadeOut={isFadingOut} />}
       onLoaded={()=>setIsFadingOut(true)}
       onMount={()=>setIsFadingOut(false)}
-      component={workflowID ? <WorkflowCard workflow={workflow} users={users as User[]}/> : null}
-      />)
+      >
+        workflowID 
+        ? <WorkflowCard workflow={workflow} users={users as User[]}/> 
+        : null
+      </Loader>)
 }
  
 export default WorkflowWrapper;

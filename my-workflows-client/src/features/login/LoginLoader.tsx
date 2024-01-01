@@ -6,43 +6,43 @@ import { useEffect, useState } from "react";
 import LoginCard from "./LoginCard";
 
 const LoginLoader = () => {
-  const navigate = useNavigate();
-  const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized} = useGetUserDetailsQuery();
-  const [isFadingOut, setIsFadingOut] =useState(false);
+  // const navigate = useNavigate();
+  // const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized} = useGetUserDetailsQuery();
+  // const [isFadingOut, setIsFadingOut] =useState(false);
   
-  const isComplete = !(isLoadingUser || isUninitialized);
-  const {loading, complete, LoadItem} = useLoadingEffect(isComplete);
+  // const isComplete = !(isLoadingUser || isUninitialized);
+  // const {loading, complete, LoadItem} = useLoadingEffect(isComplete);
   
-  useEffect(() => {
-    if(loggedInUser?.email){
-      navigate('/');
-      return;
-    }
+  // useEffect(() => {
+  //   if(loggedInUser?.email){
+  //     navigate('/');
+  //     return;
+  //   }
 
-    if(!isComplete){
-      console.log('loading')
-      loading();
-      return;
-    } else {
-      console.log('complete') 
-      complete();
-    }
-  },[
-    isComplete,
-    loading,
-    complete,
-    navigate,
-    loggedInUser
-  ])
+  //   if(!isComplete){
+  //     console.log('loading')
+  //     loading();
+  //     return;
+  //   } else {
+  //     console.log('complete') 
+  //     complete();
+  //   }
+  // },[
+  //   isComplete,
+  //   loading,
+  //   complete,
+  //   navigate,
+  //   loggedInUser
+  // ])
 
-  return (
-    <LoadItem
-      fallback={<LoadingOverlay fadeOut={isFadingOut} />}
-      onLoaded={()=>setIsFadingOut(true)}
-      onMount={()=>setIsFadingOut(false)}
-    >
-      <LoginCard />
-    </LoadItem> );
+  // return (
+  //   <LoadItem
+  //     fallback={<LoadingOverlay fadeOut={isFadingOut} />}
+  //     onLoaded={()=>setIsFadingOut(true)}
+  //     onMount={()=>setIsFadingOut(false)}
+  //   >
+  //     <LoginCard />
+  //   </LoadItem> );
 }
  
 export default LoginLoader;

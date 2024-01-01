@@ -6,15 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { ItemContainer } from "features/ui/shared";
 import {TextInput} from "features/ui/shared";
 import { SubmitButton } from "features/ui/shared";
-// import useLoading from 'features/loading/useLoading';
-import LoadingOverlay from "features/loading/LoadingOverlay";
-import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
-import { useState } from "react";
 
 const LoginCard = () => {
   const navigate = useNavigate();
-  // const {Loading, setLoading, isLoading, config} = useLoading(false);
-  const [isFadingOut, setIsFadingOut] =useState(false);
 
   const [logIn, status] = useLoginMutation();
   const { register, handleSubmit, formState: {errors: inputErrors }, getValues } = useForm<LoginRequest>( {resolver: yupResolver(LoginRequestSchema)});
@@ -39,30 +33,17 @@ const LoginCard = () => {
   }
   
   const handleLogin = async () => {
-    // setLoading(true, {minLoading:0, delay:0})
     try{
       const {user} = await logIn({email: getValues("email"), password:getValues("password")}).unwrap();
       if(user)
-        // setLoading(true, {minLoading:0, delay:0, onLoaded: undefined})
         navigate('/')
       }
     catch(e){
       console.log(e);   
-    } finally{
-      // setLoading(false, {minLoading:MIN_LOADING, delay:FADE_OUT_DELAY});
-    }
+    } 
   }
 
   return ( 
-    // <Loading
-    //   isLoading={isLoading}
-    //   fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    //   delay={FADE_OUT_DELAY}
-    //   minLoading={MIN_LOADING}
-    //   onLoaded={()=> setIsFadingOut(true)}
-    //   onUnmount={()=>setIsFadingOut(false)}
-    //   {...config}
-    // >
         <ItemContainer className="max-w-md space-y-2">
           <h1 className="">Welcome Back!</h1>
           <h5>Standardize and track your most important work flows.</h5>
@@ -105,7 +86,6 @@ const LoginCard = () => {
             </form>
             </div>
         </ItemContainer>
-      // </Loading>
   );
 }
  

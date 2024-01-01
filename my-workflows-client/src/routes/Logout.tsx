@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "app/services/auth";
 import LoadingOverlay from "features/loading/LoadingOverlay";
-import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
+import { FADE_OUT_DELAY } from "features/loading/config";
 import { InlineLink } from "features/ui";
 import { Loader, Loading } from "features/loading";
 
@@ -26,13 +26,13 @@ const Logout = () => {
   <Loading
   initialLoadState={true}
   fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-  config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
+  config={{delay: FADE_OUT_DELAY}}
   >
      <Loader
      isLoaded={true}
      onLoaded={()=>setIsFadingOut(true)}
      onMount={()=>setIsFadingOut(false)}
-     component={
+     >
       <div className="container flex flex-col items-center justify-center w-fill">
         <div>
           <h1>
@@ -41,8 +41,7 @@ const Logout = () => {
           <InlineLink to="/login">Go to login</InlineLink>
         </div>
       </div>
-     }
-     />
+     </Loader>
   </Loading>
   )
 }

@@ -1,10 +1,10 @@
-import { useContext, useEffect, useRef, useState, JSX, useCallback } from "react";
+import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { LoadingConfig, LoadingContext } from "./LoadingContext";
 import useTimeSince from "./useTimeSince";
 
 type LoadItemProps = {
   children: React.ReactNode;
-  fallback?: JSX.Element;
+  fallback?: React.JSX.Element;
   onMount?: Function,
   onLoaded?: Function,
   isLoaded?: boolean
@@ -13,7 +13,9 @@ type LoadItemProps = {
 type LoadingEffectReturn = {
   complete: ()=>void,
   loading: ()=>void,
-  LoadItem: (props: LoadItemProps) => JSX.Element
+  isComponentMounted: boolean,
+  fallback: React.JSX.Element
+  // LoadItem: (props: LoadItemProps) => JSX.Element
 }
 
 type LoadingEventFunctions = {
@@ -21,7 +23,13 @@ type LoadingEventFunctions = {
   onMount?: Function
 }
 
-const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
+type LoadingEffectProps = {
+  initialLoading: boolean,
+  onMount?: Function,
+  onLoaded?: Function
+}
+
+const useLoadingEffect = ({initialLoading, onMount, onLoaded}: LoadingEffectProps): LoadingEffectReturn => {
   const {
      loadingState,
      setComponentLoadingState,
@@ -30,18 +38,15 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
   } = useContext(LoadingContext);
 
   const [_config, setConfig] = useState<LoadingConfig>(config);
-  const eventFunctions = useRef<LoadingEventFunctions>({onLoaded:undefined, onMount:undefined});
+  const eventFunctions = useRef<LoadingEventFunctions>({onLoaded:onLoaded, onMount:onMount});
   
 
   const timeLoading = useTimeSince();
-  const prevIsLoadingRef = useRef(initialLoadValue);
-  const prevIsMountedRef = useRef(!initialLoadValue);
+  const prevIsLoadingRef = useRef(initialLoading);
+  const prevIsMountedRef = useRef(!initialLoading);
   
   const {isComponentMounted, isLoading} = loadingState;
   const {delay, minLoading} = _config;
-
-  const mountingDelay = Math.max(minLoading - timeLoading.get(), 0) + delay;
-  
 
   useEffect(() => {
     const justStartedLoading = isLoading && prevIsLoadingRef.current === false;
@@ -76,6 +81,10 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
 
   const  mountComponent = useCallback(() => {
     const {onLoaded} = eventFunctions.current;
+
+    const minWait = Math.max((minLoading - delay) - timeLoading.get(), 0)
+    const mountingDelay =  minWait + delay;
+
     const mount = ()=> {
       return setComponentLoadingState({
         isLoading: false,
@@ -93,7 +102,7 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
       return;
     }
     mount()
-  },[mountingDelay, setComponentLoadingState])
+  },[setComponentLoadingState, timeLoading,  delay, minLoading])
 
 
   const loading = useCallback((config?: LoadingConfig) => {
@@ -107,40 +116,18 @@ const useLoadingEffect = (initialLoadValue: boolean): LoadingEffectReturn => {
 
 
   const complete = useCallback(() => {
-    if(!isLoading && isComponentMounted) return;
+    const remTime = minLoading - timeLoading.get();
+    const waitTimeFullfilled = remTime <= 0;
+    if((!isLoading && isComponentMounted) || !waitTimeFullfilled) return;
     mountComponent();
-  },[isLoading, isComponentMounted, mountComponent])
-  
-
-  const LoadItem = useCallback(({children, fallback: priorityFallback, onLoaded, onMount, isLoaded}: LoadItemProps) =>{
-    eventFunctions.current = {...eventFunctions.current, onLoaded, onMount};
-    const _fallback = priorityFallback || fallback;
-    // just render component if already mounted
-    if(isComponentMounted){
-      return (<>{children}</>)
-    }
-
-    //first time mounting after loading state. Factor delay for fade out effect
-    // go ahead and render if no delay configured
-    //? direct render here causes onLoaded to run after mount, but not believed to be an issue
-    if(isLoaded){
-      const justLoaded = prevIsLoadingRef.current === true
-      if(justLoaded) {
-        //! mountComponent();   cannot mount in render. update to still incorporate delay
-        if(!mountingDelay){
-          return ( <>{children}</>)
-        }
-      }
-      return ( <>{children}</>)
-    }
-    return (<>{_fallback}</>)
-  }
-  ,[isComponentMounted, fallback, mountingDelay, ])
+  },[isLoading, isComponentMounted, mountComponent, timeLoading, minLoading])
 
   return ( {
     complete,
     loading,
-    LoadItem
+    // LoadItem,
+    fallback,
+    isComponentMounted
   } );
 }
  

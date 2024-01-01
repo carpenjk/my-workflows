@@ -28,6 +28,7 @@ function App() {
     <Loading
       initialLoadState={true}
       fallback={<LoadingOverlay fadeOut={false}/>}
+      config={{minLoading: 400}}
     >
     <SidebarProvider sidebarRef={sidebarRef}>
       <div className="w-full min-h-screen min-w-screen App dark:bg-dk-primary-9 bg-primary-8" >

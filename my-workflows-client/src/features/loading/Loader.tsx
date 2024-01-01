@@ -1,31 +1,32 @@
-import {  useLoadingEffect } from "features/loading";
 import { useEffect } from "react";
+import useLoadingEffect from "./useLoadingEffect";
 
-type Props = {
+type Props = React.PropsWithChildren<{
   isLoaded: boolean,
-  component: React.ReactNode,
+  // component: React.ReactNode,
   fallback?: React.JSX.Element,
   onLoaded?: Function,
-  onMount?: Function
-}
+  onMount?: Function,
+}>
 
-const Loader = ({isLoaded, component, ...loadProps}: Props) => {
-  
-  const {complete, LoadItem} = useLoadingEffect(isLoaded);
+const Loader = ({children, fallback: priorityFallback, onLoaded, onMount, isLoaded}: Props) =>{
+  const {complete, loading, fallback, isComponentMounted} = useLoadingEffect({initialLoading: true, onLoaded, onMount});
 
   useEffect(() => {
     if(isLoaded){
       complete();
-    }
-  }, [complete, isLoaded])
+      return
+    } 
+    loading();
+  }, [complete, loading, isLoaded])
 
-  return ( 
-  <LoadItem
-    isLoaded={isLoaded}
-    {...loadProps}
-  >
-    {component}
-  </LoadItem> );
+  const _fallback = priorityFallback || fallback;
+  // just render component if already mounted
+  if(isComponentMounted){
+    return (<>{children}</>)
+  }
+  
+  return (<>{_fallback}</>)
 }
- 
+
 export default Loader;

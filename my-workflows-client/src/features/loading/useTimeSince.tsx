@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const  getTime = (): number => new Date().getTime();
 
 const useTimeSince = () => {
   const [timeMounted, setTimeMounted] = useState<number>(getTime());
 
-  function getTimeSinceMounted(): number{
-    return new Date().getTime() - timeMounted;   
-  }
+  const getTimeSinceMounted = useCallback((): number => {
+    return getTime() - timeMounted;   
+  },[timeMounted])
 
   return {
     get: getTimeSinceMounted,

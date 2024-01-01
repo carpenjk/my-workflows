@@ -24,7 +24,9 @@ const ProtectedRoute = () => {
   <Loader
         isLoaded={isLoaded}
         fallback={<LoadingOverlay fadeOut={false} />}
-        component={!isLoggedIn
+      >
+  <>
+        {!isLoggedIn
           ? 
           (<div >
             <h1>Unauthorized :(</h1>
@@ -32,7 +34,8 @@ const ProtectedRoute = () => {
           </div>)
           : (<Outlet/>)
         }
-      />
+  </>
+  </Loader>
   )
 }
  

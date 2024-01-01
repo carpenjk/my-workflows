@@ -6,43 +6,43 @@ import { WorkflowCard } from "features/workflow";
 import { useEffect, useState } from "react";
 
 const WorkflowLoader = ({workflowID}:{workflowID: string}) => {
-  const {data: workflow, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isFetchingWorkflows} = useGetWorkflowQuery(workflowID);
-  const {data: users, isLoading: isLoadingUsers, isUninitialized: isUsersUninitialized, isFetching: isFetchingUsers} = useGetUsersQuery();
+  // const {data: workflow, isLoading: isLoadingWorkflows, isUninitialized: isWorkflowsUninitialized, isFetching: isFetchingWorkflows} = useGetWorkflowQuery(workflowID);
+  // const {data: users, isLoading: isLoadingUsers, isUninitialized: isUsersUninitialized, isFetching: isFetchingUsers} = useGetUsersQuery();
   
-  const {loading, complete, LoadItem} = useLoadingEffect(!(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
-    || isUsersUninitialized || isLoadingUsers || isFetchingUsers));
-  const [isFadingOut, setIsFadingOut] = useState(false);
+  // const {loading, complete, LoadItem} = useLoadingEffect(!(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
+  //   || isUsersUninitialized || isLoadingUsers || isFetchingUsers));
+  // const [isFadingOut, setIsFadingOut] = useState(false);
   
-  useEffect(() => {
-    if(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
-    || isUsersUninitialized || isLoadingUsers || isFetchingUsers){
-      console.log('loading')
-      loading();
-      return;
-    } else {
-      console.log('complete') 
-      complete();
-    }
-  },[
-    isLoadingWorkflows,
-    isFetchingWorkflows,
-    isWorkflowsUninitialized,
-    isLoadingUsers,
-    isFetchingUsers,
-    isUsersUninitialized,
-    loading,
-    complete
-  ])
+  // useEffect(() => {
+  //   if(isWorkflowsUninitialized || isLoadingWorkflows || isFetchingWorkflows
+  //   || isUsersUninitialized || isLoadingUsers || isFetchingUsers){
+  //     console.log('loading')
+  //     loading();
+  //     return;
+  //   } else {
+  //     console.log('complete') 
+  //     complete();
+  //   }
+  // },[
+  //   isLoadingWorkflows,
+  //   isFetchingWorkflows,
+  //   isWorkflowsUninitialized,
+  //   isLoadingUsers,
+  //   isFetchingUsers,
+  //   isUsersUninitialized,
+  //   loading,
+  //   complete
+  // ])
 
 
-  return (
-    <LoadItem
-      fallback={<LoadingOverlay fadeOut={isFadingOut} />}
-      onLoaded={()=>setIsFadingOut(true)}
-      onMount={()=>setIsFadingOut(false)}
-    >
-      <WorkflowCard workflow={workflow} users={users as User[]}/>
-    </LoadItem> );
+  // return (
+  //   <LoadItem
+  //     fallback={<LoadingOverlay fadeOut={isFadingOut} />}
+  //     onLoaded={()=>setIsFadingOut(true)}
+  //     onMount={()=>setIsFadingOut(false)}
+  //   >
+  //     <WorkflowCard workflow={workflow} users={users as User[]}/>
+  //   </LoadItem> );
 }
  
 export default WorkflowLoader;

@@ -1,6 +1,6 @@
 import { useGetUsersQuery } from "app/services/user";
 import { Loader, Loading, LoadingOverlay } from "features/loading";
-import { FADE_OUT_DELAY, MIN_LOADING } from "features/loading/config";
+import { FADE_OUT_DELAY } from "features/loading/config";
 import WorkflowCard from "features/workflow/WorkflowCard";
 import { useState } from "react";
 
@@ -13,14 +13,15 @@ const NewWorkflow = () => {
     <Loading
     initialLoadState={true}
     fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    config={{delay: FADE_OUT_DELAY, minLoading: MIN_LOADING}}
+    config={{delay: FADE_OUT_DELAY}}
     >
       <Loader
         isLoaded={isLoaded}
         onLoaded={()=>setIsFadingOut(true)}
         onMount={()=>setIsFadingOut(false)}
-        component={(<WorkflowCard users={users || []}/>)}
-      />
+      >
+        <WorkflowCard users={users || []}/>
+      </Loader>
     </Loading>
  )
 }
