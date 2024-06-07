@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import {InlineLink} from "features/ui/shared";
+import {InlineButton, InlineLink} from "features/ui/shared";
 import { LoginRequest, LoginRequestSchema, useLoginMutation } from "app/services/auth";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from "react-router-dom";
@@ -32,9 +32,9 @@ const LoginCard = () => {
     return "";
   }
   
-  const handleLogin = async () => {
+  const handleLogin = async (credentials: LoginRequest) => {
     try{
-      const {user} = await logIn({email: getValues("email"), password:getValues("password")}).unwrap();
+      const {user} = await logIn(credentials).unwrap();
       if(user)
         navigate('/')
       }
@@ -42,13 +42,12 @@ const LoginCard = () => {
       console.log(e);   
     } 
   }
-
   return ( 
         <ItemContainer className="max-w-md space-y-2">
           <h1 className="">Welcome Back!</h1>
           <h5>Standardize and track your most important work flows.</h5>
           <div className="w-full max-w-md p-4">
-            <form className="w-full" onSubmit={handleSubmit(handleLogin)}>
+            <form className="w-full" onSubmit={handleSubmit(()=>handleLogin({email: getValues("email"), password:getValues("password")}))}>
               <div className="w-full mb-4 sm:mb-6">
                 <TextInput
                   id="email"
@@ -73,7 +72,9 @@ const LoginCard = () => {
               </div>
               <div className="flex flex-col items-center justify-center mb-6 space-y-2">
                   <span className="text-sm">Or</span>
-                  <InlineLink to="/" tabIndex={4}>Login as Guest</InlineLink>
+              <InlineButton type='button' onClick={()=>handleLogin({email:process.env.REACT_APP_GUEST_ACC || '' , password:process.env.REACT_APP_GUEST_PASSWORD || ''})}>
+                Login as Guest
+              </InlineButton>
               </div>
               <div className="flex items-center justify-between mt-10 space-x-6">
               <SubmitButton tabIndex={3}>Sign In</SubmitButton>

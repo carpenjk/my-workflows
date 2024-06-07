@@ -7,8 +7,9 @@ import {SelectInput} from 'features/ui/shared';
 import Table from 'features/ui/shared/Table';
 import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { useWorkflow } from './useWorkflow';
+import { Loader } from 'features/loading';
 
 type Props = {
   workflow?: Workflow,
@@ -24,7 +25,6 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
 
 const WorkflowCard = ({workflow, users = []}: Props) => {
-    
     const {
       formState,
       // getValues,
@@ -36,14 +36,30 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
       copyTask,
       deleteTask
     } = useWorkflow(workflow);
+
+    const [isSaving, setIsSaving] = useState(false);
+    const handleSave = () => {
+      setIsSaving(true);
+      try{
+        saveWorkflow();
+      } catch(e){
+        console.log(e)
+      } finally {
+        setIsSaving(false);
+      }
+    }
   
-  const {ref: nameRef, ...nameFields} = register("name",  { required: true });
-  const {ref: descriptionRef, ...descriptionFields} = register("description",  { required: true });
+  // const {ref: nameRef, ...nameFields} = register("name",  { required: true });
+  // const {ref: descriptionRef, ...descriptionFields} = register("description",  { required: true });
 
   return ( 
     <TableCard
           title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
     >
+      <Loader
+        isLoaded={!isSaving}
+        fallback={<div className='absolute inset-0 '> </div>}
+      >
         <form className="w-full" onSubmit={saveWorkflow()}>
           <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
             <InputCell inputName='name' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
@@ -205,6 +221,7 @@ const WorkflowCard = ({workflow, users = []}: Props) => {
           <SubmitButton disabled={!formState.isDirty}>Save</SubmitButton>
           </div>
         </form>
+      </Loader>
     </TableCard>
    );
 }
