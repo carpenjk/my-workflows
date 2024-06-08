@@ -1,13 +1,13 @@
+import { LoadingOverlay } from "features/loading";
 
 interface Props extends React.ComponentProps<'div'> {
   msg: string
 }
 
 const ToastMsg:React.FC<Props> = ({msg}: Props) => {
+  console.log('loading toast')
   return ( 
-    <div className="flex items-center justify-center w-full">
-      {msg}
-    </div>
+      <LoadingOverlay fadeOut={false} msg={msg}/>
    );
 }
  

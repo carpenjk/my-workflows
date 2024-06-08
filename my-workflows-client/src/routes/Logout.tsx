@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom'
 import { useLogoutMutation } from "app/services/auth";
-import LoadingOverlay from "features/loading/LoadingOverlay";
-import { FADE_OUT_DELAY } from "features/loading/config";
 import { InlineLink } from "features/ui";
-import { Loader, Loading } from "features/loading";
 
 const Logout = () => {
   const [logout, status] = useLogoutMutation();
+  console.log("🚀 ~ Logout ~ status:", status)
+  const {isSuccess, isUninitialized} = status;
   const [message, setMessage] = useState('');
-  const [isFadingOut, setIsFadingOut] =useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     async function asyncLogout(){
@@ -22,27 +22,21 @@ const Logout = () => {
     asyncLogout();
   }, [logout]);
 
+  // useEffect(() => {
+  //  if(!isUninitialized && isSuccess) {
+  //   setTimeout(()=> navigate('/login'),1000);
+  //  }
+  // }, [navigate, isUninitialized, isSuccess]);
+
   return ( 
-  <Loading
-  initialLoadState={true}
-  fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-  config={{delay: FADE_OUT_DELAY}}
-  >
-     <Loader
-     isLoaded={true}
-     onLoaded={()=>setIsFadingOut(true)}
-     onMount={()=>setIsFadingOut(false)}
-     >
       <div className="container flex flex-col items-center justify-center w-fill">
         <div>
-          <h1>
+          <h1 className=" text-text-normal dark:text-dk-text-normal">
           {message}
           </h1>
-          <InlineLink to="/login">Go to login</InlineLink>
+          {/* <InlineLink to="/login">Go to login</InlineLink> */}
         </div>
       </div>
-     </Loader>
-  </Loading>
   )
 }
  

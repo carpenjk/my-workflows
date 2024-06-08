@@ -1,3 +1,3 @@
 export {default as WorkflowsSummary} from './WorkflowsSummary'
-export {default as WorkflowCard} from './WorkflowCard'
+export {default as WorkflowForm} from './WorkflowForm'
 export {useWorkflow} from './useWorkflow'

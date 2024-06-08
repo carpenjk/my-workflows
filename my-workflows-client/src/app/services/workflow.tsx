@@ -1,7 +1,8 @@
 import { api } from './api';
 import * as yup from "yup"; 
 import { Task } from './task';
-
+import { toast } from "react-toastify";
+import { TOAST_ID, createOrUpdateToast } from 'features/loading';
 
 export interface Workflow{
   workflowID: number,
@@ -87,6 +88,20 @@ export const workflowApi = api.injectEndpoints({
           })
         ))
       }),
+      async onQueryStarted(
+        arg,
+        {
+          queryFulfilled,
+        }
+      ) {
+        createOrUpdateToast(TOAST_ID, "Loading Workflows")
+        try{
+          await queryFulfilled;
+          toast.done(TOAST_ID);
+        } catch (e){
+          console.log(e);
+        }
+      },
       providesTags: ['Workflow'],
       
     }),
@@ -99,6 +114,22 @@ export const workflowApi = api.injectEndpoints({
           ...data,
           tasks: data.tasks.map(task=> withDependencies(task))
       }),
+      async onQueryStarted(
+        arg,
+        {
+          getState,
+          queryFulfilled,
+        }
+      ) {
+        console.log(getState());
+        createOrUpdateToast(TOAST_ID, "Loading Workflow")
+        try{
+          await queryFulfilled
+          toast.done(TOAST_ID)
+        } catch (e){
+          console.log(e);
+        }
+      },
       providesTags: ['Workflow'],
     }),
     createWorkflow: builder.mutation<number , CreateWorkflowRequest>({
@@ -107,6 +138,20 @@ export const workflowApi = api.injectEndpoints({
         method: 'POST',
         body: params
       }),
+      async onQueryStarted(
+        arg,
+        {
+          queryFulfilled,
+        }
+      ) {
+        createOrUpdateToast(TOAST_ID, "Saving Workflow")
+        try{
+          await queryFulfilled
+          toast.done(TOAST_ID)
+        } catch (e){
+          console.log(e);
+        }
+      },
       invalidatesTags: ['Workflow'],
     }),
     editWorkflow: builder.mutation<void , EditWorkflowRequest>({

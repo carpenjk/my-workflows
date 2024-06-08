@@ -1,6 +1,4 @@
 import {  useGetUserDetailsQuery } from 'app/services/auth';
-import { Loader, LoadingOverlay } from 'features/loading';
-import { InlineLink } from 'features/ui';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom'
 
@@ -8,8 +6,10 @@ const ProtectedRoute = () => {
   const navigate = useNavigate();
   const {data: user, isLoading: isLoadingUser, isUninitialized: isUninitializedUser, isFetching: isFetchingUser} = useGetUserDetailsQuery();
   
+  
   const isLoaded = (!isUninitializedUser && !isLoadingUser && !isFetchingUser);
   const isLoggedIn = user?.email;
+  console.log("🚀 ~ ProtectedRoute ~ isLoggedIn:", isLoggedIn)
 
   useEffect(() => {
     if(isLoaded){
@@ -19,23 +19,19 @@ const ProtectedRoute = () => {
       }
     } 
   },[isLoaded, navigate, isLoggedIn])
+
+  useEffect(() => {
+    console.log("🚀 ~ ProtectedRoute ~ user:", user)  
+  }, [user]);
   
   return (
-  <Loader
-        isLoaded={isLoaded}
-        fallback={<LoadingOverlay fadeOut={false} />}
-      >
   <>
         {!isLoggedIn
           ? 
-          (<div >
-            <h1>Unauthorized :(</h1>
-            <InlineLink to='/login'>Login  to gain access</InlineLink>
-          </div>)
+          (<div />)
           : (<Outlet/>)
         }
   </>
-  </Loader>
   )
 }
  

@@ -5,7 +5,6 @@ import ItemContainer from "features/ui/shared/ItemContainer";
 import { useNavigate } from "react-router-dom";
 import TextInput from "features/ui/shared/TextInput";
 import SubmitButton from "features/ui/shared/SubmitButton";
-import { ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 
 const RegistrationCard = () => {
@@ -100,16 +99,6 @@ const RegistrationCard = () => {
           </div>
         </form>
         </div>
-        <ToastContainer
-          className="content-centered"
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
     </ItemContainer>
    );
 }

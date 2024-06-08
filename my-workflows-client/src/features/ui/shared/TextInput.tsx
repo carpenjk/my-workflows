@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react';
-import React from 'react'
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 interface Props extends ComponentProps<"input"> {

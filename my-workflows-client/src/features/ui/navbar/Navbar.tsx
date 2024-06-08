@@ -1,4 +1,4 @@
-import { HTMLProps, useState } from 'react';
+import { HTMLProps, useEffect, useState } from 'react';
 import NavItem from './NavItem';
 import {HomeIcon, SquaresPlusIcon, TableCellsIcon, UserIcon, ArrowsRightLeftIcon} from '@heroicons/react/24/outline'
 import { twMerge } from 'tailwind-merge';
@@ -12,6 +12,9 @@ type Props = {
 const Navbar = ({className}: Props) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const {data: user} = useGetUserDetailsQuery();
+  useEffect(() => {
+    console.log("🚀 ~ Navbar ~ user:", user)
+  }, [user]);
 
   return (
     <>

@@ -1,30 +1,26 @@
-import {  useState} from "react";
-import {WorkflowCard} from "features/workflow";
-import { Loader, LoadingOverlay } from "features/loading";
+import {WorkflowForm} from "features/workflow";
 import { useGetWorkflowQuery } from "app/services/workflow";
 import { User, useGetUsersQuery } from "app/services/user";
+import { TableCard } from "features/ui";
 
 const WorkflowWrapper = ({workflowID}: {workflowID: string}) => {
-  const {data: workflow, isLoading: isLoadingWorkflows, isUninitialized: isUninitializedWorkflows, isFetching: isFetchingWorkflows} = useGetWorkflowQuery(workflowID);
-  const {data: users, isLoading: isLoadingUsers, isUninitialized: isUninitializedUsers, isFetching: isFetchingUsers} = useGetUsersQuery();
-
-  const [isFadingOut, setIsFadingOut] = useState(false);
-  
-  const isLoaded = !(isUninitializedWorkflows || isLoadingWorkflows || isFetchingWorkflows
-    || isUninitializedUsers || isLoadingUsers || isFetchingUsers)
-
+  const {data: workflow } = useGetWorkflowQuery(workflowID);
+  const {data: users } = useGetUsersQuery();
 
   return(
-      <Loader
-      isLoaded={isLoaded}
-      fallback={<LoadingOverlay fadeOut={isFadingOut} />}
-      onLoaded={()=>setIsFadingOut(true)}
-      onMount={()=>setIsFadingOut(false)}
+        workflow 
+        ? (
+        <TableCard
+          title={`Edit Workflow: ${workflow?.workflowID ?? "New Workflow"}`}
+        >
+          <WorkflowForm workflow={workflow} users={users as User[]}/>
+        </TableCard>
+    )
+        : <TableCard
+        title={`Edit Workflow: ${workflowID ?? "New Workflow"}`}
       >
-        workflowID 
-        ? <WorkflowCard workflow={workflow} users={users as User[]}/> 
-        : null
-      </Loader>)
+      </TableCard>
+  )
 }
  
 export default WorkflowWrapper;

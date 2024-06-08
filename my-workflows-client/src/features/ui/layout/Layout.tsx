@@ -6,6 +6,7 @@ import Logo from "../shared/Logo";
 import { useEffect, useRef } from "react";
 import { screens } from "features/theme/screensExtension";
 import useSidebarWidth from "features/sidebar/useSidebarWidth";
+import { ToastContainer } from "react-toastify";
 
 type Props = {
   sidebarRef: RefObject<HTMLDivElement>
@@ -26,7 +27,7 @@ const Layout = memo(({sidebarRef}: Props) => {
     <>
         <div className="relative flex w-full h-screen">
           <div className="z-50 h-full w-fit">
-            <Header className="fixed top-0 left-0 z-50 w-full h-16 pl-4 pr-6 md:pl-8 md:h-24 max-w-screen-2xl"
+            <Header className="fixed top-0 left-0 z-50 w-full pl-4 pr-6 h-14 md:pl-8 md:h-16 max-w-screen-2xl"
               logo={<Logo/>}
             />
             <aside  className="z-40">
@@ -35,8 +36,18 @@ const Layout = memo(({sidebarRef}: Props) => {
               </div>
             </aside>
           </div>
-            <main ref={mainRef} className="relative z-40 flex items-start justify-center flex-1 w-full h-full p-2 pt-20 md:py-28 md:px-6">
+            <main ref={mainRef} className="relative z-40 flex items-start justify-center flex-1 w-full h-full p-2 pt-16 md:px-6">
               <Outlet/>
+              <ToastContainer
+                className="content-centered"
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+              />
             </main>
         </div>
     </>

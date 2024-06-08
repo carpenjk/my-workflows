@@ -2,9 +2,6 @@ import { useGetUserDetailsQuery } from "app/services/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { RegistrationCard } from "features/registration";
-import LoadingOverlay from "features/loading/LoadingOverlay";
-import { FADE_OUT_DELAY } from "features/loading/config";
-import { Loader, Loading } from "features/loading";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -21,19 +18,7 @@ const Register = () => {
 
 
   return (
-    <Loading
-    initialLoadState={true}
-    fallback={<LoadingOverlay fadeOut={isFadingOut}/>}
-    config={{delay: FADE_OUT_DELAY}}
-    >
-      <Loader
-      isLoaded={isLoaded}
-      onLoaded={()=>setIsFadingOut(true)}
-      onMount={()=>setIsFadingOut(false)}
-      >
-        <RegistrationCard />
-      </Loader>
-    </Loading>
+    <RegistrationCard />
   );
 }
 

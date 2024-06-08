@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
-import store from './app/store';
-import { Provider } from 'react-redux';
 import ThemeProvider from 'features/theme/ThemeProvider';
+import { Provider } from 'react-redux';
+import App from './App';
+import store from './app/store';
 import { initTheme } from 'features/theme/themeScript';
 
 const root = ReactDOM.createRoot(
@@ -15,11 +15,11 @@ const root = ReactDOM.createRoot(
 initTheme();
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
       <ThemeProvider>
-          <App/>
+      <Provider store={store}>
+            <App/>
+      </Provider>
       </ThemeProvider>
-    </Provider>
   </React.StrictMode>
 );
 

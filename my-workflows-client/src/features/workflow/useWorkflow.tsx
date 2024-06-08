@@ -25,6 +25,7 @@ export type UseWorkflowReturn = {
 }
 
 export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
+console.log("🚀 ~ useWorkflow ~ workflow:", workflow)
 
   const { register, handleSubmit, formState, getValues, control } = 
     useForm<FormValues>({
@@ -72,7 +73,6 @@ export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
     }
 
   
-  
   const {dirtyFields, isDirty} = formState;
   
 
@@ -81,8 +81,6 @@ export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
   const [saveTasks, saveTaskStatus] = useSaveTasksMutation();
   const [deleteTasks, deleteTaskStatus] = useDeleteTasksMutation();
   const [saveDependencies, saveDependenciesStatus] = useUpdateDependenciesMutation();
-
-
   
 
   function processTasks(tasks: NewTaskRequest[]) {
@@ -144,7 +142,6 @@ export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
           await saveDependencies({workflowID: workflow.workflowID, dependencies});
         }
       }
-
 
     } catch(e){
       console.log(e);

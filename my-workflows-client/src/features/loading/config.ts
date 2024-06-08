@@ -1,1 +1,0 @@
-export const FADE_OUT_DELAY = 400;
