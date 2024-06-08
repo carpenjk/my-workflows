@@ -27,7 +27,6 @@ authListenerMiddleware.startListening({
   },
 })
 
-
 authListenerMiddleware.startListening({
   matcher: authApi.endpoints.register.matchFulfilled,
   effect: async (action, listenerApi) => {
@@ -41,8 +40,6 @@ authListenerMiddleware.startListening({
       transition: zoomIn,
       onClose: ()=>redirect('/login')
     });
-    console.log('fullfilled');
-    // redirect('/login');
   },
 })
 authListenerMiddleware.startListening({

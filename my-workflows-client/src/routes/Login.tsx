@@ -10,23 +10,16 @@ const Login = () => {
    const navigate = useNavigate();
    const {data: loggedInUser, isLoading: isLoadingUser, isUninitialized: isUninitializedUser, isFetching: isFetchingUser} = useGetUserDetailsQuery();
    
-
-   // useEffect(() => {
-   //    if(loggedInUser?.email){
-   //       navigate('/');
-   //    }
-   // },[navigate,loggedInUser])
-
    useEffect(() => {
-      console.log("🚀 ~ useEffect ~ !isLoadingUser:", !isLoadingUser)
       if(!isLoadingUser){
          toast.done(TOAST_ID);
       }
    }, [isLoadingUser]);
      
-   const isComplete = !(isLoadingUser || isUninitializedUser || isFetchingUser);
    return(
-      <LoginCard />
+      <>
+         <LoginCard />
+      </>
    )
 }
  

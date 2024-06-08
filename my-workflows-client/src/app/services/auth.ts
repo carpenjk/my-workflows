@@ -1,10 +1,7 @@
 import * as yup from "yup";
 import { api } from './api';
 import { User } from './user';
-import { toast } from "react-toastify";
-import { TOAST_ID, TRANSITION, createOrUpdateToast, makeToast } from "features/loading";
-import { redirect } from "react-router-dom";
-import { Console } from "console";
+import { TOAST_ID, createOrUpdateToast } from "features/loading";
 
 export interface UserResponse {
   user: User,
@@ -18,8 +15,6 @@ export interface LogoutResponse {
 export interface MessageResponse  {
   msg: string
 }
-
-
 
 export const LoginRequestSchema = yup.object({
   email: yup.string()
@@ -55,8 +50,7 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
         body: credentials,
       }),
-      async onQueryStarted(
-      ) {
+      async onQueryStarted() {
         createOrUpdateToast(TOAST_ID, "Loading")
       },
       invalidatesTags: ['User']
@@ -66,19 +60,8 @@ export const authApi = api.injectEndpoints({
         url: 'api/v1/user/logout',
         method:'POST'
       }),
-      async onQueryStarted(
-        arg,
-        {
-          queryFulfilled,
-        }
-      ) {
+      async onQueryStarted() {
         createOrUpdateToast(TOAST_ID, "Logging Out")
-        // try{
-        //   await queryFulfilled
-        //   toast.done(TOAST_ID)
-        // } catch (e){
-        //   console.log(e);
-        // }
       },
       invalidatesTags: ['User']
     }),
@@ -94,8 +77,7 @@ export const authApi = api.injectEndpoints({
         url: 'api/v1/user/me',
         method: 'GET',
       }),
-      async onQueryStarted(
-      ) {
+      async onQueryStarted() {
         createOrUpdateToast(TOAST_ID, "Loading")
       },
       providesTags: ['User']

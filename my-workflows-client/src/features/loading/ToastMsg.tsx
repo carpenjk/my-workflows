@@ -5,7 +5,6 @@ interface Props extends React.ComponentProps<'div'> {
 }
 
 const ToastMsg:React.FC<Props> = ({msg}: Props) => {
-  console.log('loading toast')
   return ( 
       <LoadingOverlay fadeOut={false} msg={msg}/>
    );

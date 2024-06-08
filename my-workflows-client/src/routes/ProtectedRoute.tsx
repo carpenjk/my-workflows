@@ -6,10 +6,8 @@ const ProtectedRoute = () => {
   const navigate = useNavigate();
   const {data: user, isLoading: isLoadingUser, isUninitialized: isUninitializedUser, isFetching: isFetchingUser} = useGetUserDetailsQuery();
   
-  
   const isLoaded = (!isUninitializedUser && !isLoadingUser && !isFetchingUser);
   const isLoggedIn = user?.email;
-  console.log("🚀 ~ ProtectedRoute ~ isLoggedIn:", isLoggedIn)
 
   useEffect(() => {
     if(isLoaded){
@@ -19,10 +17,6 @@ const ProtectedRoute = () => {
       }
     } 
   },[isLoaded, navigate, isLoggedIn])
-
-  useEffect(() => {
-    console.log("🚀 ~ ProtectedRoute ~ user:", user)  
-  }, [user]);
   
   return (
   <>

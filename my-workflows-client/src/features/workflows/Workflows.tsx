@@ -10,13 +10,12 @@ interface Props {
   workflows: Workflow[]
 }
 
-const WorkflowsSummary = ({workflows}: Props) => {
+const Workflows = ({workflows}: Props) => {
   const [deleteWorkflow, deleteStatus] = useDeleteWorkflowMutation();
   const [createWorkflow, createStatus] = useCreateWorkflowMutation();
   
   async function handleCopy(workflow:Workflow){
     const workflowCopy = transformWorkflow(workflow);
-    console.log("🚀 ~ file: WorkflowsSummary.tsx:23 ~ handleCopy ~ workflowCopy:", workflowCopy)
     try{
       await createWorkflow(workflowCopy).unwrap();
     }catch(e){
@@ -27,7 +26,6 @@ const WorkflowsSummary = ({workflows}: Props) => {
   return(
       <TableCard
         title="My workflows"
-        
       >
       <div className="flex items-start justify-start w-full max-w-fit">
         <Table
@@ -86,4 +84,4 @@ const WorkflowsSummary = ({workflows}: Props) => {
   )
 }
  
-export default WorkflowsSummary;
+export default Workflows;

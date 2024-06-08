@@ -25,7 +25,6 @@ export type UseWorkflowReturn = {
 }
 
 export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
-console.log("🚀 ~ useWorkflow ~ workflow:", workflow)
 
   const { register, handleSubmit, formState, getValues, control } = 
     useForm<FormValues>({

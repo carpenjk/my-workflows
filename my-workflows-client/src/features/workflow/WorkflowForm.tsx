@@ -24,7 +24,6 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
 
 const WorkflowForm = ({workflow, users = []}: Props) => {
-    console.log("🚀 ~ WorkflowCard ~ workflow:", workflow)
     const {
       formState,
       register,

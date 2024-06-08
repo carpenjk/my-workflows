@@ -59,7 +59,6 @@ export function transformTaskOwner(task: Task){
 }
 
 export function transformWorkflow(workflow: Workflow){
-  console.log('copy workflow:', workflow.workflowID);
   const {workflowID, createdAt, updatedAt, completedDate, workflowOwner, tasks, ...copyProps} = workflow;
   return({
     ownerID: workflowOwner.userID,
@@ -89,10 +88,7 @@ export const workflowApi = api.injectEndpoints({
         ))
       }),
       async onQueryStarted(
-        arg,
-        {
-          queryFulfilled,
-        }
+        arg, { queryFulfilled }
       ) {
         createOrUpdateToast(TOAST_ID, "Loading Workflows")
         try{
@@ -115,13 +111,8 @@ export const workflowApi = api.injectEndpoints({
           tasks: data.tasks.map(task=> withDependencies(task))
       }),
       async onQueryStarted(
-        arg,
-        {
-          getState,
-          queryFulfilled,
-        }
+        arg, { queryFulfilled }
       ) {
-        console.log(getState());
         createOrUpdateToast(TOAST_ID, "Loading Workflow")
         try{
           await queryFulfilled
@@ -139,10 +130,7 @@ export const workflowApi = api.injectEndpoints({
         body: params
       }),
       async onQueryStarted(
-        arg,
-        {
-          queryFulfilled,
-        }
+        arg, { queryFulfilled }
       ) {
         createOrUpdateToast(TOAST_ID, "Saving Workflow")
         try{

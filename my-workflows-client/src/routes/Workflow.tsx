@@ -1,7 +1,7 @@
 import { useGetUserDetailsQuery } from "app/services/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import WorkflowsSummary from "features/workflow/WorkflowsSummary";
+import { Workflows } from "features/workflows";
 import { useGetWorkflowsQuery } from "app/services/workflow";
 
 const Workflow = () => {
@@ -16,7 +16,7 @@ const Workflow = () => {
   }, [loggedInUser, navigate])
 
   return (  
-          <WorkflowsSummary workflows={workflows || []}/>
+          <Workflows workflows={workflows || []}/>
   )
 }
  
