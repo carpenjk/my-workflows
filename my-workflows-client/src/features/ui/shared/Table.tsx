@@ -33,11 +33,11 @@ const Table = (props: Props) => {
           <h2 className="flex-none text-sm font-bold xl:text-lg text-text-normal dark:text-dk-text-normal">{title}</h2>
         )}
         
-        <div className={ twMerge(`relative flex-1 overflow-auto gap-y-2 ${'loadMore' in props ? 'pb-8' : ''}`, className)}>
+        <div className={ twMerge(`relative flex-1 overflow-auto ${'loadMore' in props ? 'pb-8' : ''}`, className, 'auto-rows-max')}>
           <div className="z-30 contents">
            {headers}
           </div>
-          <div className="z-20 contents">
+          <div className="z-20 contents bg-primary-9">
             {children}
           </div>
           {'loadMore' in props && (

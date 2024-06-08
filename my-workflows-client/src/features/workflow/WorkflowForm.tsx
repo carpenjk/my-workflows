@@ -38,7 +38,8 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
   return ( 
     
         <form className="w-full" onSubmit={saveWorkflow()}>
-          <div className='relative flex flex-col items-stretch w-full mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] xl:flex-row xl:items-center xl:justify-between xl:space-x-4'>
+          <div className={`relative w-full h-20 flex flex-col items-center p-2  mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] 
+                xl:flex-row xl:items-center xl:justify-between xl:space-x-4 bg-primary-9`}>
             <InputCell inputName='name' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
               <MultilineTextInput
                 // ref={nameRef}
@@ -126,8 +127,8 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                       },
                     ]}/>
                   </TableCell>
-                  <TableCell>
-                    <InputCell inputName={nameID}>
+                  <InputCell inputName={nameID}>
+                    <TableCell>
                       <MultilineTextInput
                         id={nameID}
                         placeholder="Enter name"
@@ -135,10 +136,10 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                         control={control}
                         maxLength={fieldSizes.workflow.name}
                       />
-                    </InputCell>
-                  </TableCell>
-                  <TableCell>
-                    <InputCell inputName={descriptionID}>
+                    </TableCell>
+                  </InputCell>
+                  <InputCell inputName={descriptionID}>
+                    <TableCell>
                       <MultilineTextInput
                         id={descriptionID}
                         placeholder="Enter description"
@@ -146,10 +147,10 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                         control={control}
                         maxLength={fieldSizes.workflow.description}
                       />
-                    </InputCell>
-                  </TableCell>
-                  <TableCell>
-                    <InputCell inputName={dependenciesID}>
+                    </TableCell>
+                  </InputCell>
+                  <InputCell inputName={dependenciesID}>
+                    <TableCell>
                       <SelectInput
                         id={dependenciesID}
                         placeholder="Enter dependencies"
@@ -159,10 +160,10 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                         multiple={true}
                         defaultValue={task.dependencies?.map(dep => dep.toString()) ?? []}
                       />
-                    </InputCell>  
-                  </TableCell>
-                  <TableCell>
-                    <InputCell inputName={dueDayID}>
+                    </TableCell>
+                  </InputCell>  
+                  <InputCell inputName={dueDayID}>
+                    <TableCell>
                       <input
                         id={dueDayID}
                         className={` relative flex flex-wrap items-center justify-start 
@@ -176,10 +177,10 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                         maxLength={fieldSizes.task.dueDay}
                         max={"9999"}
                       />
-                    </InputCell>
-                  </TableCell>
-                  <TableCell>
-                    <InputCell inputName={taskOwnerID} focusOnEsc>
+                    </TableCell>
+                  </InputCell>
+                  <InputCell inputName={taskOwnerID} focusOnEsc>
+                    <TableCell>
                       <SelectInput
                         id={taskOwnerID}
                         placeholder="Enter owner"
@@ -188,8 +189,8 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                         values={getDisplayUsers(users)}
                         defaultValue={task.ownerID ?? []} // needed to prevent change from uncontrolled to controlled error
                       />
-                    </InputCell>
-                  </TableCell>
+                    </TableCell>
+                  </InputCell>
                 </Fragment>
               )
             })}

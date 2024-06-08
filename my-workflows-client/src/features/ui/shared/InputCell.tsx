@@ -27,10 +27,10 @@ const InputCell = ({children, className, inputName, focusOnEsc = false}: Props) 
     onKeyDown={handleKeyDown}
     // tabIndex={0}
      ref={cellRef}
-     className={twMerge(` whitespace-normal relative flex items-center justify-stretch w-full min-h-[52px] lg:min-h-[58px] 
-      pt-2 pb-2 px-3 border border-solid rounded-sm shadow-inner border-primary-8 bg-primary-9
+     className={twMerge(`relative flex items-center justify-stretch w-full 
+       border border-solid rounded-sm focus-within:shadow-inner border-primary-8 bg-primary-9
       dark:bg-dk-primary-9 focus-within:outline-2 focus-within:outline focus-within:outline-sky-600/70
-       focus-within:-outline-offset-2 text-text-normal dark:text-dk-text-normal font-maven text-xs xl:text-sm`, className)}
+       focus-within:-outline-offset-2 `, className)}
        >
       {children}
     </div>

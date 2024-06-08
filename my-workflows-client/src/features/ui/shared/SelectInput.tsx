@@ -122,7 +122,7 @@ function classNames(...classes: any) {
             return (
               <div className='relative flex items-center justify-start w-full bg-transparent min-h-fit text-text-normal dark:text-dk-text-normal font-maven'>
                 {label && (
-                  <Listbox.Label className={twMerge(`block text-xs xl:text-sm font-bold text-text-normal 
+                  <Listbox.Label className={twMerge(`block text-xs font-bold text-text-normal 
               dark:text-dk-text-normal font-maven`, labelClasses)}>{label}:</Listbox.Label>
                 )}
                 <div className="relative flex w-full h-full">
@@ -130,7 +130,7 @@ function classNames(...classes: any) {
                       w-full max-w-full h-full min-h-fit text-text-normal dark:text-dk-text-normal font-maven 
                       text-xs lg:text-sm bg-transparent`, className)}>
                     <Listbox.Button className={`relative cursor-text border-none 
-                      bg-transparent w-full h-full min-h-fit text-xs xl:text-sm break-words focus:ring-0 focus:outline-none`}>
+                      bg-transparent w-full h-full min-h-fit text-xs break-words focus:ring-0 focus:outline-none`}>
                       <span className="flex items-center">
                         <span className="block truncate">{getDisplayValues(field) ?? placeholder}</span>
                       </span>

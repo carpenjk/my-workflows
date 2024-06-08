@@ -45,7 +45,7 @@ const ActionDropDown = ({actions}: Props) => {
       <Menu.Button ref={actionButtonRef} className={`group flex items-center justify-center w-full h-full  
       rounded-sm focus:outline-2 focus:outline focus:outline-sky-600/70 focus:-outline-offset-2
     `}>
-        <EllipsisHorizontalCircleIcon className={`w-8 h-8 fill-transparent text-text-normal dark:text-dk-text-normal
+        <EllipsisHorizontalCircleIcon className={`w-5 h-5 fill-transparent text-text-normal dark:text-dk-text-normal
         group-hover:fill-link-200/75 dark:group-hover:fill-transparent dark:group-hover:text-link-400 transition-all duration-500
       `}/>
       </Menu.Button>

@@ -1,13 +1,13 @@
-import { ComponentProps, useRef, useState } from 'react';
+import { setTextAreaHeight } from 'utils/autoHeightTextArea';
+import { ComponentProps, useEffect, useImperativeHandle, useRef } from 'react';
 import React from 'react'
-import { useWatch, Control } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 import { ClassNameValue, twMerge } from 'tailwind-merge';
 
 interface Props extends ComponentProps<"textarea"> {
   id?: string,
   name: string,
   label?: string,
-  placeholder: string,
   labelClasses?: ClassNameValue,
   textAreaClasses?: ClassNameValue
   control: Control<any>
@@ -15,30 +15,32 @@ interface Props extends ComponentProps<"textarea"> {
 
 type Ref = HTMLTextAreaElement;
 
-const MultilineTextInput = React.forwardRef<Ref, Props>(({name,control, label, labelClasses,className, textAreaClasses, id, placeholder, ...inputProps}, ref) => {
-  const inputControl = useWatch({name: name, control: control});
-  const [isCursorInside, setIsCursorInside] = useState(false);
-  const [showPlaceholder, setShowPlaceholder] = useState(!inputControl);
+const MultilineTextInput = React.forwardRef<Ref, Props>(({name,control, label, labelClasses,className, textAreaClasses, id, placeholder, ...inputProps}, forwardedRef) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  
+  useImperativeHandle(forwardedRef, ()=> textAreaRef.current as HTMLTextAreaElement)
 
-  const leaveInput = () => {
-    setIsCursorInside(false);
-    if(!inputControl){
-      setShowPlaceholder(true)
+  useEffect(() => {
+    if(textAreaRef.current){
+      setTextAreaHeight(textAreaRef.current);
+    }
+  }, []);
+
+  const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    setTextAreaHeight(e.target);
+    console.log(e.target.value);
+    if(inputProps.onChange){
+      inputProps.onChange(e);
     }
   }
 
   const enterInput = (element: HTMLTextAreaElement) => {
-    element.setSelectionRange(0, element.value.length);
-    setShowPlaceholder(false);
-    setIsCursorInside(true);
+    element.setSelectionRange(element.value.length, element.value.length);
   }
   const handleClick = (e: React.MouseEvent  | React.FocusEvent) => enterInput(e.target as HTMLTextAreaElement);
   const handleFocus: React.FocusEventHandler<HTMLTextAreaElement> = (e) => enterInput(e.target);
-  const handleBlur: React.FocusEventHandler<HTMLTextAreaElement> = (e) => leaveInput();
 
-  const textAreaDisplayClass = isCursorInside ? 'relative text-text-normal dark:text-dk-text-normal' : 'text-transparent';  
-  
   return ( 
     <div className='relative flex items-center justify-start w-full min-h-fit'>
       {label && (
@@ -48,25 +50,22 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({name,control, label, l
       </label>
       )}
       <div ref={containerRef} className='relative flex w-full h-full'>
-        <div className={twMerge(`relative flex flex-wrap items-center justify-start 
-          w-full max-w-full h-full min-h-fit text-text-normal dark:text-dk-text-normal font-maven text-xs xl:text-sm bg-transparent overflow-hidden`, className)}>
-          {!isCursorInside ? inputControl : null}
-          {(!inputControl && showPlaceholder) ? placeholder : null}
           <textarea
             onFocus={handleFocus}
-            onBlurCapture={handleBlur}
-            className={twMerge(`resize-none absolute inset-0 p-0 border-none 
-              bg-transparent w-full h-full min-h-fit text-xs xl:text-sm break-words focus:ring-0`,
-              textAreaDisplayClass , textAreaClasses)}
+            className={twMerge(`relative flex flex-wrap items-center justify-start 
+              w-full max-w-full text-text-normal dark:text-dk-text-normal font-maven resize-none border-none 
+              bg-transparent text-xs break-words focus:ring-0`,
+              textAreaClasses)}
+            style={{height: "0px"}}
             id={id}
-            rows={2}
-            ref={ref}
+            rows={1}
+            ref={textAreaRef}
             spellCheck={false}
             name={name}
             {...inputProps}
+            onChange={handleChange}
             onClick={handleClick}
           />
-        </div>
       </div>
     </div>
    );
