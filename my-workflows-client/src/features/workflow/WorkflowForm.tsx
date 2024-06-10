@@ -9,6 +9,8 @@ import ColumnHeader from 'features/ui/table/ColumnHeader';
 import TableCell from 'features/ui/table/TableCell';
 import { Fragment } from 'react';
 import { useWorkflow } from './useWorkflow';
+import { SinglelineInput } from 'features/ui/shared';
+import { getID, getPrefix } from 'utils/formFields';
 
 type Props = {
   workflow?: Workflow,
@@ -22,6 +24,7 @@ const getDisplayUsers = (users: User[]) => users.map((user) => ({
 const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
   value: task.taskID.toString(), displayValue:  task.name
 }))
+ 
 
 const WorkflowForm = ({workflow, users = []}: Props) => {
     const {
@@ -34,48 +37,18 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
       copyTask,
       deleteTask
     } = useWorkflow(workflow);
+
+    const newRowIndex = taskFields.length;
+    const newIDPrefix = getPrefix('tasks', newRowIndex);
+    const newNameID = getID(newIDPrefix, 'name');
+    const newDescriptionID = getID(newIDPrefix, 'description');
+    const newDependenciesID = getID(newIDPrefix, 'dependencies');;
+    const newDueDayID = getID(newIDPrefix, 'dueDay');
+    const newTaskOwnerID = getID(newIDPrefix, 'ownerID');
   
   return ( 
     
         <form className="w-full" onSubmit={saveWorkflow()}>
-          <div className={`relative w-full h-20 flex flex-col items-center p-2  mx-auto mb-4 md:mb-8 center xl:max-w-[calc(100%-4rem)] 
-                xl:flex-row xl:items-center xl:justify-between xl:space-x-4 bg-primary-9`}>
-            <InputCell inputName='name' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
-              <MultilineTextInput
-                // ref={nameRef}
-                id="name"
-                label="Name"
-                className=' xl:w-[11rem] ml-2'
-                textAreaClasses="h-4 xl:h-5 xl:h-full"
-                placeholder="Employee Onboarding"
-                {...register("name",  { required: true }) }
-                control={control}
-                maxLength={fieldSizes.workflow.name}
-              />
-            </InputCell>
-            <InputCell inputName='description' className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
-              <MultilineTextInput
-                id="description"
-                label="Description:"
-                className='xl:w-[248px] ml-2'
-                textAreaClasses="xs:h-4 md:h-full"
-                placeholder="New employee onboarding tasks"
-                {...register("description",  { required: true }) }
-                control={control}
-                maxLength={fieldSizes.workflow.description}
-              />
-            </InputCell>
-            <InputCell className='mb-3 xl:mb-0 md:w-[352px] lg:w-[364px] xl:w-fit' >
-              <SelectInput
-                id="ownerID"
-                label="Owner"
-                className='xl:w-[100px] ml-2'
-                placeholder="John Smith"
-                control={control}
-                values={getDisplayUsers(users)}
-              />
-            </InputCell>
-          </div>
           <Table 
             className={`grid w-full
               grid-cols-[3.5rem_minmax(10.5rem,11.5rem)_minmax(15rem,1fr)_minmax(12rem,1fr)_minmax(5rem,_.5fr)_minmax(8.5rem,1fr)] 
@@ -99,12 +72,13 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
             }
           >
             {taskFields.map((task, index) => {
-              const idPrefix = `tasks.${index}.`;
-              const nameID = `${idPrefix}name`;
-              const descriptionID = `${idPrefix}description`;
-              const dependenciesID = `${idPrefix}dependencies`;
-              const dueDayID = `${idPrefix}dueDay`;
-              const taskOwnerID = `${idPrefix}ownerID`
+              const idPrefix = getPrefix('tasks',index);
+              const nameID = getID(idPrefix, 'name');
+              const descriptionID = getID(idPrefix, 'description');
+              const dependenciesID = getID(idPrefix, 'dependencies');;
+              const dueDayID = getID(idPrefix, 'dueDay');
+              const taskOwnerID = getID(idPrefix, 'ownerID');
+              
               return (
                 <Fragment key={task.id}>
                   <TableCell>
@@ -131,7 +105,6 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                     <TableCell>
                       <MultilineTextInput
                         id={nameID}
-                        placeholder="Enter name"
                         {...register(`tasks.${index}.name`, {required: true})}
                         control={control}
                         maxLength={fieldSizes.workflow.name}
@@ -142,7 +115,6 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                     <TableCell>
                       <MultilineTextInput
                         id={descriptionID}
-                        placeholder="Enter description"
                         {...register(`tasks.${index}.description`, {required: true})}
                         control={control}
                         maxLength={fieldSizes.workflow.description}
@@ -153,7 +125,6 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                     <TableCell>
                       <SelectInput
                         id={dependenciesID}
-                        placeholder="Enter dependencies"
                         {...register(`tasks.${index}.dependencies`, {required: true})}
                         control={control}
                         values={getDisplayDependencies(workflow?.tasks ?? [])}
@@ -164,18 +135,14 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                   </InputCell>  
                   <InputCell inputName={dueDayID}>
                     <TableCell>
-                      <input
+                      <SinglelineInput
                         id={dueDayID}
-                        className={` relative flex flex-wrap items-center justify-start 
-                            w-full max-w-full h-full font-maven text-xs 2xl:text-sm bg-transparent text-text-normal
-                          dark:text-dk-text-normal px-0 py-1 border-none break-words shadow-none focus:ring-0`}
-                        placeholder="Enter due day"
                         {...register(`tasks.${index}.dueDay`, {required: true})}
                         defaultValue={task.dueDay === 0 ? undefined : task.dueDay.toString()}
-                        type='text'
                         pattern="\d*"
                         maxLength={fieldSizes.task.dueDay}
                         max={"9999"}
+                        control={control}
                       />
                     </TableCell>
                   </InputCell>
@@ -183,7 +150,6 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                     <TableCell>
                       <SelectInput
                         id={taskOwnerID}
-                        placeholder="Enter owner"
                         {...register(`tasks.${index}.ownerID`, {required: true})}
                         control={control}
                         values={getDisplayUsers(users)}
@@ -194,6 +160,67 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                 </Fragment>
               )
             })}
+            <Fragment key={taskFields.length -1}>
+              <TableCell>
+                <div>+</div>
+              </TableCell>
+              <InputCell inputName={newNameID}>
+                <TableCell>
+                  <MultilineTextInput
+                    id={newNameID}
+                    {...register(`tasks.${newRowIndex}.name`, {required: true})}
+                    control={control}
+                    maxLength={fieldSizes.workflow.name}
+                  />
+                </TableCell>
+              </InputCell>
+              <InputCell inputName={newDescriptionID}>
+                <TableCell>
+                  <MultilineTextInput
+                    id={newDescriptionID}
+                    {...register(`tasks.${newRowIndex}.description`, {required: true})}
+                    control={control}
+                    maxLength={fieldSizes.workflow.description}
+                  />
+                </TableCell>
+              </InputCell>
+              <InputCell inputName={newDependenciesID}>
+                <TableCell>
+                  <SelectInput
+                    id={newDependenciesID}
+                    {...register(`tasks.${newRowIndex}.dependencies`, {required: true})}
+                    control={control}
+                    values={getDisplayDependencies(workflow?.tasks ?? [])}
+                    multiple={true}
+                    defaultValue={[]}
+                  />
+                </TableCell>
+              </InputCell>  
+              <InputCell inputName={newDueDayID}>
+                <TableCell>
+                  <SinglelineInput
+                    id={newDueDayID}
+                    {...register(`tasks.${newRowIndex}.dueDay`, {required: true})}
+                    defaultValue={ undefined}
+                    pattern="\d*"
+                    maxLength={fieldSizes.task.dueDay}
+                    max={"9999"}
+                    control={control}
+                  />
+                </TableCell>
+              </InputCell>
+              <InputCell inputName={newTaskOwnerID} focusOnEsc>
+                <TableCell>
+                  <SelectInput
+                    id={newTaskOwnerID}
+                    {...register(`tasks.${newRowIndex}.ownerID`, {required: true})}
+                    control={control}
+                    values={getDisplayUsers(users)}
+                    defaultValue={[]} // needed to prevent change from uncontrolled to controlled error
+                  />
+                </TableCell>
+              </InputCell>
+            </Fragment>
           </Table>
           <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
           <SubmitButton disabled={!formState.isDirty}>Save</SubmitButton>

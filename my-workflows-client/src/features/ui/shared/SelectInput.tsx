@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Fragment } from 'react'
 import useResizeObserver from "use-resize-observer";
-import { Listbox, Transition } from '@headlessui/react'
+import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react'
 import { ComponentProps } from 'react';
 import {Control, Controller, ControllerRenderProps} from 'react-hook-form'
 import { ClassNameValue, twMerge } from 'tailwind-merge';
@@ -17,7 +17,7 @@ interface Value {
 interface Props extends ComponentProps<"input"> {
   id: string,
   label?: string,
-  placeholder: string,
+  placeholder?: string,
   labelClasses?: ClassNameValue,
   listboxClasses?: ClassNameValue,
   control: Control<any>,
@@ -46,7 +46,7 @@ function classNames(...classes: any) {
     
   const optionsRef = useRef<HTMLUListElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const placeOptionsContainer =useCallback((optionsElement: HTMLUListElement, bodyWidth?: number)=> {
     if(!containerRef?.current){
       return;
@@ -116,25 +116,27 @@ function classNames(...classes: any) {
     name={id}
     defaultValue={defaultValue}
     render={({ field }) => {
+      const value = getDisplayValues(field); 
+      const displayText = value ?? placeholder;
       return (
         <Listbox ref={containerRef} value={field.value} onChange={field.onChange} name={id} multiple={multiple}>
           {({ open }: { open: boolean; }) => {
             return (
               <div className='relative flex items-center justify-start w-full bg-transparent min-h-fit text-text-normal dark:text-dk-text-normal font-maven'>
                 {label && (
-                  <Listbox.Label className={twMerge(`block text-xs font-bold text-text-normal 
-              dark:text-dk-text-normal font-maven`, labelClasses)}>{label}:</Listbox.Label>
+                  <Label className={twMerge(`block text-xs font-bold text-text-normal 
+              dark:text-dk-text-normal font-maven`, labelClasses)}>{label}:</Label>
                 )}
                 <div className="relative flex w-full h-full">
                   <div className={twMerge(`relative flex flex-wrap items-center justify-start 
                       w-full max-w-full h-full min-h-fit text-text-normal dark:text-dk-text-normal font-maven 
-                      text-xs lg:text-sm bg-transparent`, className)}>
-                    <Listbox.Button className={`relative cursor-text border-none 
+                      text-xs bg-transparent`, className)}>
+                    <ListboxButton className={`relative cursor-text border-none 
                       bg-transparent w-full h-full min-h-fit text-xs break-words focus:ring-0 focus:outline-none`}>
                       <span className="flex items-center">
-                        <span className="block truncate">{getDisplayValues(field) ?? placeholder}</span>
+                        <span className={`block truncate ${!displayText ? 'text-transparent' : ""}`}>{displayText ?? "-"}</span>
                       </span>
-                    </Listbox.Button>
+                    </ListboxButton>
                   </div>
                 </div>
                 {(ReactDOM.createPortal(
@@ -147,15 +149,15 @@ function classNames(...classes: any) {
                   >
                     <div className='contents'>
                       <ScrollLock disablePortal />
-                      <Listbox.Options ref={onRefChange} className={twMerge(`absolute top-0 z-50 py-1 mt-1 overflow-auto
-                          bg-primary-9 rounded-md shadow-lg max-h-56 ring-0 focus:outline-none sm:text-sm
+                      <ListboxOptions ref={onRefChange} className={twMerge(`absolute top-0 z-50 mt-1 overflow-auto
+                          bg-primary-9 dark:bg-dk-primary-9 rounded-sm shadow-lg max-h-56 ring-0 focus:outline-none text-xs
                           text-text-normal dark:text-dk-text-normal`, listboxClasses)}>
                         {values.map((value) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={value.value}
                             className={({ active }: { active: boolean; }) => classNames(
-                              active ? ' bg-dk-primary-6 text-dk-primary-2' : ' text-text-normal',
-                              'relative cursor-default select-none py-2 px-3 font-maven text-xs xl:text-sm'
+                              active ? ' bg-dk-primary-6 text-dk-primary-2' : ' text-text-normal dark:bg-primary-3 dark:text-dk-text-normal',
+                              'relative p-1 cursor-default select-none font-maven text-xs'
                             )}
                             value={value.value}
                           >
@@ -170,9 +172,9 @@ function classNames(...classes: any) {
                                 </div>
                               </>
                             )}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                      </Listbox.Options>
+                      </ListboxOptions>
                     </div>
                   </Transition>,
                   document.body))}

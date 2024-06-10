@@ -13,12 +13,11 @@ interface Props extends ComponentProps<"textarea"> {
   control: Control<any>
 } 
 
-type Ref = HTMLTextAreaElement;
-
-const MultilineTextInput = React.forwardRef<Ref, Props>(({name,control, label, labelClasses,className, textAreaClasses, id, placeholder, ...inputProps}, forwardedRef) => {
+const MultilineTextInput = React.forwardRef<HTMLTextAreaElement, Props>(({name,control, label, labelClasses,className, textAreaClasses, id, placeholder, ...inputProps}, forwardedRef) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   
+  //used to pass correct object to generic setTextAreaHeight
   useImperativeHandle(forwardedRef, ()=> textAreaRef.current as HTMLTextAreaElement)
 
   useEffect(() => {
@@ -29,7 +28,6 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({name,control, label, l
 
   const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setTextAreaHeight(e.target);
-    console.log(e.target.value);
     if(inputProps.onChange){
       inputProps.onChange(e);
     }
@@ -53,7 +51,7 @@ const MultilineTextInput = React.forwardRef<Ref, Props>(({name,control, label, l
           <textarea
             onFocus={handleFocus}
             className={twMerge(`relative flex flex-wrap items-center justify-start 
-              w-full max-w-full text-text-normal dark:text-dk-text-normal font-maven resize-none border-none 
+              w-full max-w-full p-0 text-text-normal dark:text-dk-text-normal font-maven resize-none border-none 
               bg-transparent text-xs break-words focus:ring-0`,
               textAreaClasses)}
             style={{height: "0px"}}

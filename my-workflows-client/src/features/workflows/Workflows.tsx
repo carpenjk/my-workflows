@@ -1,6 +1,6 @@
 import { enUSFormatter } from "utils/date";
 import { Workflow, transformWorkflow, useCreateWorkflowMutation, useDeleteWorkflowMutation } from "app/services/workflow";
-import { Table, TableCard } from "features/ui";
+import { Table, PanelCard } from "features/ui";
 import ColumnHeader from "features/ui/table/ColumnHeader";
 import TableCell from "features/ui/table/TableCell";
 import { Fragment } from "react";
@@ -24,7 +24,7 @@ const Workflows = ({workflows}: Props) => {
   }
   
   return(
-      <TableCard
+      <PanelCard
         title="My workflows"
       >
       <div className="flex items-start justify-start w-full max-w-fit">
@@ -80,7 +80,7 @@ const Workflows = ({workflows}: Props) => {
             })}
         </Table>
       </div>
-    </TableCard>
+    </PanelCard>
   )
 }
  

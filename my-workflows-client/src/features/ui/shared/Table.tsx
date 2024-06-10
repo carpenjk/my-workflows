@@ -28,16 +28,16 @@ const Table = (props: Props) => {
   const {actionComponent, className, children, headers, maxHeightClassName,  title} = props;
   return ( 
     <div className={twMerge('relative flex transition-all truncate duration-300 ease-in-out md:transition-none', maxHeightClassName)}>
-      <div className="flex flex-col items-start justify-start w-full pb-12 ">
+      <div className="flex flex-col items-start justify-start w-full pb-12">
         {title && (
-          <h2 className="flex-none text-sm font-bold xl:text-lg text-text-normal dark:text-dk-text-normal">{title}</h2>
+          <h2 className="flex-none mb-1 text-xs font-bold text-text-normal dark:text-dk-text-normal">{title}</h2>
         )}
         
-        <div className={ twMerge(`relative flex-1 overflow-auto ${'loadMore' in props ? 'pb-8' : ''}`, className, 'auto-rows-max')}>
+        <div className={ twMerge(`relative flex-1 overflow-auto auto-rows-max px-2 bg-primary-9 dark:bg-dk-primary-8 rounded-sm ${'loadMore' in props ? 'pb-8' : ''}`, className)}>
           <div className="z-30 contents">
            {headers}
           </div>
-          <div className="z-20 contents bg-primary-9">
+          <div className="z-20 contents ">
             {children}
           </div>
           {'loadMore' in props && (
