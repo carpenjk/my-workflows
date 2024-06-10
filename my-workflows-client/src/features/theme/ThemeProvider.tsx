@@ -2,7 +2,6 @@ import { useState, useEffect, FC, ReactNode } from 'react'
 import ThemeContext from './ThemeContext'
 
 const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  // const initialTheme = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
   const initialTheme = localStorage.theme ?? (window.matchMedia('prefers-color-scheme: dark').matches ? 'dark' : 'light');
   const [theme, setTheme] = useState<'light' | 'dark'>(initialTheme);
 

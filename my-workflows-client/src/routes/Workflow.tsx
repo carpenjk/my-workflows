@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Workflows } from "features/workflows";
 import { useGetWorkflowsQuery } from "app/services/workflow";
+import { PanelCard, PanelTitle } from "features/ui";
+import PanelHeader from "features/workflow/PanelHeader";
 
 const Workflow = () => {
   const navigate = useNavigate();
@@ -16,7 +18,13 @@ const Workflow = () => {
   }, [loggedInUser, navigate])
 
   return (  
+    <PanelCard
+    >
+      <PanelHeader>
+        <PanelTitle>Workflows</PanelTitle>
+      </PanelHeader>
           <Workflows workflows={workflows || []}/>
+    </PanelCard>
   )
 }
  

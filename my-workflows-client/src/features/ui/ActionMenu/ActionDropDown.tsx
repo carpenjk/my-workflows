@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
-import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
+import ActionButtonIcon from './ActionButtonIcon';
 import { NavLink } from 'react-router-dom';
 import { ScrollLock } from '../shared';
 
@@ -26,7 +26,6 @@ const ActionDropDown = ({actions}: Props) => {
     if(!menuElement){
       return;
     }
-    // setMenuRef(menuElement);
     const buttonRect = actionButtonRef.current?.getBoundingClientRect();
     const RIGHT_OFFSET = 16;
     const TOP_OFFSET = 8;
@@ -41,12 +40,10 @@ const ActionDropDown = ({actions}: Props) => {
 
   return (
     <Menu>
-      <MenuButton ref={actionButtonRef} className={`group flex items-center justify-center w-full h-full  
-      rounded-sm focus:outline-2 focus:outline focus:outline-sky-600/70 focus:-outline-offset-2 data-[hover]:fill-link-200/75 dark:group-hover:fill-transparent dark:group-hover:text-link-400
-    `}>
-        <EllipsisHorizontalCircleIcon className={`w-5 h-5 fill-transparent text-text-normal dark:text-dk-text-normal
-        group-hover:fill-link-200/75 dark:group-hover:fill-transparent dark:group-hover:text-link-400 transition-all duration-500
-      `}/>
+      <MenuButton ref={actionButtonRef} className={`group flex items-center justify-center w-full h-full
+        rounded-sm focus:outline-2 focus:outline focus:outline-sky-600/70 focus:-outline-offset-2
+       data-[hover]:fill-link-200/75 dark:group-hover:fill-transparent dark:group-hover:text-link-400`}>
+        <ActionButtonIcon/>
       </MenuButton>
         <Transition
         enter="transition ease-out duration-100"

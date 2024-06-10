@@ -1,28 +1,14 @@
-import { RefObject, memo } from "react";
 import { Header } from "features/ui/header";
 import { Navbar } from 'features/ui/navbar';
 import { Outlet } from "react-router-dom";
 import Logo from "../shared/Logo";
-import { useEffect, useRef } from "react";
-import { screens } from "features/theme/screensExtension";
-import useSidebarWidth from "features/sidebar/useSidebarWidth";
+import {useSidebarToggle} from "features/sidebar";
 import { ToastContainer } from "react-toastify";
 
-type Props = {
-  sidebarRef: RefObject<HTMLDivElement>
-}
-
-const Layout = memo(({sidebarRef}: Props) => {
-  const mainRef = useRef<HTMLDivElement>(null);
-  const sidebarWidth = useSidebarWidth();
+const Layout = () => {
+  const {isCollapsed} = useSidebarToggle();
+  const padForSidebar = `${isCollapsed ? 'md:pl-32 md:pr-6': 'md:pl-[240px] md:pr-6'}`
   
-  useEffect(() => {
-    if(mainRef.current){
-      mainRef.current.style.width= `calc(100% - ${sidebarWidth}px`
-      mainRef.current.style.maxWidth = `calc(${screens["2xl"]} - ${sidebarWidth}px)`;
-    }
-    
-  }, [sidebarWidth]);
   return ( 
     <>
         <div className="relative flex w-full h-screen">
@@ -31,12 +17,13 @@ const Layout = memo(({sidebarRef}: Props) => {
               logo={<Logo/>}
             />
             <aside  className="z-40">
-              <div ref={sidebarRef}>
+              <div>
                 <Navbar />
               </div>
             </aside>
           </div>
-            <main ref={mainRef} className="relative z-40 flex items-start justify-center flex-1 w-full h-full p-2 pt-16 md:px-6">
+            <main className={`relative z-40 flex items-start justify-center flex-1 w-full h-full max-w-screen-2xl px-2 pt-16 pb-[68px] sm:pb-[76px] ${padForSidebar}`}>
+              <div className="relative w-full h-full">
               <Outlet/>
               <ToastContainer
                 className="content-centered"
@@ -47,11 +34,12 @@ const Layout = memo(({sidebarRef}: Props) => {
                 draggable
                 pauseOnHover
                 theme="dark"
-              />
+                />
+              </div>
             </main>
         </div>
     </>
   );
-})
+}
 
 export default Layout; 

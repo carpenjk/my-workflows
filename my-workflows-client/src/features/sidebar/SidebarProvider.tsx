@@ -1,10 +1,16 @@
-import { FC, ReactNode } from "react"
+import { FC, ReactNode, useState } from "react"
 import SidebarContext from "./SidebarContext"
-import useElementWidth from "hooks/useElementWidth"
 
-const SidebarProvider: FC<{ children: ReactNode, sidebarRef: React.RefObject<HTMLElement> }> = ({ children, sidebarRef }) => {
-  const elementWidth = useElementWidth(sidebarRef);
-  return <SidebarContext.Provider value={elementWidth ?? 0} >{children}</SidebarContext.Provider>
+const SidebarProvider: FC<{ children: ReactNode
+}> = ({ children }) => {
+
+  const initialSetting = localStorage.collapseSidebar ?? false;
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(initialSetting);
+  const toggleSidebar = () => {
+    setIsCollapsed((prev)=>!prev);
+  } 
+
+  return <SidebarContext.Provider value={{isCollapsed: isCollapsed, toggleSidebar: toggleSidebar}} >{children}</SidebarContext.Provider>
 }
 
 export default SidebarProvider

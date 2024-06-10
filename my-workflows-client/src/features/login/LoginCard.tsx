@@ -43,10 +43,11 @@ const LoginCard = () => {
     } 
   }
   return ( 
-        <ItemContainer className="max-w-md space-y-2">
-          <h1 className="">Welcome Back!</h1>
-          <h5>Standardize and track your most important work flows.</h5>
-          <div className="w-full max-w-md p-4">
+    <div className="flex items-center justify-center w-full h-full">
+        <ItemContainer className="max-w-md space-y-2 ">
+          <h1 className="text-3xl font-maven">Welcome Back!</h1>
+          <h5 className="text-base font-maven">Standardize and track your most important work flows.</h5>
+          <div className="w-full max-w-md p-4 ">
             <form className="w-full" onSubmit={handleSubmit(()=>handleLogin({email: getValues("email"), password:getValues("password")}))}>
               <div className="w-full mb-4 sm:mb-6">
                 <TextInput
@@ -87,6 +88,7 @@ const LoginCard = () => {
             </form>
             </div>
         </ItemContainer>
+        </div>
   );
 }
  

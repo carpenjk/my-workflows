@@ -1,24 +1,14 @@
-import { PropsWithChildren } from "react";
-import ItemContainer from "./ItemContainer";
-
-interface PropsWithLoading {
-  title: string,
-  loadMore: React.MouseEventHandler,
-  loadMoreActive?: boolean,
+type Props = {
+  children: React.ReactNode
 }
 
-interface PropsWithoutLoading {
-  title: string,
-}
-
-type Props = PropsWithLoading | PropsWithoutLoading;
-
-const PanelCard = (props :PropsWithChildren<Props>) => {
-  const {children, title } = props;
+const PanelCard = ({children}: Props) => {
   return(
-    <ItemContainer className="w-full h-full max-w-full max-h-[90vh] p-4 md:p-6 min-h-[488px] lg:max-w-5xl">
+    <div className={`panel relative flex flex-col w-full h-full min-h-full max-w-full-[90vh]] p-4 bg-primary-95 
+      dark:bg-dk-primary-7 dark:text-dk-text-normal rounded-md shadow-inner 
+      shadow-secondary-8/50 dark:shadow-dk-primary-6 `}>
       {children}  
-    </ItemContainer>
+    </div>
   )
 }
  

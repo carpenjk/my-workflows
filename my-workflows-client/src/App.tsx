@@ -18,17 +18,15 @@ import Logout from 'routes/Logout';
 import Register from 'routes/Register';
 import NewWorkflow from 'routes/NewWorkflow';
 import EditWorkflow from 'routes/EditWorkflow';
-import { useRef } from 'react';
 import { SidebarProvider } from 'features/sidebar';
 
 function App() {
-  const sidebarRef = useRef<HTMLDivElement>(null);
   return (
-    <SidebarProvider sidebarRef={sidebarRef}>
+    <SidebarProvider>
       <div className="w-full min-h-screen min-w-screen App dark:bg-dk-primary-9 bg-primary-8" >
         <BrowserRouter> 
           <Routes >
-            <Route path="/" element={<Layout sidebarRef={sidebarRef}/>}>
+            <Route path="/" element={<Layout />}>
               <Route path="/login" element={<Login/>}></Route>
               <Route path="/logout" element={<Logout/>}></Route>
               <Route path="/register" element={<Register/>}></Route>

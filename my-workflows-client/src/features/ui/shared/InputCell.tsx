@@ -28,8 +28,7 @@ const InputCell = ({children, className, inputName, focusOnEsc = false}: Props) 
     // tabIndex={0}
      ref={cellRef}
      className={twMerge(`relative flex items-center justify-stretch w-full 
-       border border-solid rounded-sm focus-within:shadow-inner border-primary-8 dark:border-dk-primary-7 bg-primary-9
-      dark:bg-dk-primary-8 focus-within:outline-2 focus-within:outline focus-within:outline-sky-600/70
+       border border-solid rounded-sm focus-within:shadow-inner border-primary-8 dark:border-dk-primary-7 focus-within:outline-2 focus-within:outline focus-within:outline-sky-600/70
        focus-within:-outline-offset-2 `, className)}
        >
       {children}

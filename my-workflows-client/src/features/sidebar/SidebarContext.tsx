@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-const defaultValue = 0
+const defaultValue = {isCollapsed: false, toggleSidebar:()=>{} };
 
 const SidebarContext = createContext(defaultValue)
 

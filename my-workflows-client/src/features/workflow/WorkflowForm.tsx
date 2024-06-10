@@ -1,16 +1,15 @@
 import { Task } from 'app/services/task';
 import { User } from 'app/services/user';
 import { Workflow, fieldSizes } from "app/services/workflow";
-import { SubmitButton, MultilineTextInput, InputCell, InlineButton } from "features/ui";
+import { MultilineTextInput, InputCell, InlineButton } from "features/ui";
 import {ActionDropDown} from 'features/ui/ActionMenu';
 import {SelectInput} from 'features/ui/shared';
-import Table from 'features/ui/shared/Table';
-import ColumnHeader from 'features/ui/table/ColumnHeader';
-import TableCell from 'features/ui/table/TableCell';
+import { Table, TableCell, ColumnHeader, ActionButtonCell } from 'features/ui/table';
 import { Fragment } from 'react';
 import { useWorkflow } from './useWorkflow';
 import { SinglelineInput } from 'features/ui/shared';
 import { getID, getPrefix } from 'utils/formFields';
+import { PlusIcon } from 'features/ui/shared/PlusIcon';
 
 type Props = {
   workflow?: Workflow,
@@ -28,7 +27,7 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 
 const WorkflowForm = ({workflow, users = []}: Props) => {
     const {
-      formState,
+      // formState,
       register,
       control,
       taskFields,
@@ -48,12 +47,10 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
   
   return ( 
     
-        <form className="w-full" onSubmit={saveWorkflow()}>
+        <form className="contents" onSubmit={saveWorkflow()}>
           <Table 
-            className={`grid w-full
-              grid-cols-[3.5rem_minmax(10.5rem,11.5rem)_minmax(15rem,1fr)_minmax(12rem,1fr)_minmax(5rem,_.5fr)_minmax(8.5rem,1fr)] 
-              content-start`}
-            maxHeightClassName='h-[calc(85vh-332px)] sm:h-[calc(85vh-364px)] lg:h-[calc(85vh-418px)] xl:h-[calc(85vh-266px)]'
+            className={`grid w-full h-full content-start
+              grid-cols-[auto_minmax(9rem,11.5rem)_minmax(12rem,1fr)_minmax(9rem,1fr)_minmax(3rem,_.25fr)_minmax(7rem,.25fr)]`}
             title='Tasks'
             actionComponent={
               <InlineButton type='button' onClick={createNewTask} className="absolute bottom-3 right-4 sm:right-8">
@@ -81,7 +78,7 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
               
               return (
                 <Fragment key={task.id}>
-                  <TableCell>
+                  <ActionButtonCell >
                     <ActionDropDown actions={[
                       {
                         action: 'edit',
@@ -100,7 +97,7 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                         to: '/workflow'
                       },
                     ]}/>
-                  </TableCell>
+                  </ActionButtonCell>
                   <InputCell inputName={nameID}>
                     <TableCell>
                       <MultilineTextInput
@@ -162,7 +159,7 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
             })}
             <Fragment key={taskFields.length -1}>
               <TableCell>
-                <div>+</div>
+                <PlusIcon/>
               </TableCell>
               <InputCell inputName={newNameID}>
                 <TableCell>
@@ -222,9 +219,9 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
               </InputCell>
             </Fragment>
           </Table>
-          <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
+          {/* <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
           <SubmitButton disabled={!formState.isDirty}>Save</SubmitButton>
-          </div>
+          </div> */}
         </form>
    );
 }
