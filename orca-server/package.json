@@ -1,5 +1,5 @@
 {
-  "name": "my-workflows-server",
+  "name": "orca-server",
   "version": "1.0.0",
   "description": "Server for work flows",
   "main": "index.ts",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/carpenjk/my-work-flows.git"
+    "url": "git+https://github.com/carpenjk/orca.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/carpenjk/my-work-flows/issues"
+    "url": "https://github.com/carpenjk/orca/issues"
   },
-  "homepage": "https://github.com/carpenjk/my-work-flows#readme",
+  "homepage": "https://github.com/carpenjk/orca#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "connect-session-sequelize": "^7.1.7",

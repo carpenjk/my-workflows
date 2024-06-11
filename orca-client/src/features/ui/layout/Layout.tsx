@@ -13,9 +13,7 @@ const Layout = () => {
     <>
         <div className="relative flex w-full h-screen">
           <div className="z-50 h-full w-fit">
-            <Header className="fixed top-0 left-0 z-50 w-full pl-4 pr-6 h-14 md:pl-8 md:h-16 max-w-screen-2xl"
-              logo={<Logo/>}
-            />
+            <Header logo={<Logo/>}/>
             <aside  className="z-40">
               <div>
                 <Navbar />
