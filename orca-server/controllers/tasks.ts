@@ -4,6 +4,7 @@ import { Task } from "../models/Task";
 import { NotFoundError } from "../errors/notFoundError";
 import { BulkCreateOptions, CreateOptions } from "sequelize";
 import { BadRequestError } from "../errors/badRequestError";
+import { User } from "../models/User";
 
 export interface TaskArgs {
   taskID?: bigint,
@@ -22,7 +23,20 @@ export const getTasks = asyncWrapper(async (req: Request, res: Response, next: N
   const tasks = await Task.findAll({
     where: {
       ...filters
-    }
+    },
+    include: [
+      {
+        model: User,
+        as: 'taskOwner',
+        attributes: ['userID', 'name', 'email']
+      },
+      {
+        model: Task,
+        as: 'taskDependencies',
+        attributes: ['taskID', 'name', 'dueDay'],
+        through: {attributes: {exclude: ['Dependencies']}},
+      }
+    ]
   })
   if (tasks.length === 0) {
     return next(new NotFoundError('No tasks found.'));
@@ -32,7 +46,23 @@ export const getTasks = asyncWrapper(async (req: Request, res: Response, next: N
 
 export const getTask = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const taskID: string = req.params.taskID;
-  const task = await Task.findOne({ where: { taskID: taskID } });
+  const task = await Task.findOne({
+     where: { taskID: taskID },
+     include: [
+      {
+        model: User,
+        as: 'taskOwner',
+        attributes: ['userID', 'name', 'email']
+      },
+      {
+        model: Task,
+        as: 'taskDependencies',
+        attributes: ['taskID', 'name', 'dueDay'],
+        through: {attributes: {exclude: ['Dependencies']}},
+      }
+    ]
+    });
+
   if (!task) {
     return next(new NotFoundError(`No task with id : ${taskID}`));
   }

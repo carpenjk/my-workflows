@@ -32,13 +32,13 @@ export const fieldSizes = {
 export const EditTaskSchema = yup.object({
   workflowID: yup.number().integer().required(),
   taskID: yup.number().integer().positive('Invalid task.').required(),
-  name: yup.string().max(fieldSizes.task.name).required(),
-  description: yup.string().max(fieldSizes.task.description).required(),
+  name: yup.string().max(fieldSizes.task.name),
+  description: yup.string().max(fieldSizes.task.description),
   dependencies: yup.array().of(
     yup.string().integer()
   ),
-  dueDay: yup.number().integer().required().positive('A due day must be selected.'),
-  ownerID: yup.number().integer().required(),
+  dueDay: yup.number().integer().positive('A due day must be selected.'),
+  ownerID: yup.number().integer(),
 }).required();
 
 export const NewTaskSchema = yup.object({
@@ -67,14 +67,20 @@ export function transformTaskOwner(task: Task){
   return({ownerID: taskOwner.userID, ...copyProps})
 }
 
+export function withDependencies(task: Task): Task{
+  // no dependencies
+  if(task.taskDependencies?.length < 1) return task;
+  return ({...task, dependencies: task.taskDependencies.map(dependencies=> dependencies.taskID.toString())})
+}
+
 export const taskApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getTasks: builder.query< Task[], {limit: number} | void>({
-      query: (params) => ({
-        url: `${process.env.REACT_APP_API_PATH}/workflow/`,
+    getTasks: builder.query< Task[], string>({
+      query: (workflowID) => ({
+        url: `${process.env.REACT_APP_API_PATH}/workflow/${workflowID}/task`,
         method: 'GET',
-        params: params ? { ...params } : undefined,
       }),
+      transformResponse: (data: Task[]) => data ? data.map((task) => withDependencies(task)) : [],
       providesTags: ['Task'],
     }),
     createTask: builder.mutation<Task[] , NewTaskRequest>({
@@ -88,7 +94,7 @@ export const taskApi = api.injectEndpoints({
     updateTask: builder.mutation<number , EditTaskRequest>({
       query: (params)=> ({
         url: `${process.env.REACT_APP_API_PATH}/workflow/${params.workflowID}/task/${params.taskID}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: params
       }),
       invalidatesTags: ['Task'],

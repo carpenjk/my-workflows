@@ -4,7 +4,6 @@ type Props = {
   children: React.ReactNode,
   className: ClassNameValue,
   maxHeightClassName?: ClassNameValue,
-  actionComponent?: React.ReactNode,
   headers?: React.ReactNode,
   title?:  string
 }

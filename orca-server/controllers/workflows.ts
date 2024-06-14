@@ -2,30 +2,31 @@ import { NextFunction, Request, Response } from "express";
 import { Workflow } from "../models/Workflow";
 import { asyncWrapper } from "../middleware/asyncWrapper";
 import { NotFoundError } from "../errors/notFoundError";
-import { TaskArgs } from "./tasks";
 import { Task } from "../models/Task";
 import { User } from "../models/User";
 import { sequelize } from "../adapters/sequelize";
 
-interface WorkflowArgs {
+
+interface WorkflowID {
+  workflowID: bigint
+}
+
+interface WorkflowFields {
   name: string,
   description: string,
   ownerID: bigint,
 }
 
-interface UpdateWorkflowArgs extends WorkflowArgs {
-  workflowID: bigint
-}
+type UpdateWorkflowArgs = WorkflowID & WorkflowFields;
 
 export const getWorkflow = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const { workflowID } = req.params;
-  const workflow = await Workflow.scope('withTasks').findOne({where: {workflowID: Number(workflowID)}})
-
-  if (!workflow) {
-    return next(new NotFoundError('No workflows found.'));
-  }
-  res.send(workflow);
-});
+  const workflow = await Workflow.findOne({
+    where: {workflowID: workflowID},
+    attributes: ['workflowID', 'name', 'description', 'status', 'duration', 'ownerID', 'ownerID']
+  })
+  return res.send(workflow);
+})
 
 export const getWorkflows = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
   const limit = Number(req.query.limit);
@@ -78,7 +79,7 @@ function getDuration(tasks:Task[]): {} | {duration: string} {
   return {};
 }
 
-export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowArgs>, res: Response) => {
+export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowFields>, res: Response) => {
   const {...summaryFields } = req.body;
   const workflow = await Workflow.create({
     status: 'Draft',
@@ -87,10 +88,6 @@ export const createWorkflow = asyncWrapper(async (req: Request<{},{}, WorkflowAr
   res.json({ msg: 'Workflow created!' });
 });
 
-
-function withWorkflowID(tasks: TaskArgs[], workflowID: bigint){
-  return tasks.map(task=> ({...task, workflowID: workflowID}));
-}
 
 export const updateWorkFlow = asyncWrapper(async (req: Request<{}, {}, UpdateWorkflowArgs>, res: Response, next: NextFunction) => {
   const { workflowID: workflowID, ...workflowParams } = req.body;

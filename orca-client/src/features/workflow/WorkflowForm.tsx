@@ -1,20 +1,30 @@
-import { Task } from 'app/services/task';
-import { User } from 'app/services/user';
-import { Workflow, fieldSizes } from "app/services/workflow";
-import { MultilineTextInput, InputCell, InlineButton } from "features/ui";
+import { NewTasksRequest, NewTasksSchema, Task, useCreateTaskMutation, useDeleteTasksMutation, useSaveTasksMutation, useUpdateTaskMutation } from 'app/services/task';
+import { User, useGetUsersQuery } from 'app/services/user';
+import { fieldSizes } from "app/services/workflow";
+import { MultilineTextInput, InputCell } from "features/ui";
 import {ActionDropDown} from 'features/ui/ActionMenu';
 import {SelectInput} from 'features/ui/shared';
-import { Table, TableCell, ColumnHeader, ActionButtonCell } from 'features/ui/table';
-import { Fragment } from 'react';
-import { useWorkflow } from './useWorkflow';
+import { TableCell, ActionButtonCell } from 'features/ui/table';
+import { Fragment, useState } from 'react';
 import { SinglelineInput } from 'features/ui/shared';
 import { getID, getPrefix } from 'utils/formFields';
 import { PlusIcon } from 'features/ui/shared/PlusIcon';
+import { UseFormHandleSubmit, useFieldArray, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useUpdateDependenciesMutation } from 'app/services/dependencies';
 
 type Props = {
-  workflow?: Workflow,
-  users: User[]
+  workflowID: number,
+  tasks: Task[]
 }
+
+export type FormValues =   NewTasksRequest;
+export type SaveTaskFields = UseFormHandleSubmit<FormValues, undefined>
+export type DeleteTask = ({ taskID, index }: {
+  taskID: number;
+  index: number;
+}) => void;
+
 
 const getDisplayUsers = (users: User[]) => users.map((user) => ({
   value: user.userID , displayValue: user.name
@@ -25,17 +35,52 @@ const getDisplayDependencies = (deps: Task[]) => deps.map((task) => ({
 }))
  
 
-const WorkflowForm = ({workflow, users = []}: Props) => {
-    const {
-      // formState,
-      register,
-      control,
-      taskFields,
-      saveWorkflow,
-      createNewTask,
-      copyTask,
-      deleteTask
-    } = useWorkflow(workflow);
+const WorkflowForm = ({workflowID, tasks}: Props) => {
+
+    const [deletedTasks, setDeletedTasks] = useState<number[]>([]);
+    const [updateTask, updateTaskStatus] = useUpdateTaskMutation();
+    const [createTask, createTaskStatus] = useCreateTaskMutation();
+    const [deleteTasks, deleteTaskStatus] = useDeleteTasksMutation();
+    const [saveDependencies, saveDependenciesStatus] = useUpdateDependenciesMutation(); 
+    const {data: users } = useGetUsersQuery();
+
+    const { register, handleSubmit, formState, getValues, control } = 
+    useForm<FormValues>({
+      resolver: yupResolver(NewTasksSchema),
+      defaultValues: {
+        tasks: tasks?.map((task)=> {
+          const {taskOwner, taskDependencies, updatedAt, createdAt, ...taskFields} = task;
+          return({
+          ...taskFields, ownerID: taskOwner?.userID
+        })})
+      },
+    });
+
+    const { fields: taskFields, append, prepend, remove, replace, swap, move, insert } = useFieldArray({
+      control, 
+      name: "tasks",
+    });
+
+    
+    const _updateTask = async (e: React.FocusEvent) => {
+      console.log("🚀 ~ const_updateTask= ~ e:", e)
+      const idAry = e.target.id.split('.');
+      console.log("🚀 ~ const_updateTask= ~ idAry:", idAry)
+
+      if("name" in e.target) {
+        // updateTask({taskID: Number(idAry[1]), workflowID: workflowID, [idAry[2]]: getValues(e.target.name as string)})
+      }
+
+      
+    }
+
+    const copyTask = (index: number)=> {
+      const {taskID, ...copyFields} = taskFields[index];
+      createTask(copyFields);
+    }
+    // ! update this
+    const deleteTask = ({taskID, index}: {taskID: number, index: number})=>{}
+
 
     const newRowIndex = taskFields.length;
     const newIDPrefix = getPrefix('tasks', newRowIndex);
@@ -47,158 +92,79 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
   
   return ( 
     
-        <form className="contents" onSubmit={saveWorkflow()}>
-          <Table 
-            className={`grid w-full h-full content-start
-              grid-cols-[auto_minmax(9rem,11.5rem)_minmax(12rem,1fr)_minmax(9rem,1fr)_minmax(3rem,_.25fr)_minmax(7rem,.25fr)]`}
-            title='Tasks'
-            actionComponent={
-              <InlineButton type='button' onClick={createNewTask} className="absolute bottom-3 right-4 sm:right-8">
-                New Task
-              </InlineButton>
-            }
-            headers={
-              <>
-                <ColumnHeader></ColumnHeader>
-                <ColumnHeader>Name</ColumnHeader>
-                <ColumnHeader>Description</ColumnHeader>
-                <ColumnHeader>Dependencies</ColumnHeader>
-                <ColumnHeader>Due Day</ColumnHeader>
-                <ColumnHeader>Owner</ColumnHeader>
-              </>
-            }
-          >
-            {taskFields.map((task, index) => {
-              const idPrefix = getPrefix('tasks',index);
-              const nameID = getID(idPrefix, 'name');
-              const descriptionID = getID(idPrefix, 'description');
-              const dependenciesID = getID(idPrefix, 'dependencies');;
-              const dueDayID = getID(idPrefix, 'dueDay');
-              const taskOwnerID = getID(idPrefix, 'ownerID');
-              
-              return (
-                <Fragment key={task.id}>
-                  <ActionButtonCell >
-                    <ActionDropDown actions={[
-                      {
-                        action: 'edit',
-                        to: '/workflow'
-                      },
-                      {
-                        action: 'copy',
-                        fn: ()=> copyTask(index),
-                      },
-                      {
-                        action: 'delete',
-                        fn: ()=> deleteTask({ taskID: Number(task.taskID), index: index }),
-                      },
-                      {
-                        action: 'deploy',
-                        to: '/workflow'
-                      },
-                    ]}/>
-                  </ActionButtonCell>
-                  <InputCell inputName={nameID}>
-                    <TableCell>
-                      <MultilineTextInput
-                        id={nameID}
-                        {...register(`tasks.${index}.name`, {required: true})}
-                        control={control}
-                        maxLength={fieldSizes.workflow.name}
-                      />
-                    </TableCell>
-                  </InputCell>
-                  <InputCell inputName={descriptionID}>
-                    <TableCell>
-                      <MultilineTextInput
-                        id={descriptionID}
-                        {...register(`tasks.${index}.description`, {required: true})}
-                        control={control}
-                        maxLength={fieldSizes.workflow.description}
-                      />
-                    </TableCell>
-                  </InputCell>
-                  <InputCell inputName={dependenciesID}>
-                    <TableCell>
-                      <SelectInput
-                        id={dependenciesID}
-                        {...register(`tasks.${index}.dependencies`, {required: true})}
-                        control={control}
-                        values={getDisplayDependencies(workflow?.tasks ?? [])}
-                        multiple={true}
-                        defaultValue={task.dependencies?.map(dep => dep.toString()) ?? []}
-                      />
-                    </TableCell>
-                  </InputCell>  
-                  <InputCell inputName={dueDayID}>
-                    <TableCell>
-                      <SinglelineInput
-                        id={dueDayID}
-                        {...register(`tasks.${index}.dueDay`, {required: true})}
-                        defaultValue={task.dueDay === 0 ? undefined : task.dueDay.toString()}
-                        pattern="\d*"
-                        maxLength={fieldSizes.task.dueDay}
-                        max={"9999"}
-                        control={control}
-                      />
-                    </TableCell>
-                  </InputCell>
-                  <InputCell inputName={taskOwnerID} focusOnEsc>
-                    <TableCell>
-                      <SelectInput
-                        id={taskOwnerID}
-                        {...register(`tasks.${index}.ownerID`, {required: true})}
-                        control={control}
-                        values={getDisplayUsers(users)}
-                        defaultValue={task.ownerID ?? []} // needed to prevent change from uncontrolled to controlled error
-                      />
-                    </TableCell>
-                  </InputCell>
-                </Fragment>
-              )
-            })}
-            <Fragment key={taskFields.length -1}>
-              <TableCell>
-                <PlusIcon/>
-              </TableCell>
-              <InputCell inputName={newNameID}>
+
+      <form className="contents" onSubmit={() => {}}>
+        {taskFields.map((task, index) => {
+          const idPrefix = getPrefix('tasks',task.taskID ?? "NEW");
+          const nameID = getID(idPrefix, 'name');
+          const descriptionID = getID(idPrefix, 'description');
+          const dependenciesID = getID(idPrefix, 'dependencies');;
+          const dueDayID = getID(idPrefix, 'dueDay');
+          const taskOwnerID = getID(idPrefix, 'ownerID');
+          
+          return (
+            <Fragment key={task.id}>
+              <ActionButtonCell >
+                <ActionDropDown actions={[
+                  {
+                    action: 'edit',
+                    to: '/workflow'
+                  },
+                  {
+                    action: 'copy',
+                    fn: ()=> copyTask(index),
+                  },
+                  {
+                    action: 'delete',
+                    fn: ()=> deleteTask({ taskID: Number(task.taskID), index: index }),
+                  },
+                  {
+                    action: 'deploy',
+                    to: '/workflow'
+                  },
+                ]}/>
+              </ActionButtonCell>
+              <InputCell inputName={nameID}>
                 <TableCell>
                   <MultilineTextInput
-                    id={newNameID}
-                    {...register(`tasks.${newRowIndex}.name`, {required: true})}
+                    id={nameID}
+                    {...register(`tasks.${index}.name`, 
+                      {required: true,
+                        onBlur: _updateTask
+                      })}
                     control={control}
                     maxLength={fieldSizes.workflow.name}
                   />
                 </TableCell>
               </InputCell>
-              <InputCell inputName={newDescriptionID}>
+              <InputCell inputName={descriptionID}>
                 <TableCell>
                   <MultilineTextInput
-                    id={newDescriptionID}
-                    {...register(`tasks.${newRowIndex}.description`, {required: true})}
+                    id={descriptionID}
+                    {...register(`tasks.${index}.description`, {required: true})}
                     control={control}
                     maxLength={fieldSizes.workflow.description}
                   />
                 </TableCell>
               </InputCell>
-              <InputCell inputName={newDependenciesID}>
+              <InputCell inputName={dependenciesID}>
                 <TableCell>
                   <SelectInput
-                    id={newDependenciesID}
-                    {...register(`tasks.${newRowIndex}.dependencies`, {required: true})}
+                    id={dependenciesID}
+                    {...register(`tasks.${index}.dependencies`, {required: true})}
                     control={control}
-                    values={getDisplayDependencies(workflow?.tasks ?? [])}
+                    values={getDisplayDependencies(tasks ?? [])}
                     multiple={true}
-                    defaultValue={[]}
+                    defaultValue={task.dependencies?.map(dep => dep.toString()) ?? []}
                   />
                 </TableCell>
               </InputCell>  
-              <InputCell inputName={newDueDayID}>
+              <InputCell inputName={dueDayID}>
                 <TableCell>
                   <SinglelineInput
-                    id={newDueDayID}
-                    {...register(`tasks.${newRowIndex}.dueDay`, {required: true})}
-                    defaultValue={ undefined}
+                    id={dueDayID}
+                    {...register(`tasks.${index}.dueDay`, {required: true})}
+                    defaultValue={task.dueDay === 0 ? undefined : task.dueDay.toString()}
                     pattern="\d*"
                     maxLength={fieldSizes.task.dueDay}
                     max={"9999"}
@@ -206,22 +172,81 @@ const WorkflowForm = ({workflow, users = []}: Props) => {
                   />
                 </TableCell>
               </InputCell>
-              <InputCell inputName={newTaskOwnerID} focusOnEsc>
+              <InputCell inputName={taskOwnerID} focusOnEsc>
                 <TableCell>
                   <SelectInput
-                    id={newTaskOwnerID}
-                    {...register(`tasks.${newRowIndex}.ownerID`, {required: true})}
+                    id={taskOwnerID}
+                    {...register(`tasks.${index}.ownerID`, {required: true})}
                     control={control}
-                    values={getDisplayUsers(users)}
-                    defaultValue={[]} // needed to prevent change from uncontrolled to controlled error
+                    values={users ? getDisplayUsers(users) : []}
+                    defaultValue={task.ownerID ?? []} // needed to prevent change from uncontrolled to controlled error
                   />
                 </TableCell>
               </InputCell>
             </Fragment>
-          </Table>
-          {/* <div className="flex items-center justify-end w-full mt-3 space-x-6 lg:mt-6">
-          <SubmitButton disabled={!formState.isDirty}>Save</SubmitButton>
-          </div> */}
+          )
+        })}
+        <Fragment key={taskFields.length -1}>
+          <TableCell>
+            <PlusIcon/>
+          </TableCell>
+          <InputCell inputName={newNameID}>
+            <TableCell>
+              <MultilineTextInput
+                id={newNameID}
+                {...register(`tasks.${newRowIndex}.name`, {required: true})}
+                control={control}
+                maxLength={fieldSizes.workflow.name}
+              />
+            </TableCell>
+          </InputCell>
+          <InputCell inputName={newDescriptionID}>
+            <TableCell>
+              <MultilineTextInput
+                id={newDescriptionID}
+                {...register(`tasks.${newRowIndex}.description`, {required: true})}
+                control={control}
+                maxLength={fieldSizes.workflow.description}
+              />
+            </TableCell>
+          </InputCell>
+          <InputCell inputName={newDependenciesID}>
+            <TableCell>
+              <SelectInput
+                id={newDependenciesID}
+                {...register(`tasks.${newRowIndex}.dependencies`, {required: true})}
+                control={control}
+                values={getDisplayDependencies(tasks ?? [])}
+                multiple={true}
+                defaultValue={[]}
+              />
+            </TableCell>
+          </InputCell>  
+          <InputCell inputName={newDueDayID}>
+            <TableCell>
+              <SinglelineInput
+                id={newDueDayID}
+                {...register(`tasks.${newRowIndex}.dueDay`, {required: true})}
+                defaultValue={ undefined}
+                pattern="\d*"
+                maxLength={fieldSizes.task.dueDay}
+                max={"9999"}
+                control={control}
+              />
+            </TableCell>
+          </InputCell>
+          <InputCell inputName={newTaskOwnerID} focusOnEsc>
+            <TableCell>
+              <SelectInput
+                id={newTaskOwnerID}
+                {...register(`tasks.${newRowIndex}.ownerID`, {required: true})}
+                control={control}
+                values={users ? getDisplayUsers(users) : []}
+                defaultValue={[]} // needed to prevent change from uncontrolled to controlled error
+              />
+            </TableCell>
+          </InputCell>
+        </Fragment>
         </form>
    );
 }

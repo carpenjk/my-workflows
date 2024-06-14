@@ -18,7 +18,6 @@ export interface Workflow{
   }
   status: string,
   updatedAt: Date,
-  tasks: Task[]
 }
 
 export const fieldSizes = {
@@ -59,19 +58,13 @@ export function transformTaskOwner(task: Task){
 }
 
 export function transformWorkflow(workflow: Workflow){
-  const {workflowID, createdAt, updatedAt, completedDate, workflowOwner, tasks, ...copyProps} = workflow;
+  const {workflowID, createdAt, updatedAt, completedDate, workflowOwner, ...copyProps} = workflow;
   return({
     ownerID: workflowOwner.userID,
-    tasks: tasks.map(task=> transformTaskOwner(task)),
     ...copyProps
   })
 }
 
-export function withDependencies(task: Task): Task{
-  // no dependencies
-  if(task.taskDependencies?.length < 1) return task;
-  return ({...task, dependencies: task.taskDependencies.map(dependencies=> dependencies.taskID.toString())})
-}
 
 export const workflowApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -80,12 +73,6 @@ export const workflowApi = api.injectEndpoints({
         url: `${process.env.REACT_APP_API_PATH}/workflow`,
         method: 'GET',
         params: params ? { ...params } : undefined,
-        transformResponse: (data: Workflow[]) => (data.map(
-          workflow => ({
-            ...workflow,
-            tasks: workflow.tasks.map(task=> withDependencies(task))
-          })
-        ))
       }),
       async onQueryStarted(
         arg, { queryFulfilled }
@@ -105,10 +92,6 @@ export const workflowApi = api.injectEndpoints({
       query: (workflow) => ({
         url: `${process.env.REACT_APP_API_PATH}/workflow/${workflow}`,
         method: 'GET',
-      }),
-      transformResponse: (data: Workflow) => ({
-          ...data,
-          tasks: data.tasks.map(task=> withDependencies(task))
       }),
       async onQueryStarted(
         arg, { queryFulfilled }

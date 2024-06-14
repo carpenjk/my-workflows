@@ -16,7 +16,6 @@ import Layout from 'features/ui/layout/Layout';
 import ProtectedRoute from 'routes/ProtectedRoute';
 import Logout from 'routes/Logout';
 import Register from 'routes/Register';
-import NewWorkflow from 'routes/NewWorkflow';
 import EditWorkflow from 'routes/EditWorkflow';
 import { SidebarProvider } from 'features/sidebar';
 
@@ -34,7 +33,6 @@ function App() {
                 <Route path="/" element={<Dashboard/>}></Route>
                 <Route path="/manage" element={<Manage/>}></Route>
                 <Route path="/workflow" element={<Workflow/>}></Route>
-                <Route path="/workflow/new" element={<NewWorkflow/>}></Route>
                 <Route path="/workflow/:workflowID" element={<EditWorkflow/>}></Route>
               </Route>
             </Route>

@@ -1,2 +1,2 @@
 export {default as WorkflowForm} from './WorkflowForm'
-export {useWorkflow} from './useWorkflow'
+export {useTasks as useWorkflow} from './useWorkflow'

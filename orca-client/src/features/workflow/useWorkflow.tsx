@@ -24,21 +24,21 @@ export type UseWorkflowReturn = {
   copyTask: (index: number) => void
 }
 
-export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
+export const useTasks = (workflow?: Workflow): UseWorkflowReturn => {
 
   const { register, handleSubmit, formState, getValues, control } = 
     useForm<FormValues>({
       resolver: yupResolver(EditWorkflowSchema.concat(NewTasksSchema)),
       defaultValues: {
-        workflowID: workflow?.workflowID,
-        name: workflow?.name,
-        description: workflow?.description,
-        ownerID: workflow?.workflowOwner.userID,
-        tasks: workflow?.tasks.map((task)=> {
-          const {taskOwner, taskDependencies, updatedAt, createdAt, ...taskFields} = task;
-          return({
-          ...taskFields, ownerID: taskOwner?.userID
-        })})
+        // workflowID: workflow?.workflowID,
+        // name: workflow?.name,
+        // description: workflow?.description,
+        // ownerID: workflow?.workflowOwner.userID,
+        // tasks: workflow?.tasks.map((task)=> {
+        //   const {taskOwner, taskDependencies, updatedAt, createdAt, ...taskFields} = task;
+        //   return({
+        //   ...taskFields, ownerID: taskOwner?.userID
+        // })})
       },
     });
 
@@ -100,7 +100,7 @@ export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
     });
     return {tasks: splitTasks, dependencies: deps};
   }
-  async function _saveWorkflow(values: FormValues, dirtyFields:  Partial<Readonly<FieldNamesMarkedBoolean<FormValues>>>){
+  async function _saveTasks(values: FormValues, dirtyFields:  Partial<Readonly<FieldNamesMarkedBoolean<FormValues>>>){
     function containsDirtyFields(fieldNode: object | object[] | boolean): boolean{
       if(typeof fieldNode == 'boolean') return fieldNode;
       if(typeof fieldNode !== 'object') return false;
@@ -149,7 +149,7 @@ export const useWorkflow = (workflow?: Workflow): UseWorkflowReturn => {
 
   const handleSave = async () =>{
     if(!isDirty) return;
-    await _saveWorkflow(getValues(), dirtyFields)
+    await _saveTasks(getValues(), dirtyFields)
   }
 
 
